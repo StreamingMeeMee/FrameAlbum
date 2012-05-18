@@ -1,0 +1,25 @@
+<?php
+#------------------------------------------
+# DB configuration options for PHP code
+#
+#------------------------------------------
+
+#--- DB configuration
+$GLOBALS['db_user'] = "DBUSERNAME";
+$GLOBALS['db_pass'] = "DBUSERPASSWORD";
+$GLOBALS['db_name'] = 'DBNAME';
+$GLOBALS['db_host'] = "DBHOST";
+
+#-----------------------------
+function dbStart()
+#-----------------------------
+{
+    mysql_connect($GLOBALS['db_host'],$GLOBALS['db_user'],$GLOBALS['db_pass']);
+
+    @mysql_select_db($GLOBALS['db_name']) or die( "Unable to select database:[".$GLOBALS['db_name']."]");
+
+    mysql_set_charset('utf8');
+}
+
+#--- BE SURE THERE ARE NO BLANK LINES AFTER CLOSE
+?>

@@ -1,0 +1,72 @@
+<?php
+#------------------------------------------
+# Global configuration options for PHP code
+#
+#------------------------------------------
+
+#------------------------------------------
+# Set VERSION
+#------------------------------------------
+
+    $GLOBALS['version'] = 'Prod - v2011-11-09';
+
+#------------------------------------------
+# Feature switches are first
+#------------------------------------------
+
+    $GLOBALS['enable_rss'] = TRUE;          # enable all RSS feeds - NOT YET IMPLEMENTEED
+
+    $GLOBALS['enable_web'] = TRUE;          # enable all Portal sections - NOT YET IMPLEMENTED
+
+    $GLOBALS['enable_register'] = FALSE;    # allow new registrations
+
+    $GLOBALS['enable_preregister'] = TRUE;  # allow new registrations
+
+    $GLOBALS['enable_chan_samples'] = TRUE;     # display sample images when viewing channel details
+
+    $GLOBALS['enable_frame_samples'] = FALSE;   # display sample images from a given frame
+
+    $GLOBALS['enable_google_plus_one'] = TRUE;
+#--------------------------------------------
+# Option settings
+#--------------------------------------------
+
+    $GLOBALS['pwsalt'] = "YOUR_SALT_GOES_HERE";
+
+    $GLOBALS['email_from'] = 'user@email.com';
+    $GLOBALS['email_reply_to'] = $GLOBALS['email_from'];
+
+    $GLOBALS['no_frame_content_channel'] = 0;         # send this to frames with no content (channels)
+
+    $GLOBALS['row_item_limit'] = 3;               # how many items to include on a single line (0 based)
+
+    $GLOBALS['PUB_CHAN_USERID'] = 2;                # 'Public' channels are owned by this user.
+                                                    # This user also owns all un-activated frames.
+#--------------------------------------------
+# API KEYS
+#--------------------------------------------
+
+    $GLOBALS['mixpanel_key'] = 'MIXPANEL_COM_API_KEY';
+
+    $GLOBALS['flickr_api_key'] = 'FLICKR_API_KEY';
+    $GLOBALS['flickr_api_secret'] = 'FLICKR_API_KEY_SECRET';
+
+    $GLOBALS['wu_api_key'] = 'WEATHER_UNDERGROUND_API_KEY';
+
+    $GLOBALS['picasa_login'] = 'PICASA_USER_LOGIN';
+    $GLOBALS['picasa_passwd'] = 'PICASA_USER_PASSWORD';
+
+#--------------------------------------------
+# All paths should not include trailing '/'
+#--------------------------------------------
+    $GLOBALS['image_path'] = '/opt/framealbum/html/image';
+    $GLOBALS['image_url_root'] = 'http://YOUR_HOST_NAME/';
+
+    $GLOBALS['rss_path'] = '/opt/framealbum/rss';
+    $GLOBALS['rss_url_root'] = 'http://YOUR_HOST_NAME';
+    $GLOBALS['rss_feed_url'] = 'http://YOUR_HOST_NAME/feed.php';
+
+    $GLOBALS['www_url_root'] = 'http://YOUR_HOST_NAME/';
+
+#-- BE SURE THERE ARE NO BLANK LINES AFTER THE CLOSE
+?>
