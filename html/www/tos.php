@@ -12,7 +12,7 @@
 ?>
 </head>
 
-<body onLoad="mpmetrics.track('Contact');">
+<body onLoad="mpmetrics.track('TOS');">
 <?php
     include_once "topheader.inc";
     include_once "search_strip.inc";
