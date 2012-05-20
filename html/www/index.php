@@ -116,7 +116,5 @@ JS;
 <?php
     include_once 'footer_home.inc';
 ?>
-<script type="text/javascript" src="//www.hellobar.com/hellobar.js"></script>
-<script type="text/javascript">new HelloBar(1,48202);</script>
 </body>
 </html>
