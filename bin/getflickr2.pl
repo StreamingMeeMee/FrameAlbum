@@ -39,6 +39,9 @@
 # 2011-nov-21 - TimC
 #   - remove 'min_upload_time' from MAIN - unused
 #   - get MAX_AGE from attribs
+#
+# 2012-may-20 - TimC
+#   - use $GLOBALS{'leftronic_key'} rather than hardcoded value
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -56,7 +59,7 @@ require "inc/helpers.pl";
 #----------------------------------
 our $PROGRAMNAME = 'getFlickr2';       # Name of calling app
 our $PROGRAMOWNER = 'user@email.com';
-our $VERSIONSTRING = 'v2011-Nov-21';
+our $VERSIONSTRING = 'v2012-May-20';
 
 our $CHAN_TYPE = 1;
 
@@ -410,15 +413,16 @@ my $pid;
     $dbh->do("INSERT INTO grabber_stats (channel_type_id, rundate, wall_time, stats) VALUES (1, now(), $et, '" . $chn_cnt . '|' . $item_cnt  . "')")
         or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
 
-    my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "SmQC4vt62IyzBuDPzrzi", "streamName": "getflickr_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
+
+    my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
     SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
     system $cmd;
 
-    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "SmQC4vt62IyzBuDPzrzi", "streamName": "getflickr_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
+    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
     SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
     system $cmd;
 
-    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "SmQC4vt62IyzBuDPzrzi", "streamName": "getflickr_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
+    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
     SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
     system $cmd;
 

@@ -51,6 +51,8 @@ our %GLOBALS;
     $GLOBALS{'picasa_login'} = 'picasa-user-account@gmail.com';
     $GLOBALS{'picasa_passwd'} = 'PICASA_USER_PASSWORD';
 
+    $GLOBALS{'leftronic_key'} = 'LEFTRONIC_KEY';
+
 #--------------------------------------------
 # All paths should not include trailing '/'
 #--------------------------------------------
