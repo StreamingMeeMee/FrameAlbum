@@ -25,8 +25,14 @@
 
   <div class="midarea">
     <div class="head">FAQ </div>
-    <div class="body_textarea">
-      <div align="justify">Coming soon. (Yeah, lame; I know...)</div>
+    <div class="body_faq_q">How do I configure my frame to use the FrameAlbum service?
+    </div>
+    <div class="body_faq_a">Most frames that include a WiFi feature are 'hard wired' to use the old FrameChannel service.  Unfortunatly, it is nigh impossible to
+ reprogram them to use FrameAlbum instead.  What we are left with is 'fooling' your frame into thinking it is talking to the FrameAlbum service.  There are three metho
+ two involve a fair bit of geekery the other on a feature present in some frames (Kodak for example).
+    </div>
+    <div class="body_faq_a"><strong>Photo RSS feed:</strong> Some frames, Kodak for example, include a feature to display a 'Photo RSS feed'.
+  Some frames refer to it as a 'custom RSS feed'.  If your frame supports this feature it is the simplist method to get your frame to use the FrameAlbum service.
     </div>
   </div>
 <!-- end of 'midarea' DIV -->
