@@ -28,7 +28,7 @@
     <div class="body_faq_q">How do I configure my frame to use the FrameAlbum service?
     </div>
     <div class="body_faq_a">Most frames that include a WiFi feature are 'hard wired' to use the old FrameChannel service.  Unfortunatly, it is nigh impossible to
- reprogram them to use FrameAlbum instead.  What we are left with is 'fooling' your frame into thinking it is talking to the FrameAlbum service.  There are three metho
+ reprogram them to use FrameAlbum instead.  What we are left with is 'fooling' your frame into thinking it is talking to the FrameAlbum service.  There are three methods of getting your frame to 'talk' to the FrameAlbum service;
  two involve a fair bit of geekery the other on a feature present in some frames (Kodak for example).
     </div>
     <div class="body_faq_a"><strong>Photo RSS feed:</strong> Some frames, Kodak for example, include a feature to display a 'Photo RSS feed'.
