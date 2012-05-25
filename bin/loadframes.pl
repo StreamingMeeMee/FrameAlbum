@@ -17,6 +17,9 @@
 #
 # 2011-nov-5 - TimC
 #   - Test some metrics to leftronics
+#
+# 2012-may-25 - TimC
+#   - don't send Leftronic metrics if key is not defined
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -249,12 +252,12 @@ my $et = 0;
     $dbh->do("INSERT INTO batch_stats (batch_id, rundate, wall_time, stats) VALUES (1, now(), $et, '" . $cnt . '|' . $item_cnt  . "')")
         or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
 
-    if ( exists(  $GLOBALS{'leftronic_key'} ) ) {
-        my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "LEFTRONIC_KEY", "streamName": "buildfeed_frames", "point": ' .$cnt . "}' https://beta.leftronic.com/customSend/";
+    if ( exists( $GLOBALS{'leftronic_key'} ) ) {
+        my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "buildfeed_frames", "point": ' .$cnt . "}' https://beta.leftronic.com/customSend/";
         SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
         system $cmd;
 
-        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "LEFTRONIC_KEY", "streamName": "buildfeed_runtime", "point": ' .$et . "}' https://beta.leftronic.com/customSend/";
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "buildfeed_runtime", "point": ' .$et . "}' https://beta.leftronic.com/customSend/";
         SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
         system $cmd;
     }

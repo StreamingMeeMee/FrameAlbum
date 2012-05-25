@@ -42,6 +42,7 @@
 #
 # 2012-may-20 - TimC
 #   - use $GLOBALS{'leftronic_key'} rather than hardcoded value
+#   - don't send Leftronic metrics if key is not defined
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -413,18 +414,19 @@ my $pid;
     $dbh->do("INSERT INTO grabber_stats (channel_type_id, rundate, wall_time, stats) VALUES (1, now(), $et, '" . $chn_cnt . '|' . $item_cnt  . "')")
         or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
 
+    if( exists( $GLOBALS{'leftronic_key'} ) ) {
+        my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
+        SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
+        system $cmd;
 
-    my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
-    SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
-    system $cmd;
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
+        SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
+        system $cmd;
 
-    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
-    SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
-    system $cmd;
-
-    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
-    SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
-    system $cmd;
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
+        SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
+        system $cmd;
+    }
 
     $pidfile->remove();
 

@@ -5,6 +5,9 @@
 # 2011-jun-16 - TimC
 #   - First go
 #   - NOT YET READY FOR PRODUCTION
+#
+# 2012-may-25 - TimC
+#   - Remove some unneeded GLOBALS
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -18,11 +21,6 @@ use strict;
 #----------------------------------
 # G L O B A L S
 #----------------------------------
-
-my $BUDDY_ICON_URL = 'http://farm1.static.flickr.com/73/buddyicons/65966179@N00.jpg?1151161573#65966179@N00';
-my $PHOTOSTREAM_URL = 'http://www.flickr.com/photos/streamingmeemee/';
-
-my $LISC_URL =  'http://creativecommons.org/licenses/by-nc-nd/2.0/deed.en';
 
 my $USER_EMAIL = '';
 
