@@ -54,7 +54,9 @@
     $GLOBALS['wu_api_key'] = 'WEATHER_UNDERGROUND_API_KEY';
 
     $GLOBALS['picasa_login'] = 'PICASA_USER_LOGIN';
-    $GLOBALS['picasa_passwd'] = 'PICASA_USER_PASSWORD';
+    $GLOBALS['picasa_passwd'] = 'PICASA_USER_PASSWORD';;
+
+    $GLOBALS['leftronic_key'] = 'LEFTRONIC_KEY';
 
 #--------------------------------------------
 # All paths should not include trailing '/'

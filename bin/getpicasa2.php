@@ -247,16 +247,18 @@ function getPicasaRecent($service, $username, $max_age, $tags, $chan_id, $item_l
         SysMsg(MSG_CRIT, "[$sql]: Invalid query: " . mysql_error());
     }
 
-    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "SmQC4vt62IyzBuDPzrzi", "streamName": "getpicasa_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
-    SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
-    system($cmd);
+    if( isset( $GLOBALS['leftronics_key'] ) ) {
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": " . $GLOBALS['leftronics_key'] . '", "streamName": "getpicasa_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
+        SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
+        system($cmd);
 
-    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "SmQC4vt62IyzBuDPzrzi", "streamName": "getpicasa_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
-    SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
-    system($cmd);
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronics_key'] . '", "streamName": "getpicasa_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
+        SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
+        system($cmd);
 
-    $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "SmQC4vt62IyzBuDPzrzi", "streamName": "getpicasa_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
-    SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
-    system($cmd);
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronics_key'] . '", "streamName": "getpicasa_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
+        SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
+        system($cmd);
+    }
 
 ?>
