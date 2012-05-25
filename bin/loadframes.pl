@@ -14,6 +14,9 @@
 #
 # 2011-sept-17 - TimC
 #   - Include walltime in summary msg.
+#
+# 2011-nov-5 - TimC
+#   - Test some metrics to leftronics
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -245,5 +248,15 @@ my $et = 0;
 
     $dbh->do("INSERT INTO batch_stats (batch_id, rundate, wall_time, stats) VALUES (1, now(), $et, '" . $cnt . '|' . $item_cnt  . "')")
         or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
+
+    if ( exists(  $GLOBALS{'leftronic_key'} ) ) {
+        my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "LEFTRONIC_KEY", "streamName": "buildfeed_frames", "point": ' .$cnt . "}' https://beta.leftronic.com/customSend/";
+        SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
+        system $cmd;
+
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "LEFTRONIC_KEY", "streamName": "buildfeed_runtime", "point": ' .$et . "}' https://beta.leftronic.com/customSend/";
+        SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
+        system $cmd;
+    }
 
     exit;
