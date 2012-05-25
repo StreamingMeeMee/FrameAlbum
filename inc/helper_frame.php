@@ -5,6 +5,78 @@
 #
 # 2012-jan-15 - TimC
 #   - define $ret & $newfid in frameCheckInFrameID2()
+#
+# 2011-nov-27 - TimC
+#   - add frameIsActive(), frameIsActiveFID()
+#--------------------------------
+
+#----------------------------
+function frameIsActive($fid, $pin)
+#----------------------------
+# Takes idframes value and an associated PIN.
+# Returns:
+#   1 if frame is active, 0 otherwise
+#============================
+{
+     if (!(isset($fid))) { $fid = 0; }
+     if (!(isset($pin))) { $pin = 0; }
+
+     if ($fid != 0) {                    # nothing to lookup
+         $fid = prepDBVal($fid);
+         $pin = prepDBVal($pin);
+
+         $sql = "SELECT active FROM frames WHERE idframes='$fid' AND feed_pin='$pin'";        # Is this a valid user?
+         $result = mysql_query($sql);
+         if (!$result) {
+             die("[$sql]: Invalid query: " . mysql_error());
+         }
+
+         if (mysql_num_rows( $result ) == 1) {
+             $tmp = mysql_fetch_row( $result );
+             $ret = ($tmp[0] == 'Y') ? 1 : 0;
+         } else {
+             $ret = 0;
+         }
+     } else {
+         $ret = 0;
+     }
+
+     return $ret;
+ }
+
+#----------------------------
+function frameIsActiveFID($frameid)
+#----------------------------
+# Takes raw 'frameID' as parm, NOT idframes value.
+# Returns:
+#   idframes value corresponding to the requested frameID
+#   1 if frame is active, 0 otherwise
+#============================
+{
+    if (!(isset($frameid))) { $frameid = ''; }
+
+    if (strlen($frameid) != 0) {                    # nothing to lookup
+        $frameid = prepDBVal($frameid);
+        $sql = "SELECT idframes, active FROM frames WHERE frame_id='$frameid'";        # Is this a valid user?
+        $result = mysql_query($sql);
+        if (!$result) {
+            die("[$sql]: Invalid query: " . mysql_error());
+        }
+
+        if (mysql_num_rows( $result ) == 1) {
+            $tmp = mysql_fetch_row( $result );
+            $ret = ($tmp[1] == 'Y') ? 1 : 0;
+        } else {
+            $tmp[0] = 0;
+            $ret = 0;
+        }
+    } else {
+        $ret = 0;
+    }
+
+    return array($tmp[0], $ret);
+}
+
 #----------------------------
 function frameActivateKey($akey, $uid)
 #----------------------------
