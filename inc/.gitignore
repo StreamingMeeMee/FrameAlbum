@@ -1,5 +1,9 @@
 config.inc
 config.php
 dbconfig.php
+<<<<<<< HEAD
+=======
+dbconfig.inc
+>>>>>>> b560cffed0e441bc69e7dd5b65e059e778e8c2d1
 dbconnect.pl
 
