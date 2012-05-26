@@ -12,6 +12,9 @@
 # 2011-sept-17 - TimC
 #   - Add epoch time to guid value to address refresh issue on Kodak frames
 #   - Don't 'clear' the channel -- update existing entry
+#
+# 2011-dec-18 - TimC
+#   - Move API key to config. include as $GLOBALS{'wu_api_key'} (Bug #40)
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -26,13 +29,13 @@ use DBI;
 use strict;
 
 require "inc/helpers.pl";
-require "inc/dbconnect.pl";
+require "inc/dbconfig.inc";
 require "../inc/config.inc";
 
 #----------------------------------
 our $PROGRAMNAME = 'getRadar';
-our $VERSIONSTRING = 'v2011-sep-7';
-my $PROGRAMOWNER = "user@email.com"  # must escape '@@' to print() this
+our $VERSIONSTRING = 'v2011-dec-18';
+my $PROGRAMOWNER = "user@email.com";
 $! = 1;
 
 our $DEBUG = 0;
@@ -59,8 +62,6 @@ unless ($DEBUG) { $BCC_EMAIL_ADDR = $PROGRAMOWNER; }
 #----------------------------------
 # G L O B A L S
 #----------------------------------
-my $API_KEY = 'WEATHER_UNDERGROUND_API_KEY'
-
 my $TTL = 2;
 
 my $MAX_ITEMS = 1;
@@ -389,7 +390,7 @@ my $id;
         }
     }
 
-    $api_url = 'http://api.wunderground.com/api/' . $API_KEY . '/radar/q/' . $zip . '.json';
+    $api_url = 'http://api.wunderground.com/api/' . $GLOBALS{'wu_api_key'} . '/radar/q/' . $zip . '.json';
     SysMsg($MSG_DEBUG, 'API request:['.$api_url.']');
 
     $rsp = $UA->get($api_url);

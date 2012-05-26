@@ -26,6 +26,13 @@
 # 2011-sept-18 - TimC
 #   - use dbStart()
 #   - modify for new directory structure
+#
+# 2011-dec-18 - TimC
+#   - get Picasa login from inc/config.php (Bug #40)
+#   - get Leftronic key from inc/config.php (Bug #40)
+#
+# 2012-jan-15 - TimC
+#   - don't submit stats to Leftronic if API key is not set
 #--------------------------
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata_Photos');
@@ -46,8 +53,6 @@ $GLOBALS['DEFAULT_MAX_ITEMS'] = 300;
 function grabPicasaChannel($cid, $attrib, $item_limit)
 #----------------------------
 {
-
-
     $sql = "DELETE from items WHERE user_channel_id=$cid";
     $r = mysql_query($sql);
     if (!$r) {
@@ -188,9 +193,7 @@ function getPicasaRecent($service, $username, $max_age, $tags, $chan_id, $item_l
     } else {
         if (mysql_num_rows( $result ) > 0) {
             $serviceName = Zend_Gdata_Photos::AUTH_SERVICE_NAME;
-            $user = "PICASAUSER@gmail.com";
-            $pass = "PICASAPASSWORD";
-#            $client = Zend_Gdata_ClientLogin::getHttpClient($user, $pass, $serviceName);
+#            $client = Zend_Gdata_ClientLogin::getHttpClient($GLOBALS['picasa_login'], $GLOBALS['picasa_passwd'], $serviceName);
 #            $service = new Zend_Gdata_Photos($client);
             $service = new Zend_Gdata_Photos();
 
@@ -247,18 +250,17 @@ function getPicasaRecent($service, $username, $max_age, $tags, $chan_id, $item_l
         SysMsg(MSG_CRIT, "[$sql]: Invalid query: " . mysql_error());
     }
 
-    if( isset( $GLOBALS['leftronics_key'] ) ) {
-        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": " . $GLOBALS['leftronics_key'] . '", "streamName": "getpicasa_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
+    if ( issset( $GLOBALS{'leftronic_key'} ) and ( strlen( $GLOBALS{'leftronic_key'} ) > 0 ) ) {
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronic_key'] . '", "streamName": "getpicasa_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
         SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
         system($cmd);
 
-        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronics_key'] . '", "streamName": "getpicasa_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronic_key'] . '", "streamName": "getpicasa_photos", "point": ' .$item_cnt . "}' https://beta.leftronic.com/customSend/";
         SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
         system($cmd);
 
-        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronics_key'] . '", "streamName": "getpicasa_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
+        $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronic_key'] . '", "streamName": "getpicasa_timeperchannel", "point": ' .($et / $chn_cnt) . "}' https://beta.leftronic.com/customSend/";
         SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
         system($cmd);
     }
-
 ?>

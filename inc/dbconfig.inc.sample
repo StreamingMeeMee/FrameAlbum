@@ -10,7 +10,7 @@
 
 our $dbh;
 
-my $dsn = 'DBI:mysql:DBNAME:DBHOST;
+my $dsn = 'DBI:mysql:DBNAME:DBHOST';
 my $db_user_name = 'DBUSERNAME';
 my $db_password = 'DBUSERPASSWORD';
 

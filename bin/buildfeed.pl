@@ -27,6 +27,9 @@
 # 2011-sept-17 - TimC
 #   - Make sure that walltime is at least 1s
 #   - Get path info from config.inc
+#
+# 2011-dec-18 - TimC
+#   - convert to use inc/dbconfig.inc
 #-------------------------------------
 use DBI;
 
@@ -41,12 +44,12 @@ use strict;
 
 require "inc/helpers.pl";
 require "inc/config.inc";
-require "inc/dbconnect.pl";
+require "inc/dbconfig.inc";
 
 #--------------------------------------
 our $PROGRAMNAME = 'BuildFeed';       # Name of calling app
 our $PROGRAMOWNER = 'user@email.com';
-our $VERSIONSTRING = 'v2011-sept-14';
+our $VERSIONSTRING = 'v2011-dec-18';
 
 our $DEBUG = 0;
 

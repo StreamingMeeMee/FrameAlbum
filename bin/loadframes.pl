@@ -20,6 +20,7 @@
 #
 # 2012-may-25 - TimC
 #   - don't send Leftronic metrics if key is not defined
+#   - convert to inc/dbconfig.inc
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -31,13 +32,13 @@ use strict;
 
 require "inc/config.inc";
 require "inc/helpers.pl";
-require "inc/dbconnect.pl";
+require "inc/dbconfig.inc";
 
 #--------------------------------------
 our %GLOBALS;
 our $PROGRAMNAME = 'LoadFrames';       # Name of calling app
 our $PROGRAMOWNER = 'user@email.com';;
-our $VERSIONSTRING = 'v2011-sept-17';
+our $VERSIONSTRING = 'v2011-may-25';
 
 our $DEBUG = 0;
 

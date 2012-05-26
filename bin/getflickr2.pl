@@ -40,9 +40,15 @@
 #   - remove 'min_upload_time' from MAIN - unused
 #   - get MAX_AGE from attribs
 #
-# 2012-may-20 - TimC
-#   - use $GLOBALS{'leftronic_key'} rather than hardcoded value
-#   - don't send Leftronic metrics if key is not defined
+# 2011-dec-18 - TimC
+#   - load global config via inc/config.inc
+#   - Remove unused $BUDDY_ICON_URL and $PHOTOSTREAM_URL
+#   - Move API info to config. include (Bug #40)
+#   - load 'inc/dbconfig.inc' rather than 'inc/dbconnect.pl'
+#
+# 2012-jan-15 - TimC
+#   - get Leftronic key from $GLOBALS{'leftronic_key'}
+#   - don't submit stats to Leftronic if no key is set
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -54,13 +60,14 @@ use DBI;
 
 use strict;
 
-require "inc/dbconnect.pl";
+require "inc/dbconfig.inc";
 require "inc/helpers.pl";
+require "inc/config.inc";
 
 #----------------------------------
 our $PROGRAMNAME = 'getFlickr2';       # Name of calling app
 our $PROGRAMOWNER = 'user@email.com';
-our $VERSIONSTRING = 'v2012-May-20';
+our $VERSIONSTRING = 'v2011-Dec-18';
 
 our $CHAN_TYPE = 1;
 
@@ -96,11 +103,7 @@ my $PID_FN = '/var/run/' . $PROGRAMNAME . '.pid';
 #----------------------------------
 # G L O B A L S
 #----------------------------------
-my $API_KEY = 'API_KEY_GOES_HERE';
-my $API_SECRET = 'API_KEY_SECRET';
-
-my $BUDDY_ICON_URL = 'http://farm1.static.flickr.com/73/buddyicons/65966179@N00.jpg?1151161573#65966179@N00';
-my $PHOTOSTREAM_URL = 'http://www.flickr.com/photos/streamingmeemee/';
+our %GLOBALS;
 
 my $LISC_URL =  'http://creativecommons.org/licenses/by-nc-nd/2.0/deed.en';
 
@@ -271,7 +274,7 @@ my @photos;
 #----------------------------------
 # M A I N
 #----------------------------------
-my $api = new Flickr::API2({'key'=>$API_KEY, 'secret'=>$API_SECRET});
+my $api = new Flickr::API2({'key'=>$GLOBALS{'flickr_api_key'}, 'secret'=>$GLOBALS{'flickr_api_secret'}});
 
 my %opts=();
 
@@ -414,7 +417,7 @@ my $pid;
     $dbh->do("INSERT INTO grabber_stats (channel_type_id, rundate, wall_time, stats) VALUES (1, now(), $et, '" . $chn_cnt . '|' . $item_cnt  . "')")
         or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
 
-    if( exists( $GLOBALS{'leftronic_key'} ) ) {
+    if ( length( $GLOBALS{'leftronic_key'} ) > 0 ) {
         my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "getflickr_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
         SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
         system $cmd;
