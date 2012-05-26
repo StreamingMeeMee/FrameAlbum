@@ -3,7 +3,7 @@
     <div align="center"><a id="footnav_home" href="/" class="fotterlink">Home</a>  |  <a id="footnav_register" href="/register.php" class="fotterlink">Register</a>  |  <a id="footnav_about" href="/about.php" class="fotterlink">About Us</a>  |  <a id="footnav_faq" href="/faq.php" class="fotterlink">FAQ</a>  |  <a id="footnav_tos" href="/tos.php" class="fotterlink">Terms of Service</a>  |  <a id="footnav_contact" href="/contact.php" class="fotterlink">Contact Us</a></div>
   </div>
   <div class="fotter_copyrights">
-    <div align="center">&copy; 2011 Frontier Digital, LLC. All Rights Reserved</div>
+    <div align="center"><?php echo $GLOBALS['footer_copyright'] ?></div>
     <div id="version" align="center">
         <a href="https://plus.google.com/107079019841451172444?prsrc=3" style="cursor:pointer;display:inline-block;text-decoration:none;color:#333;font:13px/16px arial,sans-serif;">
             <span style="display:inline-block;vertical-align:top;margin-right:5px;">FrameAlbum on</span>
