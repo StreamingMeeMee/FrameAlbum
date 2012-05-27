@@ -1,6 +1,16 @@
+-- Host: localhost
+-- Generation Time: May 27, 2012 at 01:53 PM
+-- Server version: 5.1.58
+-- PHP Version: 5.2.17
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `framealbum`
@@ -12,7 +22,6 @@ SET time_zone = "+00:00";
 -- Table structure for table `batch_stats`
 --
 
-DROP TABLE IF EXISTS `batch_stats`;
 CREATE TABLE IF NOT EXISTS `batch_stats` (
   `batch_id` int(11) NOT NULL,
   `rundate` datetime NOT NULL,
@@ -27,9 +36,9 @@ CREATE TABLE IF NOT EXISTS `batch_stats` (
 -- Table structure for table `channel_types`
 --
 
-DROP TABLE IF EXISTS `channel_types`;
 CREATE TABLE IF NOT EXISTS `channel_types` (
   `idchanneltypes` smallint(4) unsigned NOT NULL AUTO_INCREMENT,
+  `channel_short_name` varchar(8) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Used by modules to find idchannels value',
   `channel_name` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `channel_script` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `channel_icon_url` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -38,8 +47,9 @@ CREATE TABLE IF NOT EXISTS `channel_types` (
   `active` enum('Y','N','T') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'T',
   `default_item_limit` int(8) NOT NULL DEFAULT '100',
   `channel_type_ttl` int(11) NOT NULL DEFAULT '60' COMMENT 'in minutes',
-  PRIMARY KEY (`idchanneltypes`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  PRIMARY KEY (`idchanneltypes`),
+  UNIQUE KEY `channel_short_name` (`idchanneltypes`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=11 ;
 
 -- --------------------------------------------------------
 
@@ -47,7 +57,6 @@ CREATE TABLE IF NOT EXISTS `channel_types` (
 -- Table structure for table `flickr_cache`
 --
 
-DROP TABLE IF EXISTS `flickr_cache`;
 CREATE TABLE IF NOT EXISTS `flickr_cache` (
   `request` char(35) COLLATE utf8_unicode_ci NOT NULL,
   `response` mediumtext COLLATE utf8_unicode_ci NOT NULL,
@@ -61,7 +70,6 @@ CREATE TABLE IF NOT EXISTS `flickr_cache` (
 -- Table structure for table `frames`
 --
 
-DROP TABLE IF EXISTS `frames`;
 CREATE TABLE IF NOT EXISTS `frames` (
   `idframes` int(8) unsigned NOT NULL AUTO_INCREMENT,
   `frame_id` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
@@ -81,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `frames` (
   UNIQUE KEY `activation_key` (`activation_key`),
   KEY `owner_id` (`user_id`),
   KEY `frame_id` (`frame_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1402 ;
 
 -- --------------------------------------------------------
 
@@ -89,7 +97,6 @@ CREATE TABLE IF NOT EXISTS `frames` (
 -- Table structure for table `frame_channels`
 --
 
-DROP TABLE IF EXISTS `frame_channels`;
 CREATE TABLE IF NOT EXISTS `frame_channels` (
   `frame_id` int(8) unsigned NOT NULL,
   `user_channel_id` smallint(8) unsigned NOT NULL,
@@ -106,7 +113,6 @@ CREATE TABLE IF NOT EXISTS `frame_channels` (
 -- Table structure for table `frame_items`
 --
 
-DROP TABLE IF EXISTS `frame_items`;
 CREATE TABLE IF NOT EXISTS `frame_items` (
   `frame_id` int(12) NOT NULL,
   `user_channel_id` smallint(12) NOT NULL,
@@ -122,7 +128,6 @@ CREATE TABLE IF NOT EXISTS `frame_items` (
 -- Table structure for table `grabber_stats`
 --
 
-DROP TABLE IF EXISTS `grabber_stats`;
 CREATE TABLE IF NOT EXISTS `grabber_stats` (
   `channel_type_id` int(8) NOT NULL,
   `rundate` datetime NOT NULL,
@@ -137,7 +142,6 @@ CREATE TABLE IF NOT EXISTS `grabber_stats` (
 -- Table structure for table `items`
 --
 
-DROP TABLE IF EXISTS `items`;
 CREATE TABLE IF NOT EXISTS `items` (
   `iditems` int(12) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(128) CHARACTER SET utf8 DEFAULT NULL,
@@ -152,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `items` (
   `media_content_duration` smallint(4) unsigned NOT NULL DEFAULT '10',
   PRIMARY KEY (`iditems`),
   KEY `channel_id` (`user_channel_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=140496698 ;
 
 -- --------------------------------------------------------
 
@@ -160,19 +164,23 @@ CREATE TABLE IF NOT EXISTS `items` (
 -- Table structure for table `product_ids`
 --
 
-DROP TABLE IF EXISTS `product_ids`;
 CREATE TABLE IF NOT EXISTS `product_ids` (
   `idproduct` smallint(8) unsigned NOT NULL AUTO_INCREMENT,
   `productid` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
   `manuf` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `manuf_website` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `model` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `hres` smallint(4) unsigned DEFAULT NULL,
   `vres` smallint(4) unsigned DEFAULT NULL,
   `custom_rss_support` enum('Y','N','?') COLLATE utf8_unicode_ci NOT NULL DEFAULT '?',
+  `fc_support` enum('Y','N','?') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y',
+  `upnp_support` enum('Y','N','?') COLLATE utf8_unicode_ci NOT NULL DEFAULT '?',
   `active` enum('Y','N','T') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'T',
+  `internal_mem` int(6) DEFAULT NULL COMMENT 'Amount of internal memory (MB)',
+  `mem_cards` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Memory card types sypported',
   PRIMARY KEY (`idproduct`),
   KEY `productid` (`productid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=56 ;
 
 -- --------------------------------------------------------
 
@@ -180,7 +188,6 @@ CREATE TABLE IF NOT EXISTS `product_ids` (
 -- Table structure for table `sys_parms`
 --
 
-DROP TABLE IF EXISTS `sys_parms`;
 CREATE TABLE IF NOT EXISTS `sys_parms` (
   `idsys_parms` smallint(8) unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
@@ -189,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `sys_parms` (
   `notes` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`idsys_parms`),
   KEY `key` (`key`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -197,7 +204,6 @@ CREATE TABLE IF NOT EXISTS `sys_parms` (
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `idusers` smallint(8) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
@@ -214,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`),
   KEY `email` (`email`),
   KEY `ZIP` (`ZIP`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1952 ;
 
 -- --------------------------------------------------------
 
@@ -222,7 +228,6 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Table structure for table `user_channels`
 --
 
-DROP TABLE IF EXISTS `user_channels`;
 CREATE TABLE IF NOT EXISTS `user_channels` (
   `iduserchannels` int(8) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` smallint(8) unsigned NOT NULL,
@@ -238,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `user_channels` (
   UNIQUE KEY `iduserchannels` (`iduserchannels`),
   KEY `user_id` (`user_id`),
   KEY `channel_id` (`channel_type_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=844 ;
 
 -- --------------------------------------------------------
 
@@ -246,8 +251,11 @@ CREATE TABLE IF NOT EXISTS `user_channels` (
 -- Table structure for table `words`
 --
 
-DROP TABLE IF EXISTS `words`;
 CREATE TABLE IF NOT EXISTS `words` (
   `word` varchar(8) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
