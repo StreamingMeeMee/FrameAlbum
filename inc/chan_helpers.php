@@ -11,6 +11,9 @@
 #
 # 2011-oct-1 - TimC
 #   - Activate 'tags' in flickr channel
+#
+# 2012-may-27 - TimC
+#   - Update for new chan. type IDs
 #-------------------------------------------
 require_once("phpFlickr/phpFlickr.php");
 
@@ -306,11 +309,11 @@ function channelUserForm($cid, $ctid, $fid)
 
     if ($ctid == 1) {
         list ($msg, $html) =  channelUserFormFlickr($cid, $ctid, $fid);
-    } else if ($ctid == 3) {
+    } else if ($ctid == 2) {
         list ($msg, $html) =  channelUserFormText($cid, $ctid, $fid);
-    } else if ($ctid == 8) {
+    } else if ($ctid == 6) {
         list ($msg, $html) =  channelUserFormPicasa($cid, $ctid, $fid);
-    } else if ($ctid == 10) {
+    } else if ($ctid == 7) {
         list ($msg, $html) =  channelUserFormRadar($cid, $ctid, $fid);
     } else {
         $msg = 'Unsupported channel type:['.$ctid.']';
@@ -771,11 +774,11 @@ function channelUserInfoHTML($cid)
 
     if ($ctid == 1) {
         list ($msg, $html) = channelUserInfoFlickrHTML($cid);
-    } else if ($ctid == 3) {
+    } else if ($ctid == 2) {
         list ($msg, $html) = channelUserInfoTextHTML($cid);
-    } else if ($ctid == 8) {
+    } else if ($ctid == 6) {
         list ($msg, $html) = channelUserInfoPicasaHTML($cid);
-    } else if ($ctid == 10) {
+    } else if ($ctid == 7) {
         list ($msg, $html) = channelUserInfoRadarHTML($cid);
     } else {
         $msg = 'Unsupported channel type:['.$ctid.']';
