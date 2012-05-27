@@ -22,14 +22,14 @@ function releasePreReg($uid)
     } else {
         if (mysql_num_rows( $result ) == 1) {
             $row = mysql_fetch_assoc( $result );
-            $regurl = 'http://YOUR_HOST_NAME/register.php?tok=' . $row['token'];
+            $regurl = $GLOBALS['www_url_root'] . '/register.php?tok=' . $row['token'];
 
             $t = "Welcome to the FrameAlbum beta test!\n\n";
             $t .= "You are among the first to test the new FrameAlbum service for your digital photo frame.  Please be aware that the service is a beta test and will have bugs that may impact your ability to use the service.  We'll do our best to squash them before you encounter them but PLEASE DO let us know at " . $GLOBALS['email_from'] . " if you find them before we do.\n\n";
             $t .= "To activate your FrameAlbum account simply click on this link $regurl (or copy it into your browser's address bar) and complete the simple registration form.  We hope you enjoy FrameAlbum!\n\n";
 
 #            $t .= "Some of you may have already received this message.  We are resending it to fix a problem with the registration link.  We're sorry for the confusion.\n\n";
-            $t .= "\n\n\nThis email was sent to you because of your pre-registration at www.FrameAlbum.com.  If you believe you have received this message in error, or wish to be removed from our system, please reply and tell us what you would like to do.  You can contact us via our website at http://www.framealbum.com/contact.php.\n\n";
+            $t .= "\n\n\nThis email was sent to you because of your pre-registration at www.FrameAlbum.com.  If you believe you have received this message in error, or wish to be removed from our system, please reply and tell us what you would like to do.  You can contact us via our website at " . $GLOBALS['www_url_root'] . "/contact.php.\n\n";
             $t .= "No hortas were harmed in the sending of this message.\n";
 
             $ret = mail($row['email'], 'Welcome to FrameAlbum', $t, $headers);
