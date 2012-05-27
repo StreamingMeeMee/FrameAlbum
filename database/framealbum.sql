@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `channel_types` (
   `default_item_limit` int(8) NOT NULL DEFAULT '100',
   `channel_type_ttl` int(11) NOT NULL DEFAULT '60' COMMENT 'in minutes',
   PRIMARY KEY (`idchanneltypes`),
-  UNIQUE KEY `channel_short_name` (`idchanneltypes`)
+  UNIQUE KEY `channel_short_name` (`channel_short_name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=11 ;
 
 -- --------------------------------------------------------
