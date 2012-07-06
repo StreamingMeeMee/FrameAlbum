@@ -33,6 +33,9 @@
 #
 # 2012-jan-15 - TimC
 #   - don't submit stats to Leftronic if API key is not set
+#
+# 2012-jul-6 - TimC
+#   - fix 'issset()' typo
 #--------------------------
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata_Photos');
@@ -250,7 +253,7 @@ function getPicasaRecent($service, $username, $max_age, $tags, $chan_id, $item_l
         SysMsg(MSG_CRIT, "[$sql]: Invalid query: " . mysql_error());
     }
 
-    if ( issset( $GLOBALS{'leftronic_key'} ) and ( strlen( $GLOBALS{'leftronic_key'} ) > 0 ) ) {
+    if ( isset( $GLOBALS{'leftronic_key'} ) and ( strlen( $GLOBALS{'leftronic_key'} ) > 0 ) ) {
         $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS['leftronic_key'] . '", "streamName": "getpicasa_channels", "point": ' .$chn_cnt . "}' https://beta.leftronic.com/customSend/";
         SysMsg(MSG_INFO, 'CMD:['.$cmd.']');
         system($cmd);
