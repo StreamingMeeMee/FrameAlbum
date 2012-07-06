@@ -15,6 +15,9 @@
 #
 # 2011-dec-18 - TimC
 #   - Move API key to config. include as $GLOBALS{'wu_api_key'} (Bug #40)
+#
+# 2012-jul-6 - TimC
+#   - fix quoting of $PROGRAMOWNER email
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -34,8 +37,8 @@ require "../inc/config.inc";
 
 #----------------------------------
 our $PROGRAMNAME = 'getRadar';
-our $VERSIONSTRING = 'v2011-dec-18';
-my $PROGRAMOWNER = "user@email.com";
+our $VERSIONSTRING = 'v2012-jul-06';
+my $PROGRAMOWNER = 'user@email.com';
 $! = 1;
 
 our $DEBUG = 0;
