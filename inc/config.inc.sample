@@ -29,6 +29,7 @@ our %GLOBALS;
 #--------------------------------------------
 # Option settings
 #--------------------------------------------
+    date_default_timezone_set('America/New_York');
 
     $GLOBALS{'pwsalt'} = "YOUR_SALT_GOES_HERE";
 
