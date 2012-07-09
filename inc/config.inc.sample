@@ -8,7 +8,7 @@ our %GLOBALS;
 # Set VERSION
 #------------------------------------------
 
-    $GLOBALS{'version'} = 'Prod - v2011-11-09';
+    $GLOBALS{'version'} = 'GIT - v2012-Jul-09';
 
 #------------------------------------------
 # Feature switches are first
@@ -29,7 +29,6 @@ our %GLOBALS;
 #--------------------------------------------
 # Option settings
 #--------------------------------------------
-    date_default_timezone_set('America/New_York');
 
     $GLOBALS{'pwsalt'} = "YOUR_SALT_GOES_HERE";
 
