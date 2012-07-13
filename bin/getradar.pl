@@ -18,6 +18,9 @@
 #
 # 2012-jul-6 - TimC
 #   - fix quoting of $PROGRAMOWNER email
+#
+# 2012-jul-13 - TimC
+#   - Make sure channel image directory exists before putting files there - DOH!
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -28,6 +31,7 @@ use XML::Simple;
 use Image::Magick;
 use DateTime;
 use DBI;
+use File::Util;
 
 use strict;
 
@@ -37,7 +41,7 @@ require "../inc/config.inc";
 
 #----------------------------------
 our $PROGRAMNAME = 'getRadar';
-our $VERSIONSTRING = 'v2012-jul-06';
+our $VERSIONSTRING = 'v2012-jul-13';
 my $PROGRAMOWNER = 'user@email.com';
 $! = 1;
 
@@ -478,6 +482,14 @@ my $stat = '';
         SysMsg($MSG_INFO, 'No echotest available for this grabber.');
     }
 
+    unless( -e $GLOBALS{'image_path'} . '/' . $CHAN_TYPE . '/' ) {
+        SysMsg($MSG_INFO, 'Image target dir, does not exists; making:[' . $GLOBALS{'image_path'} . '/' . $CHAN_TYPE . '/' . ']');
+        my($f) = File::Util->new();
+        unless( $f->make_dir( $GLOBALS{'image_path'} . '/' . $CHAN_TYPE . '/', 0755, '--if-not-exists' ) ) {
+            SysMsg($MSG_CRIT, 'Unable to create image target directory:[' . $GLOBALS{'image_path'} . '/' . $CHAN_TYPE . '/' . ']');
+        }
+    }
+
     dbStart();
 
     $sth_touch_user_chan = $dbh->prepare("UPDATE user_channels SET last_updated=now(), status=? WHERE iduserchannels=?");
@@ -532,11 +544,13 @@ my $stat = '';
 		$chn_cnt++;
     }
 
-    $et = (time() - $st);
-    SysMsg($MSG_INFO, 'Elapsed time: ' . $et . 's  Time per channel: ' . ($et / $chn_cnt) . "s");
+    if( $chn_cnt > 0 ) {            # don't bother if no channels were processed and avoid /0 error
+        $et = (time() - $st);
+        SysMsg($MSG_INFO, 'Elapsed time: ' . $et . 's  Time per channel: ' . ($et / $chn_cnt) . "s");
 
-    $dbh->do("INSERT INTO grabber_stats (channel_type_id, rundate, wall_time, stats) VALUES ($CHAN_TYPE, now(), $et, '" . $chn_cnt . "')")
-        or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
+        $dbh->do("INSERT INTO grabber_stats (channel_type_id, rundate, wall_time, stats) VALUES ($CHAN_TYPE, now(), $et, '" . $chn_cnt . "')")
+            or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
+    }
 
 #    $pidfile->remove();
 
