@@ -21,7 +21,11 @@
 #
 # 2011-sept-12 - TimC
 #   - modify as necessary for reorganized dir. structure and shared includes
-##-------------------------------------------------
+#
+# 2012-jul-11 - TimC
+#   - remove a debug 'echo' statement - doh!
+#
+#-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
 include_once 'inc/helper_gen.php';

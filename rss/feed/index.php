@@ -1,4 +1,9 @@
 <?php
+#-------------------------------------------------
+# 2012-jul-10 - TimC
+#   - Bug60 - productId not specified in some calls by DLink frames. Assign it a value to prevent warnings
+#
+#-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
 include_once 'inc/helper_gen.php';
@@ -32,7 +37,7 @@ include_once 'inc/helper_user.php';
     }
 #--- URL parse complete
 
-    if (isset($_REQUEST['productId']))  { $parms['productid'] = $_REQUEST['productId']; }
+    if (isset($_REQUEST['productId']))  { $parms['productid'] = $_REQUEST['productId']; } else { $parms['productid'] = ''; }
     if (isset($_REQUEST['language']))   { $parms['language'] = $_REQUEST['language']; }
     if (isset($_REQUEST['category']))   { $parms['category'] = $_REQUEST['category']; }
     if (isset($_REQUEST['frameId']))    { $parms['frameid']  = $_REQUEST['frameId']; }
