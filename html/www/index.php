@@ -16,7 +16,7 @@ include_once 'inc/config.php';
 <LINK REL="SHORTCUT ICON" HREF="/favicon.ico" />
 <html itemscope itemtype="http://schema.org/Product">
 <meta itemprop="name" content="FrameAlbum">
-<meta itemprop="description" content="FrameAlbum feeds your WiFi enabled photo frame all your photos from around the web.  FrameAlbum is an open-source replacement for FrameChannel.">
+<meta itemprop="description" content="FrameAlbum feeds your WiFi enabled digital photo frame all your photos from around the web.  FrameAlbum is an open-source replacement for FrameChannel.">
 <?php
     if ( isset( $GLOBALS['mixpanel_key'] ) ) {
         $key = $GLOBALS['mixpanel_key'];
@@ -81,27 +81,13 @@ JS;
     }
 ?>
     <div class="body_textarea">
-      <div align="justify">The goal is to create a open-source implementation of the FrameChannel service (before it is too late!).</div>
+      <div align="justify">We have created a open-source implementation of the FrameChannel service.  With FrameAlbum you can collect all your photos from around the internet and feed them into your internet enabled digital photo frame.</div>
     </div>
     <div class="body_textarea">
-      <div align="justify">
-        <p>If you are reading this then you are no doubt aware that the FrameChannel service has announced that they are shuttering the service at the end of June 2011.  This is an unfortunate turn of events and a decision that the folks at FrameChannel, I'm sure, did not take lightly.</p>
-      </div>
+      <div align="justify">At present FrameAlbum supports Flickr and Picasa photo sharing services as well as weather radar feeds of US and Canada.  In the near future will add Facebook photos as well as standard Media-RSS channels to your frame's feed.</div>
     </div>
     <div class="body_textarea">
-      <div align="justify">
-        <p>There is an effort underway to convince FrameChannel to release the programming code for the service as 'open source' so that someone else could provide the service.  So far, the answer has been 'no' but the discussions are on-going.</p>
-      </div>
-    </div>
-    <div class="body_textarea">
-      <div align="justify">
-        <p>I've grown quite fond of my Kodak W820 frames.  I have used the FrameChannel service to consolidate my Flickr and Picasa photos as well as provide weather information, news and the occasional drink recipe <grin>.</p>
-      </div>
-    </div>
-    <div class="body_textarea">
-      <div align="justify">
-        <p>That will all go away when FrameChannel shuts down -- or will it?</p>
-      </div>
+      <div align="justify">We also maintain a public database of WiFi enabled photo frames that includes specifications, links to the manufactures and downloads of manuals and firmware updates.  You can access this free database at <a href="http://wiki.framealbum.com">wiki.framealbum.com</a>.</div>
     </div>
     <div class="body_textarea">
       <div align="center"><a href="/about.php" class="readmore">Read More </a></div>
