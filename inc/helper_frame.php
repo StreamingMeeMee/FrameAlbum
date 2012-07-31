@@ -8,6 +8,9 @@
 #
 # 2011-nov-27 - TimC
 #   - add frameIsActive(), frameIsActiveFID()
+#
+# 2012-jul-20 - TimC
+#   - frameCheckInFrameID2() - Don't update frame's productID unless it is != DB record.
 #--------------------------------
 
 #----------------------------
@@ -376,7 +379,7 @@ function frameCheckInFrameID2($frameid, $prodid)
             $row = mysql_fetch_assoc( $result );
             $akey = $row['activation_key'];
 
-            if (isset($prodid) && (strlen($prodid) != 0) ) {
+            if ( $row['product_id'] != $idproduct ) {
                 $sql = "UPDATE frames SET product_id='$idproduct', last_seen = now() WHERE frame_id = '$frameid' LIMIT 1";
             } else {
                 $sql = "UPDATE frames SET last_seen = now() WHERE frame_id = '$frameid' LIMIT 1";

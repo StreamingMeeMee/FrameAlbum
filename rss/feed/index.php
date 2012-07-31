@@ -3,6 +3,8 @@
 # 2012-jul-10 - TimC
 #   - Bug60 - productId not specified in some calls by DLink frames. Assign it a value to prevent warnings
 #
+# 2012-jul-20 - TimC
+#   - feedActiveFrameFeed() has only one parm
 #-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
@@ -52,7 +54,7 @@ include_once 'inc/helper_user.php';
 #print_r($parms);
     if ( (isset($parms['fid'])) and ($parms['fid'] == 999999) ) { $parms['fid'] = 15; }                       # old demo feed frame id
 
-     if ( isset($parms['fid']) and isset($parms['pin']) ) {                                     # 'old school' or custom URL request
+    if ( isset($parms['fid']) and isset($parms['pin']) ) {                                     # 'old school' or custom URL request
         list ($ret, $parms['frameid'], $akey) = frameCheckIn($parms['fid']);
         $active = isFramePinActive($parms['fid'], $parms['pin']);
     } else if ((isset($parms['frameid']))) {
@@ -81,8 +83,7 @@ include_once 'inc/helper_user.php';
             $rss = feedChannelListFID($parms['fid']);
             feedSendRSS($rss);
         } else {
-            if (!isset($parms['frameid'])) { $parms['frameid']=''; }
-            feedActiveFrameFeed($parms['fid'], $parms['frameid']);
+            feedActiveFrameFeed( $parms['fid'] );
         }
     } else {
         feedInactiveFrameFeed($parms['fid'], $parms['frameid'], $parms['productid'], $akey);

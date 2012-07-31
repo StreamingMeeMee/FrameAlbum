@@ -26,7 +26,7 @@
   <div class="midarea">
     <div class="head">About FrameAlbum</div>
     <div class="body_textarea">
-      <div align="justify">The goal is to create a open-source implementation of the FrameChannel service (before it is too late!).</div>
+      <div align="justify">We have created a open-source implementation of the FrameChannel service.</div>
     </div>
     <div class="body_textarea">
       <div align="justify">
