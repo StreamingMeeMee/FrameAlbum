@@ -30,12 +30,7 @@
     </div>
     <div class="body_textarea">
       <div align="justify">
-        <p>If you are reading this then you are no doubt aware that the FrameChannel service has announced that they are shuttering the service at the end of June 2011.  This is an unfortunate turn of events and a decision that the folks at FrameChannel, I'm sure, did not take lightly.</p>
-      </div>
-    </div>
-    <div class="body_textarea">
-      <div align="justify">
-        <p>There is an effort underway to convince FrameChannel to release the programming code for the service as  'open source' so that someone else could provide the service.  So far, the answer has been 'no' but the discussions are on-going.</p>
+        <p>If you are reading this then you are no doubt aware that the FrameChannel service shutdown at the end of June 2011.  This is an unfortunate turn of events and a decision that the folks at FrameChannel, I'm sure, did not take lightly.</p>
       </div>
     </div>
     <div class="body_textarea">
@@ -45,7 +40,7 @@
     </div>
     <div class="body_textarea">
       <div align="justify">
-        <p>That will all go away when FrameChannel shuts down -- or will it?</p>
+        <p>That all went away when FrameChannel shut down -- or did it?</p>
       </div>
     </div>
 
@@ -54,11 +49,11 @@
     </div>
 
     <div class="body_textarea" align="justify">
-        <p>The goal of FrameAlbum is to offer a viable FrameChannel replacement service and to open-source the resulting software.  The initial iteration will be basic, supporting only a limited number of photo sharing sites.  With time, a little patience and many venti mochas I hope to be able to offer weather, news, stock info., photo uploads...  namely, all the things we loved about FrameChannel.</p>
+        <p>The goal of FrameAlbum is to offer a viable FrameChannel replacement service and to open-source the resulting software.  The initial iteration is basic, supporting only a limited number of photo sharing sites.  With time, a little patience and many venti mochas I hope to be able to offer weather, news, stock info., photo uploads...  namely, all the things we loved about FrameChannel.</p>
     </div>
 
     <div class="body_textarea" align="justify">
-        <p>I invite you to register for the beta (on the left) and breath new life into your internet connected digital photo frame.  You'll be the first to know when the site is ready for it's first intrepid members.</p>
+        <p>I invite you to register for the service (on the left) and breath new life into your internet connected digital photo frame.</p>
     </div>
 
   </div>
