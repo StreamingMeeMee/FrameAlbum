@@ -41,6 +41,14 @@
     background-image: url('/images/validation.png');
 }
 
+.validmsg {
+    border: 1px solid;
+    margin: 3px;
+    padding: 2px;
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+
 body{
 	margin:0;
 	color:#232323;
