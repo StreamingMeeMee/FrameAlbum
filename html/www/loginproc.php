@@ -16,7 +16,7 @@ include_once 'inc/helper_user.php';
             $username=prepDBVal($_POST['username']); 
             $password=prepDBVal($_POST['password']);
 
-            $sql="SELECT * FROM users WHERE username='$username' and passwd=AES_ENCRYPT('$password', '".$GLOBALS['pwsalt']."')";
+            $sql="SELECT * FROM users WHERE username='$username' AND passwd=AES_ENCRYPT('$password', '".$GLOBALS['pwsalt']."')";
             $result=mysql_query($sql);
 
             $count=mysql_num_rows($result);
@@ -27,14 +27,20 @@ include_once 'inc/helper_user.php';
                 $_SESSION['uid'] = $row['idusers'];
                 $_SESSION['useremail'] = $row['email'];
                 $_SESSION['isadmin'] = $row['admin'];
-//                if (isset($_POST['rememberme']) && $_POST['rememberme'] == 'Y') {
-//                    setcookie('username', $username, mktime(time()+60*60*24*120), '/', '.framealbum.com');
-//                }
+                if (isset($_POST['rememberme']) && $_POST['rememberme'] == 'Y') {
+                    setcookie('registered', $username, time()+60*60*24*120, '/', '.framealbum.com');
+                } else {
+                    setcookie('registered', '', time()-3600, '/', '.framealbum.com');
+                }
                 $sql="UPDATE users SET last_login=now() WHERE idusers=".$_SESSION['uid'];
                 $result=mysql_query($sql);
-                header("location:/usermain.php");
+                if( isset( $_POST['redir'] ) ) {
+                    header("location:" . urlencode( $_POST['redir'] ) );
+                } else {
+                    header("location:/usermain.php");
+                }
             } else {
-                $msg = "Wrong Username or Password.";
+                $msg = 'Wrong Username or Password.';
                 unset($_SESSION['username']);
                 unset($_SESSION['uid']);;
                 unset($_SESSION['useremail']);

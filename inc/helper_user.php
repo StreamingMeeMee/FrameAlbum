@@ -1,4 +1,125 @@
 <?php
+#--------------------------------
+# 2012-jul-31 - TimC
+#   - Add userRegForm(), userRegFormProc() and restore userSendWelcomeEmail()
+#--------------------------------
+
+#----------------------------
+function userSendWelcomeEmail($email)
+#----------------------------
+{
+    $headers = 'From: ' . $GLOBALS['email_from'] . "\r\n" .
+        'Reply-To: ' . $GLOBALS['email_reply_to'] . "\r\n";
+
+    $txt = "Welcome to FrameAlbum.  You may now access your account at " . $GLOBALS['www_url_root'] . ".
+
+Once you have logged in you may add your frame(s) and then define the channels that will be sent to your frame.
+
+If you have any questions, drop me an email at " . $GLOBALS['email_from'] . ".";
+
+    $ret = mail($email, 'Welcome to FrameAlbum', $txt, $headers);
+
+    if (!ret) {
+        $msg = '<p>There was a problem sending a message to ' . $email . '.  You may not receive your Welcome email message.</p>';
+    }
+
+    return array ($ret, $msg);
+}
+
+#----------------------------
+function userRegForm( $tok, $username, $email, $zip )
+#----------------------------
+{
+    $msg = '';
+    $html = '';
+
+    if (strlen($tok) > 0) {
+        list ($username, $email, $zip) = userGetInfoByToken($tok);
+        $html .= '<input type="hidden" name="tok" value="'.$tok.'">';
+    }
+
+    $html .= '<input type="hidden" name="stage" value="2">';
+    $html .= '<table border="0">';
+    $html .= '<tr><td>Username:</td><td><input type="text" maxlength="64" size="32" name="reg_username" id="reg_username" value="'.$username.'" onblur="validUsername()"><br><p id="usernamemsg" class="validmsg" style="display:none">&nbsp;</p></td><td><div><img id="usernameicon" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
+    $html .= '<tr><td>Password:</td><td><input type="password" maxlength="64" size="32" name="reg_passwd1" id="reg_passwd1" value="" onchange="validPasswd()"></td><td><div><img id="passwdicon" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
+    $html .= '<tr><td>Confirm Password:</td><td><input type="password" maxlength="64" size="32" name="reg_passwd2" id="reg_passwd2" value="" onchange="validPasswd()"><br><p id="passwdmsg" class="validmsg" style="display:none">&nbsp;</p></td><td>&nbsp;</td></tr>';
+    $html .= '<tr><td>Email address:</td><td><input type="text" maxlength="64" size="32" name="reg_email" id="reg_email" value="'.$email.'" onblur="validEmail()"><br><p id="emailmsg" class="validmsg" style="display:none">&nbsp;</p></td><td><div><img id="emailicon" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
+    $html .= '<tr><td>Home ZIP code:<br>(US & Canada only)</td><td><input type="text" maxlength="7" size="6" name="reg_zip" id="reg_zip" value="'.$zip.'" onblur="validZip()"><br><p id="zipmsg" class="validmsg" style="display:none">&nbsp;</p></td><td><div><img id="zipicon" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
+    $html .= '</table>';
+    $html .= '<div align="center"><input type="submit" value=" Register " name="register" /></div>';
+
+    return array ( $msg, $html );
+}
+
+#----------------------------
+function userRegFormProc( $tok, $username, $email, $zip, $passwd )
+#----------------------------
+{
+    $html = '';
+    $msg = '';
+    $errs = 0;
+
+    if (strlen($tok) > 0) {                             # existing user
+        list ($o_username, $o_email, $o_zip) = userGetInfoByToken($tok);    # what was the original values?
+        if ( ($o_username != $username) && (userFind($username) > 0) ) {
+            $msg .= "<p>Sorry, that username is already registered -- please enter a unique username.</p>";
+            $username = '';
+            $errs++;
+        }
+
+        if ( ($o_email != $email) && (userFindByEmail($email) > 0 ) ) {
+            $msg .= "<p>Sorry, that email address is already registered -- please enter a unique email address.</p>";
+            $email = '';
+            $errs++;
+        }
+
+        if ($errs == 0) {
+            $ret =  userUpdate($tok, $username, $passwd, $email, $zip, 'Y');
+            if ( $ret != 1) {
+                $msg .= "<p>Sorry, something went pear-shaped with the registration.  Please try again with a different username.</p>";
+                list ($d, $html) = userRegForm($tok, $username, $email, $zip);
+            } else {
+                $html .= "<p>Okey dokey -- you are ready to login and start using FrameAlbum.</p>";
+            }
+        } else {
+            list ($d, $html) = userRegForm($tok, $username, $email, $zip);
+        }
+    } else {
+        if (strlen($email) != 0) {
+            if ( userFindByEmail($email) > 0 ) {
+                $msg .= "<p>Sorry, that email address [" . $email . "] is already registered -- please enter a unique email address.</p>";
+                $email = '';;
+                $errs++;
+            }
+
+            if ( userFind($username) > 0 ) {
+                $msg .= "<p>Sorry, that username [" . $username . "] is already registered -- please enter a unique username.</p>";
+                $username = '';
+                $errs++;
+            }
+
+            if ($errs == 0) {
+                if ( userAdd($username, $passwd, $email, $zip, 'R') > 0 ) {
+                    list ($d, $msg) = userSendWelcomeEmail($email);
+                    $html .= "<p>Welcome!  You are now registered for the FrameAlbum service.  You will receive an email with details of the next step.</p>";
+                    setcookie('registered', $username, time() + ( 60*60*24*120 ), '/', '.framealbum.com');
+                } else {
+                    $msg .= "<p>Sorry, something went pear-shaped with the registration.  Please try again with a different email address.</p>";
+                    $errs++;
+                }
+            }
+        } else {
+            $msg .= "<p>Sorry, I didn't quite get that -- please enter an email address to register.</p>";
+            $email = '';
+            $errs++;
+        }
+    }
+
+    if( $errs > 0 ) { list ($d, $html) = userRegForm($tok, $username, $email, $zip); }      # if there are errors redisplay the form.
+
+    return array ( $msg, $html, $redir );
+}
+
 #----------------------------
 function userUpdate($tok, $uname, $passwd, $email, $zip, $stat)
 #----------------------------
