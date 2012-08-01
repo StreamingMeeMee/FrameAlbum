@@ -30,7 +30,7 @@
     </div>
     <div class="body_textarea">
       <div align="justify">
-        <p>Until I can get a bit more of the instructure built the best way to get in touch with me is to join the conversation on my blog; <a href="http://www.streamingmeemee.com">Stream of Consciousness</a>.</p>
+        <p>If you questions or a problem with the service you can contact us/me at info@framealbum.com  You can also join the conversation on my blog; <a href="http://www.streamingmeemee.com">Stream of Consciousness</a>.</p>
       </div>
     </div>
   </div>
