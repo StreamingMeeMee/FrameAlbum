@@ -21,6 +21,9 @@
 # 2012-may-25 - TimC
 #   - don't send Leftronic metrics if key is not defined
 #   - convert to inc/dbconfig.inc
+#
+# 2012-aug-2 - TimC
+#   - don't send stats to lefttronic if no key is set
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -38,7 +41,7 @@ require "inc/dbconfig.inc";
 our %GLOBALS;
 our $PROGRAMNAME = 'LoadFrames';       # Name of calling app
 our $PROGRAMOWNER = 'user@email.com';;
-our $VERSIONSTRING = 'v2011-may-25';
+our $VERSIONSTRING = 'v2012-aug-2';
 
 our $DEBUG = 0;
 
@@ -253,7 +256,7 @@ my $et = 0;
     $dbh->do("INSERT INTO batch_stats (batch_id, rundate, wall_time, stats) VALUES (1, now(), $et, '" . $cnt . '|' . $item_cnt  . "')")
         or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
 
-    if ( exists( $GLOBALS{'leftronic_key'} ) ) {
+    if ( exists( $GLOBALS{'leftronic_key'} ) and length( $GLOBALS{'leftronic_key'} ) > 0 ) {
         my $cmd = "curl -k -i -X POST -d '" . '{"accessKey": "' . $GLOBALS{'leftronic_key'} . '", "streamName": "buildfeed_frames", "point": ' .$cnt . "}' https://beta.leftronic.com/customSend/";
         SysMsg($MSG_INFO, 'CMD:['.$cmd.']');
         system $cmd;
