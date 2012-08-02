@@ -66,7 +66,7 @@ include_once 'inc/helper_feed.php';
 
     dbStart();
 
-echo  print_r $parms;
+#echo  print_r $parms;
 
     if ( (isset($parms['fid'])) and ($parms['fid'] == 999999) ) { $parms['fid'] = 15; }                       # old demo feed frame id
 
