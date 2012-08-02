@@ -30,6 +30,9 @@
 #
 # 2011-dec-18 - TimC
 #   - convert to use inc/dbconfig.inc
+#
+# 2012-aug-2 - TimC
+#   - Make sure rss directory exists before putting files there - DOH!
 #-------------------------------------
 use DBI;
 
@@ -38,6 +41,7 @@ use URI::Escape;
 use Getopt::Std;
 use POSIX qw( strftime );
 use File::Pid;
+use File::Util;
 use HTML::Entities;
 
 use strict;
@@ -49,7 +53,7 @@ require "inc/dbconfig.inc";
 #--------------------------------------
 our $PROGRAMNAME = 'BuildFeed';       # Name of calling app
 our $PROGRAMOWNER = 'user@email.com';
-our $VERSIONSTRING = 'v2011-dec-18';
+our $VERSIONSTRING = 'v2012-aug-2';
 
 our $DEBUG = 0;
 
@@ -269,6 +273,15 @@ my $fn = '';
     $t .= channelTail();
     $t .= feedTail();
 
+    SysMsg($MSG_DEBUG, 'Checking for RSS path:[' . $GLOBALS{'rss_path'} . '/00/00/' . ']');
+    unless( -e $GLOBALS{'rss_path'} . '/00/00/' ) {
+        SysMsg($MSG_WARN, 'RSS file target dir, does not exists; making:[' . $GLOBALS{'rss_path'} . '/00/00/' . ']');
+        my($f) = File::Util->new();
+        unless( $f->make_dir( $GLOBALS{'rss_path'} . '/00/00/', 0755, '--if-not-exists' ) ) {
+            SysMsg($MSG_CRIT, 'Unable to create RSS target directory:[' . $GLOBALS{'rss_path'} . '/00/00/' . ']');
+        }
+    }
+
     $fn = $GLOBALS{'rss_path'} . '/00/00/' . $fid . '.rss';
     SysMsg($MSG_DEBUG, 'Writing feed to:['.$fn.']');
 
@@ -344,6 +357,15 @@ my $pid;
 
             $t .= channelTail();
             $t .= feedTail();
+
+            SysMsg($MSG_DEBUG, 'Checking for RSS path:[' . $GLOBALS{'rss_path'} . '/00/00/' . ']');
+            unless( -e $GLOBALS{'rss_path'} . '/00/00/' ) {
+                SysMsg($MSG_WARN, 'RSS file target dir, does not exists; making:[' . $GLOBALS{'rss_path'} . '/00/00/' . ']');
+                my($f) = File::Util->new();
+                unless( $f->make_dir( $GLOBALS{'rss_path'} . '/00/00/', 0755, '--if-not-exists' ) ) {
+                    SysMsg($MSG_CRIT, 'Unable to create RSS target directory:[' . $GLOBALS{'rss_path'} . '/00/00/' . ']');
+                }
+            }
 
             $fn = $GLOBALS{'rss_path'} . '/00/00/' . $$ref{'idframes'} . '.rss';
             SysMsg($MSG_DEBUG, 'Writing feed to:[' . $fn . ']');
