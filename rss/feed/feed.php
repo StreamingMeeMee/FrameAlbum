@@ -76,14 +76,14 @@ include_once 'inc/helper_feed.php';
     if ( ( isset( $parms['fid'] ) ) and ( $parms['fid'] == 999999 ) ) { $parms['fid'] = 15; }   # old demo feed frame id
 
     if ( isset( $parms['username'] ) and isset( $parms['pin'] ) ) {
-        $parms['fid'] = findFrameUsernamePin( $parms['username'], $parms['pin'] );
+        $parms['fid'] = frameFindUsernamePin( $parms['username'], $parms['pin'] );
         if( $parms['fid'] > 0 ) {
             frameCheckIn( $parms['fid'] );
             $active = isFrameActive( $parms['fid'] );
         } else {
             $active = 0;
         }
-    } elsif ( isset($parms['fid']) and isset($parms['pin']) ) {
+    } else if ( isset($parms['fid']) and isset($parms['pin']) ) {
         frameCheckIn($parms['fid']);
         $active = isFramePinActive($parms['fid'], $parms['pin']);
     } else {
