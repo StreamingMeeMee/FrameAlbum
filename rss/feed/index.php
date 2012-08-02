@@ -5,6 +5,10 @@
 #
 # 2012-jul-20 - TimC
 #   - feedActiveFrameFeed() has only one parm
+#
+# 2012-aug-2 - TimC
+#   - add support for 'username=' request parms (ViewSonic frames)
+#   - replace feed.php with this code via Apache URL Rewrite
 #-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
@@ -39,6 +43,7 @@ include_once 'inc/helper_user.php';
     }
 #--- URL parse complete
 
+# This is for conventional parms via query string
     if (isset($_REQUEST['productId']))  { $parms['productid'] = $_REQUEST['productId']; } else { $parms['productid'] = ''; }
     if (isset($_REQUEST['language']))   { $parms['language'] = $_REQUEST['language']; }
     if (isset($_REQUEST['category']))   { $parms['category'] = $_REQUEST['category']; }
@@ -46,15 +51,25 @@ include_once 'inc/helper_user.php';
     if (isset($_REQUEST['channelList']))    { $parms['channellist'] = $_REQUEST['channelList']; }
     if (isset($_REQUEST['channellList']))   { $parms['channellist'] = $_REQUEST['channellList']; }
     if (isset($_REQUEST['user']))       { $parms['user'] = $_REQUEST['user']; }     # DLink frames only so far
-    if (isset($_REQUEST['fid']))        { $parms['fid'] = $_REQUEST['fid']; }
-    if (isset($_REQUEST['pin']))        { $parms['pin'] =  $_REQUEST['pin']; }
+    if (isset($_REQUEST['fid']))        { $parms['fid'] = $_REQUEST['fid']; }       # = idframe.frames
+    if (isset($_REQUEST['pin']))        { $parms['pin'] = $_REQUEST['pin']; }
+    if ( isset( $_REQUEST['username'] ) )   { $parms['username'] = $_REQUEST['username']; }   #
 
     dbStart();
 
 #print_r($parms);
     if ( (isset($parms['fid'])) and ($parms['fid'] == 999999) ) { $parms['fid'] = 15; }                       # old demo feed frame id
 
-    if ( isset($parms['fid']) and isset($parms['pin']) ) {                                     # 'old school' or custom URL request
+
+    if ( isset( $parms['username'] ) and isset( $parms['pin'] ) ) {
+        $parms['fid'] = frameFindUsernamePin( $parms['username'], $parms['pin'] );
+        if( $parms['fid'] > 0 ) {
+            frameCheckIn( $parms['fid'] );
+            $active = isFrameActive( $parms['fid'] );
+        } else {
+            $active = 0;
+        }
+    } else if ( isset($parms['fid']) and isset($parms['pin']) ) {                                     # 'old school' or custom URL request
         list ($ret, $parms['frameid'], $akey) = frameCheckIn($parms['fid']);
         $active = isFramePinActive($parms['fid'], $parms['pin']);
     } else if ((isset($parms['frameid']))) {
