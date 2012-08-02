@@ -36,6 +36,9 @@
 #
 # 2012-jul-6 - TimC
 #   - fix 'issset()' typo
+#
+# 2012-aug-2 - TimC
+#   - don't calculate chan/sec if no channels updated
 #--------------------------
 require_once 'Zend/Loader.php';
 Zend_Loader::loadClass('Zend_Gdata_Photos');
@@ -236,16 +239,19 @@ function getPicasaRecent($service, $username, $max_age, $tags, $chan_id, $item_l
                 if (!$r) {
                     die("[$sql]: Invalid query: " . mysql_error());
                 }
+
+                $msg = $chn_cnt . ' channels were loaded with ' . $item_cnt . ' items; average of '. ($item_cnt/$chn_cnt) . ' per channel; max was ' . $max_items . '.';
             }
         } else {
             $msg = 'No active PicasaWeb channels.';
         }
-        $msg = $chn_cnt . ' channels were loaded with ' . $item_cnt . ' items; average of '. ($item_cnt/$chn_cnt) . ' per channel; max was ' . $max_items . '.';
     }
 
     SysMsg(MSG_INFO, $msg);
     $et = (time() - $start);
-    SysMsg(MSG_INFO, 'Elapsed time: ' . $et . 's  Time per channel: ' . ($et / $chn_cnt) . "s");
+    if( $chn_cnt > 0 ) {
+        SysMsg(MSG_INFO, 'Elapsed time: ' . $et . 's  Time per channel: ' . ($et / $chn_cnt) . "s");
+    }
 
     $sql = "INSERT INTO grabber_stats (channel_type_id, rundate, wall_time, stats) VALUES (8, now(), $et, '" . $chn_cnt.'|'.$item_cnt.'|'.$et . "')";
     $r = mysql_query($sql);
