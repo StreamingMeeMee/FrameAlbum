@@ -1,6 +1,10 @@
 use MIME::Lite;
 use Net::SMTP;
-
+#--------------------------------------
+# 2012-aug-2 - TimC
+#   - rename getSysParms() -> getSysParm(); It only gets one parm at a time. ;-)
+#
+#--------------------------------------
 #==============================
 # G L O B A L S
 #==============================
@@ -59,7 +63,7 @@ our $BCC_EMAIL_ADDR = $PROGRAMOWNER;
 our $EMAIL_CC = '';
 
 #================================================
-sub getSysParms($$$)
+sub getSysParm($$$)
 #================================================
 {
 my $key = shift;
