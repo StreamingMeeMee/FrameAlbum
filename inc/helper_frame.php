@@ -465,13 +465,12 @@ function frameFindUsernamePin( $username, $pin )
     $username = prepDBVal( $username );
     $pin = prepDBVal( $pin );
 
-    $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers AND feed_pin='$pin'";        # Does
+    $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers AND feed_pin='$pin'";
     $result = mysql_query($sql);
     if (!$result) {
         die("[$sql]: Invalid query: " . mysql_error());
     }
-
-    if (mysql_num_rows( $result ) > 0) {
+    if ( mysql_num_rows( $result ) > 0 ) {
         $tmp = mysql_fetch_row( $result );      # just grab the first one for now.
         $ret = $tmp[0];
     } else {
