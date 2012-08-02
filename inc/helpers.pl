@@ -3,7 +3,7 @@ use Net::SMTP;
 #--------------------------------------
 # 2012-aug-2 - TimC
 #   - rename getSysParms() -> getSysParm(); It only gets one parm at a time. ;-)
-#
+#   - in SendTextEMail(),SendHTMLEmail() reduce missing parm. msg severity to 'INFO' to reduce possibility of SysMsg loops
 #--------------------------------------
 #==============================
 # G L O B A L S
@@ -92,21 +92,21 @@ my $part;
 
     unless ($from) {
         $from = getSysParm('MAIL_FROM', $PROGRAMNAME, 'postmaster@email.com');
-        SysMsg($MSG_WARN, "FROM email address was not defined - using system default: [$from]");
+        SysMsg($MSG_INFO, "FROM email address was not defined - using system default: [$from]");
     }
 
     unless ($SMTP_SERVER) {
         $SMTP_SERVER = getSysParm('SMTP_SERVER', $PROGRAMNAME, 'localhost');
-        SysMsg($MSG_WARN, "SMTP server was not defined - using system default: [$SMTP_SERVER]");
+        SysMsg($MSG_INFO, "SMTP server was not defined - using system default: [$SMTP_SERVER]");
     }
 
     unless ($to) {
         unless ($OPS_EMAIL) {
             $OPS_EMAIL = getSysParm('OPS_EMAIL', $PROGRAMNAME, 'postmaster@email.com');
-            SysMsg($MSG_WARN, "OPS_EMAIL email address was not defined - using system default: [$OPS_EMAIL]");
+            SysMsg($MSG_INFO, "OPS_EMAIL email address was not defined - using system default: [$OPS_EMAIL]");
         }
         $to = $OPS_EMAIL;
-        SysMsg($MSG_WARN, "'to' email address was not defined - using system default(OPS_EMAIL): [$to]");
+        SysMsg($MSG_INFO, "'to' email address was not defined - using system default(OPS_EMAIL): [$to]");
     }
 
     unless ($BCC_EMAIL_ADDR) { $BCC_EMAIL_ADDR = $to; }
@@ -153,21 +153,21 @@ my $part;
 
     unless ($from) {
         $from = getSysParm('MAIL_FROM', $PROGRAMNAME, 'postmaster@email.com');
-        SysMsg($MSG_WARN, "FROM email address was not defined - using system default: [$from]");
+        SysMsg($MSG_INFO, "FROM email address was not defined - using system default: [$from]");
     }
 
     unless ($SMTP_SERVER) {
         $SMTP_SERVER = getSysParm('SMTP_SERVER', $PROGRAMNAME, 'localhost');
-        SysMsg($MSG_WARN, "SMTP server was not defined - using system default: [$SMTP_SERVER]");
+        SysMsg($MSG_INFO, "SMTP server was not defined - using system default: [$SMTP_SERVER]");
     }
 
     unless ($to) {
         unless ($OPS_EMAIL) {
             $OPS_EMAIL = getSysParm('OPS_EMAIL', $PROGRAMNAME, 'postmaster@email.com');
-            SysMsg($MSG_WARN, "OPS_EMAIL email address was not defined - using system default: [$OPS_EMAIL]");
+            SysMsg($MSG_INFO, "OPS_EMAIL email address was not defined - using system default: [$OPS_EMAIL]");
         }
         $to = $OPS_EMAIL;
-        SysMsg($MSG_WARN, "'to' email address was not defined - using system default(OPS_EMAIL): [$to]");
+        SysMsg($MSG_INFO, "'to' email address was not defined - using system default(OPS_EMAIL): [$to]");
     }
 
     unless ($BCC_EMAIL_ADDR) { $BCC_EMAIL_ADDR = $to; }
@@ -185,7 +185,6 @@ my $part;
 #----- Send the message
     MIME::Lite->send('smtp', $SMTP_SERVER, Timeout=>60);
     $mime->send;
-
 }
 
 #================================================
