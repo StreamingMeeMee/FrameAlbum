@@ -8,6 +8,10 @@
 #
 # The general purpose 'FrameChannel' compatable feed is supplied by index.php
 #
+#   ********************************************************************************
+#   * This code has been deprecated and replaced with index.php via Apache Rewrite *
+#   ********************************************************************************
+#
 #-------------------------------------------------
 ## 2011-aug-9 - TimC
 #   - Check for existance of RSS file before sending it - duh
@@ -69,12 +73,10 @@ include_once 'inc/helper_feed.php';
 
     dbStart();
 
-#echo  print_r $parms;
-
     if ( ( isset( $parms['fid'] ) ) and ( $parms['fid'] == 999999 ) ) { $parms['fid'] = 15; }   # old demo feed frame id
 
     if ( isset( $parms['username'] ) and isset( $parms['pin'] ) ) {
-        $parms['fid'] = findFrameUsernamePin( $parms['username'], $parms['pin'] );{
+        $parms['fid'] = findFrameUsernamePin( $parms['username'], $parms['pin'] );
         if( $parms['fid'] > 0 ) {
             frameCheckIn( $parms['fid'] );
             $active = isFrameActive( $parms['fid'] );
