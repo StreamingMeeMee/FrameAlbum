@@ -25,6 +25,8 @@
 # 2012-jul-11 - TimC
 #   - remove a debug 'echo' statement - doh!
 #
+# 2012-aug-2 - TimC
+#   - add support for 'username=' request parms (ViewSonic frames)
 #-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
@@ -61,30 +63,39 @@ include_once 'inc/helper_feed.php';
     } 
 #--- URL parse complete
 
-    if (isset($_REQUEST['fid'])) { $parms['fid']=$_REQUEST['fid']; }        # this covers the case where the parms are passed as '?' arguments
-    if (isset($_REQUEST['pin'])) { $parms['pin']=$_REQUEST['pin']; }
+    if ( isset( $_REQUEST['fid'] ) )        { $parms['fid'] = $_REQUEST['fid']; }             # this covers the case where the parms
+    if ( isset( $_REQUEST['pin'] ) )        { $parms['pin'] = $_REQUEST['pin']; }             # are passed as '?' arguments
+    if ( isset( $_REQUEST['username'] ) )   { $parms['username'] = $_REQUEST['username']; }   #
 
     dbStart();
 
 #echo  print_r $parms;
 
-    if ( (isset($parms['fid'])) and ($parms['fid'] == 999999) ) { $parms['fid'] = 15; }                       # old demo feed frame id
+    if ( ( isset( $parms['fid'] ) ) and ( $parms['fid'] == 999999 ) ) { $parms['fid'] = 15; }   # old demo feed frame id
 
-    if ( isset($parms['fid']) and isset($parms['pin']) ) {
+    if ( isset( $parms['username'] ) and isset( $parms['pin'] ) ) {
+        $parms['fid'] = findFrameUsernamePin( $parms['username'], $parms['pin'] );{
+        if( $parms['fid'] > 0 ) {
+            frameCheckIn( $parms['fid'] );
+            $active = isFrameActive( $parms['fid'] );
+        } else {
+            $active = 0;
+        }
+    } elsif ( isset($parms['fid']) and isset($parms['pin']) ) {
         frameCheckIn($parms['fid']);
         $active = isFramePinActive($parms['fid'], $parms['pin']);
     } else {
         $active = 0;
-        $fid = 0;
+        $parms['fid'] = 0;
     }
 
-    if ($active) {
-        feedActiveFrameFeed($parms['fid']);
+    if ( $active ) {
+        feedActiveFrameFeed( $parms['fid'] );
     } else {
-        if (isset($parms['fid'])) {
-            feedInactiveFrameFeed($parms['fid'], '**', 'UKNW');
+        if ( isset( $parms['fid'] ) ) {
+            feedInactiveFrameFeed( $parms['fid'], '**', 'UKNW' );
         } else {
-            feedInactiveFrameFeed('Not supplied', '**', 'UKNW');
+            feedInactiveFrameFeed( 'Not supplied', '**', 'UKNW' );
         }
     }
 ?>

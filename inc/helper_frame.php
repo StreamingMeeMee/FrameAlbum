@@ -11,24 +11,28 @@
 #
 # 2012-jul-20 - TimC
 #   - frameCheckInFrameID2() - Don't update frame's productID unless it is != DB record.
+#
+# 2012-aug-2 - TimC
+#   - add frameFindUsernamePin() to support frames that request via username and PIN (Viewsonic)
+#   - rename parms ('fid' vs 'idframe' vs 'frameid') to clarify which is being used
 #--------------------------------
 
 #----------------------------
-function frameIsActive($fid, $pin)
+function frameIsActive( $idframe, $pin )
 #----------------------------
 # Takes idframes value and an associated PIN.
 # Returns:
 #   1 if frame is active, 0 otherwise
 #============================
 {
-     if (!(isset($fid))) { $fid = 0; }
-     if (!(isset($pin))) { $pin = 0; }
+     if ( !( isset( $idframe ) ) ) { $idframe = 0; }
+     if ( !( isset( $pin ) ) ) { $pin = 0; }
 
-     if ($fid != 0) {                    # nothing to lookup
-         $fid = prepDBVal($fid);
-         $pin = prepDBVal($pin);
+     if ( $idframe != 0 ) {                    # nothing to lookup
+         $idframe = prepDBVal( $idframe );
+         $pin = prepDBVal( $pin );
 
-         $sql = "SELECT active FROM frames WHERE idframes='$fid' AND feed_pin='$pin'";        # Is this a valid user?
+         $sql = "SELECT active FROM frames WHERE idframes='$idframe' AND feed_pin='$pin'";        # Is this a valid user?
          $result = mysql_query($sql);
          if (!$result) {
              die("[$sql]: Invalid query: " . mysql_error());
@@ -48,7 +52,7 @@ function frameIsActive($fid, $pin)
  }
 
 #----------------------------
-function frameIsActiveFID($frameid)
+function frameIsActiveFID( $frameid )
 #----------------------------
 # Takes raw 'frameID' as parm, NOT idframes value.
 # Returns:
@@ -56,10 +60,10 @@ function frameIsActiveFID($frameid)
 #   1 if frame is active, 0 otherwise
 #============================
 {
-    if (!(isset($frameid))) { $frameid = ''; }
+    if ( !( isset( $frameid ) ) ) { $frameid = ''; }
 
-    if (strlen($frameid) != 0) {                    # nothing to lookup
-        $frameid = prepDBVal($frameid);
+    if ( strlen( $frameid ) != 0 ) {                    # nothing to lookup
+        $frameid = prepDBVal( $frameid );
         $sql = "SELECT idframes, active FROM frames WHERE frame_id='$frameid'";        # Is this a valid user?
         $result = mysql_query($sql);
         if (!$result) {
@@ -81,11 +85,15 @@ function frameIsActiveFID($frameid)
 }
 
 #----------------------------
-function frameActivateKey($akey, $uid)
+function frameActivateKey( $akey, $uid )
+#----------------------------
+# Associate frame identified by activation key ($akey) to a specific user ($uid).
+#
+# Returns a text msg indicating succe
 #----------------------------
 {
-    $akey = prepDBVal($akey);
-    $uid = prepDBVal($uid);
+    $akey = prepDBVal( $akey );
+    $uid = prepDBVal( $uid );
 
     if (isset($akey) and (isset($uid)) ) {
         $res = mysql_query("UPDATE frames SET user_id=$uid,active='Y' WHERE activation_key='$akey' LIMIT 1");
@@ -103,7 +111,13 @@ function frameActivateKey($akey, $uid)
 }
 
 #----------------------------
-function frameCheckActivationKey($akey)
+function frameCheckActivationKey( $akey )
+#----------------------------
+# Returns idframe and user id (iduser) associated with a frame identified by activation key ($akey).
+#
+# Returns 0 for both if there is no frame with the supplied key.
+#
+# ?? - What if the frame is known but un-associated with a user?
 #----------------------------
 {
     $akey = prepDBVal($akey);
@@ -113,18 +127,21 @@ function frameCheckActivationKey($akey)
 
     if (mysql_num_rows($res) == 1) {
         $row = mysql_fetch_assoc($res);
-        $fid = $row['idframes'];
+        $idframe = $row['idframes'];
         $uid = $row['user_id'];
     } else {
-        $fid = 0;
+        $idframe = 0;
         $uid = 0;
     }
 
-    return array ($fid, $uid);
+    return array ( $idframe, $uid );
 }
 
 #----------------------------
 function frameGenActivationKey()
+#----------------------------
+# Generate a unique activation key by combining 2 entries in the 'words' table.
+# If after 5 attempts it is unable to generate a unique key it will use the current epoch time as the key.
 #----------------------------
 {
     $tries = 0;
@@ -149,9 +166,17 @@ function frameGenActivationKey()
 }
 
 #----------------------------
-function frameAdd($uid, $frameid, $nick, $prodid, $acv, $pin, $akey)
+function frameAdd( $uid, $frameid, $nick, $prodid, $acv, $pin, $akey )
 #----------------------------
 # Adds a new frame with the given attributes.
+#   $uid - iduser of owning user
+#   $frameid - frame supplied 'frame ID' value
+#   $nick - user supplied nickname for frame
+#   $prodid - idproduct of frame; FK to 'products' table
+#   $acv - is this frame active? (Y|N)
+#   $pin - PIN code for this frame's feed
+#   $akey - activation key for this frame
+#
 # Note: This function DOES NOT check for existing entries before attempting INSERT.
 #
 # Returns: idframes of new frames entry; 0 on error.
@@ -264,17 +289,17 @@ function frameFindIDProd($prodid)
 }
 
 #----------------------------
-function frameCheckIn($fid)
+function frameCheckIn( $idframe )
 #----------------------------
 # 'touch's a frame.  Since this is using already assigned fid (rather than frameID) it will NOT add a missing frame.
 #
 # Returns: 0 on error, 1 if specified frame was touched.
 #============================
 {
-    $fid = prepDBVal($fid);
+    $idframe = prepDBVal( $idframe );
 
-    if ( $fid != 0 ) {                     # don't touch frames with no ID
-        $sql = "UPDATE frames SET last_seen = now() WHERE idframes = '$fid' LIMIT 1";
+    if ( $idframe != 0 ) {                     # don't touch frames with no ID
+        $sql = "UPDATE frames SET last_seen = now() WHERE idframes = '$idframe' LIMIT 1";
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
@@ -284,7 +309,7 @@ function frameCheckIn($fid)
         } else {
             $ret = mysql_affected_rows();
             if ($ret == 1) {
-                $sql = "SELECT * FROM frames WHERE idframes = '$fid' LIMIT 1";
+                $sql = "SELECT * FROM frames WHERE idframes = '$idframe' LIMIT 1";
                 $result = mysql_query($sql);
                 $row = mysql_fetch_assoc( $result );
                 $frameid = $row['frame_id'];
@@ -408,6 +433,8 @@ function frameCheckInFrameID2($frameid, $prodid)
 #----------------------------
 function frameFindUsername($username)
 #----------------------------
+# Returns the first idframe associated with this user.  Yeah, not a great solution - need to refactor this one
+#----------------------------
 {
     $ret = 0;
     $username = prepDBVal($username);
@@ -429,9 +456,37 @@ function frameFindUsername($username)
 }
 
 #----------------------------
+function frameFindUsernamePin( $username, $pin )
+#----------------------------
+# Returns the idframe of the frame associated with user ($username) and with PIN = $pin.  Returns 0 if no match found.
+#----------------------------
+{
+    $ret = 0;
+    $username = prepDBVal( $username );
+    $pin = prepDBVal( $pin );
+
+    $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers AND feed_pin='$pin'";        # Does
+    $result = mysql_query($sql);
+    if (!$result) {
+        die("[$sql]: Invalid query: " . mysql_error());
+    }
+
+    if (mysql_num_rows( $result ) > 0) {
+        $tmp = mysql_fetch_row( $result );      # just grab the first one for now.
+        $ret = $tmp[0];
+    } else {
+        $ret = 0;
+    }
+
+    return $ret;
+}
+
+#----------------------------
 function frameGetProductInfo($prodid)
 #----------------------------
-# Returns specs on a give product_id
+# Returns idproduct, manufacturer, model, hres, vres for a given product_id.
+#
+# If unknown productID, return idproduct=0, manuf & model ='', hres=800,vres=480.
 #============================
 {
     $prodid = prepDBVal($prodid);
@@ -462,21 +517,21 @@ function frameGetProductInfo($prodid)
 }
 
 #----------------------------
-function isFramePinActive($fid, $pin)
+function isFramePinActive( $idframe, $pin )
 #----------------------------
 # Takes idframes value and an associated PIN.
 # Returns:
 #   1 if frame is valid and active, 0 otherwise
 #============================
 {
-    if (!(isset($fid))) { $fid = 0; }
-    if (!(isset($pin))) { $pin = 0; }
+    if ( !( isset($idframe ) ) )    { $idframe = 0; }
+    if ( !( isset($pin ) ) )        { $pin = 0; }
 
-    if ($fid != 0) {                    # nothing to lookup
-        $fid = prepDBVal($fid);
+    if ($idframe != 0) {                    # nothing to lookup
+        $idrame = prepDBVal($idframe);
         $pin = prepDBVal($pin);
 
-        $sql = "SELECT active FROM frames WHERE idframes='$fid' AND feed_pin='$pin'";        # Is this a valid user?
+        $sql = "SELECT active FROM frames WHERE idframes='$idframe' AND feed_pin='$pin'";        # Is this a valid user?
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
@@ -496,12 +551,14 @@ function isFramePinActive($fid, $pin)
 }
 
 #-------------------------
-function isFrameActive($fid)
+function isFrameActive( $idframe )
+#-------------------------
+# Returns 1 if given frame (idframe) and associated user is active, 0 if not active, user is inactive or not present.
 #-------------------------
 {
-    $fid = prepDBVal($fid);
+    $idframe = prepDBVal( $idframe );
 
-    $sql = "SELECT 'Y' FROM users AS u, frames AS f WHERE u.active='Y' AND u.idusers=f.user_id AND f.active='Y' and f.idframes=$fid";
+    $sql = "SELECT 'Y' FROM users AS u, frames AS f WHERE u.active='Y' AND u.idusers=f.user_id AND f.active='Y' and f.idframes='$idframe'";
     $res = mysql_query($sql)or die("Active frame lookup failed.");
 
     if ( mysql_num_rows($res) > 0 ) {
