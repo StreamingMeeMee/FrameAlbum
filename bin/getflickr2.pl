@@ -49,6 +49,9 @@
 # 2012-jan-15 - TimC
 #   - get Leftronic key from $GLOBALS{'leftronic_key'}
 #   - don't submit stats to Leftronic if no key is set
+#
+# 2012-aug-2 - TimC
+#   - don't calc. channels/sec if no channels were processed
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -67,7 +70,7 @@ require "inc/config.inc";
 #----------------------------------
 our $PROGRAMNAME = 'getFlickr2';       # Name of calling app
 our $PROGRAMOWNER = 'user@email.com';
-our $VERSIONSTRING = 'v2011-Dec-18';
+our $VERSIONSTRING = 'v2012-aug-2';
 
 our $CHAN_TYPE = 1;
 
@@ -405,14 +408,14 @@ my $pid;
         }
     }
 
+    $et = (time() - $st);
+
     if ($chn_cnt > 0) {
         SysMsg($MSG_INFO, $chn_cnt . ' channels were loaded with ' . $item_cnt . ' items; average of '. ($item_cnt/$chn_cnt) . ' per channel; max was ' . $max_items . '.');
+        SysMsg($MSG_INFO, 'Elapsed time: ' . $et . 's  Time per channel: ' . ($et / $chn_cnt) . "s");
     } else {
         SysMsg($MSG_WARN, $chn_cnt . ' channels were loaded -- something is a amiss!');
     }
-
-    $et = (time() - $st);
-    SysMsg($MSG_INFO, 'Elapsed time: ' . $et . 's  Time per channel: ' . ($et / $chn_cnt) . "s");
 
     $dbh->do("INSERT INTO grabber_stats (channel_type_id, rundate, wall_time, stats) VALUES (1, now(), $et, '" . $chn_cnt . '|' . $item_cnt  . "')")
         or SysMsg($MSG_CRIT, "Unable to execute grabber_stats INSERT statement: " . $dbh->errstr);
