@@ -34,6 +34,7 @@
 # 2012-aug-2 - TimC
 #   - Make sure rss directory exists before putting files there - DOH!
 #   - try eliminating blank line after <channel> and before </channel>
+#   - try adding 'tsmx:sourcelink' tags
 #-------------------------------------
 use DBI;
 
@@ -238,6 +239,8 @@ my $title = '';
         $t .= "    ".'<guid isPermaLink="false">' .  encode_entities($$ref{'guid'}, $ENCODE_CHARS) . "</guid>\n";
         $t .= "    ".'<media:content url="' . $$ref{'media_content_url'} . '" type="image/jpg" duration="10" />'."\n";
         $t .= "    ".'<media:thumbnail url="' . $$ref{'media_thumbnail_url'} . '" />'."\n";
+
+        $t .= "    ".'<tsmx:sourcelink></tsmx:sourcelink>'."\n";
 
         $t .= "</item>\n";
 
