@@ -228,22 +228,22 @@ my $et = 0;
     } else {
 		$sql = "SELECT f.idframes FROM frames AS f, users AS u
             WHERE f.active='Y' AND  f.user_id=u.idusers AND u.active='Y'";
-    }
 
-    $sth = $dbh->prepare($sql);
-    if (!defined $sth) {
-        SysMsg($MSG_CRIT, "Unable to prepare reports SELECT statement: " . $dbh->errstr);
-        exit 1;
-    }
+        $sth = $dbh->prepare( $sql );
+        if (!defined $sth) {
+            SysMsg($MSG_CRIT, "Unable to prepare reports SELECT statement: " . $dbh->errstr);
+            exit 1;
+        }
 
-    $sth->execute()
-        or SysMsg($MSG_CRIT, "Unable to execute reports SELECT statement: " . $dbh->errstr);
+        $sth->execute()
+            or SysMsg($MSG_CRIT, "Unable to execute reports SELECT statement: " . $dbh->errstr);
 
-    while ( ($fid) = $sth->fetchrow_array() ) {
+        while ( ($fid) = $sth->fetchrow_array() ) {
 
-        $item_cnt += populateFrame($fid);
+            $item_cnt += populateFrame( $fid );
 
-        $cnt++;
+            $cnt++;
+        }
     }
 
     $et = time() - $st;
