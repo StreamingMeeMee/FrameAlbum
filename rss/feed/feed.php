@@ -30,7 +30,7 @@
 #   - remove a debug 'echo' statement - doh!
 #
 # 2012-aug-2 - TimC
-#   - add support for 'username=' request parms (ViewSonic frames)
+#   - add support for 'user=' request parms (ViewSonic frames)
 #-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
@@ -67,16 +67,16 @@ include_once 'inc/helper_feed.php';
     } 
 #--- URL parse complete
 
-    if ( isset( $_REQUEST['fid'] ) )        { $parms['fid'] = $_REQUEST['fid']; }             # this covers the case where the parms
-    if ( isset( $_REQUEST['pin'] ) )        { $parms['pin'] = $_REQUEST['pin']; }             # are passed as '?' arguments
-    if ( isset( $_REQUEST['username'] ) )   { $parms['username'] = $_REQUEST['username']; }   #
+    if ( isset( $_REQUEST['fid'] ) )        { $parms['fid'] = $_REQUEST['fid']; }           # this covers the case where the parms
+    if ( isset( $_REQUEST['pin'] ) )        { $parms['pin'] = $_REQUEST['pin']; }           # are passed as '?' arguments
+    if ( isset( $_REQUEST['user'] ) )       { $parms['user'] = $_REQUEST['user']; }         #
 
     dbStart();
 
     if ( ( isset( $parms['fid'] ) ) and ( $parms['fid'] == 999999 ) ) { $parms['fid'] = 15; }   # old demo feed frame id
 
-    if ( isset( $parms['username'] ) and isset( $parms['pin'] ) ) {
-        $parms['fid'] = frameFindUsernamePin( $parms['username'], $parms['pin'] );
+    if ( isset( $parms['user'] ) and isset( $parms['pin'] ) ) {
+        $parms['fid'] = frameFindUsernamePin( $parms['user'], $parms['pin'] );
         if( $parms['fid'] > 0 ) {
             frameCheckIn( $parms['fid'] );
             $active = isFrameActive( $parms['fid'] );
