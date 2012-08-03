@@ -24,6 +24,7 @@
 #
 # 2012-aug-2 - TimC
 #   - don't send stats to lefttronic if no key is set
+#   - remove some dead code
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -222,11 +223,6 @@ my $et = 0;
     dbStart();
 
     if ($fid > 0) {
-		$sql = "SELECT f.idframes,fc.user_channel_id,fc.item_limit FROM frames AS f,`frame_channels` AS fc,
-			user_channels AS uc,channel_types AS c, users AS u 
-			WHERE f.idframes= 1 AND f.active='Y' AND fc.frame_id = f.idframes AND user_channel_id = iduserchannels AND
-			channel_type_id=idchanneltypes AND fc.active='Y' AND (c.active='Y' OR c.active='T') AND
-			f.user_id=u.idusers AND u.active='Y'";
 		$item_cnt = populateFrame($fid);
 		$cnt = 1;
     } else {
