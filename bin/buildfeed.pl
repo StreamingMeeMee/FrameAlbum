@@ -33,6 +33,7 @@
 #
 # 2012-aug-2 - TimC
 #   - Make sure rss directory exists before putting files there - DOH!
+#   - try eliminating blank line after <channel> and before </channel>
 #-------------------------------------
 use DBI;
 
@@ -137,7 +138,8 @@ my $t = '';
 
     SysMsg($MSG_DEBUG, 'channelHead: user:['.$user.']  ttl:['.$ttl."]  fid:[".$fid."]");
 
-    $t .= "<channel>\n\n";
+#    $t .= "<channel>\n\n";
+    $t .= "<channel>\n";
     $t .= "<title>FrameAlbum content for " . encode_entities($user, $ENCODE_CHARS) . "</title>\n";
     $t .= "<link>" . $GLOBALS{'www_url_root'} . "</link>\n";
     $t .= "<description>Channel for user " . encode_entities($user, $ENCODE_CHARS) . "</description>\n";
@@ -160,7 +162,8 @@ sub channelTail()
 {
 my $t = '';
 
-    $t .= "\n</channel>\n";
+#    $t .= "\n</channel>\n";
+    $t .= "</channel>\n";
 
     return $t;
 }
