@@ -21,5 +21,17 @@ function dbStart()
     mysql_set_charset('utf8');
 }
 
+#----------------------------
+function prepDBVal($val)
+#----------------------------
+{
+    if (isset($val)) {
+        $val = stripslashes($val);
+        $val = mysql_real_escape_string($val);
+    }
+
+    return $val;
+}
+
 #--- BE SURE THERE ARE NO BLANK LINES AFTER CLOSE
 ?>
