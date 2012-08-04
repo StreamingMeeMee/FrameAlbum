@@ -14,6 +14,9 @@
 #
 # 2012-may-27 - TimC
 #   - Update for new chan. type IDs
+#
+# 2012-aug-4 - TimC
+#   - update channelUserForm(), channelUserInfoHTML() with correct channel_type_ids (Bug#68) 
 #-------------------------------------------
 require_once("phpFlickr/phpFlickr.php");
 
@@ -309,11 +312,11 @@ function channelUserForm($cid, $ctid, $fid)
 
     if ($ctid == 1) {
         list ($msg, $html) =  channelUserFormFlickr($cid, $ctid, $fid);
-    } else if ($ctid == 2) {
+    } else if ($ctid == 3) {
         list ($msg, $html) =  channelUserFormText($cid, $ctid, $fid);
-    } else if ($ctid == 6) {
+    } else if ($ctid == 8) {
         list ($msg, $html) =  channelUserFormPicasa($cid, $ctid, $fid);
-    } else if ($ctid == 7) {
+    } else if ($ctid == 10) {
         list ($msg, $html) =  channelUserFormRadar($cid, $ctid, $fid);
     } else {
         $msg = 'Unsupported channel type:['.$ctid.']';
@@ -774,11 +777,11 @@ function channelUserInfoHTML($cid)
 
     if ($ctid == 1) {
         list ($msg, $html) = channelUserInfoFlickrHTML($cid);
-    } else if ($ctid == 2) {
+    } else if ($ctid == 3) {
         list ($msg, $html) = channelUserInfoTextHTML($cid);
-    } else if ($ctid == 6) {
+    } else if ($ctid == 8) {
         list ($msg, $html) = channelUserInfoPicasaHTML($cid);
-    } else if ($ctid == 7) {
+    } else if ($ctid == 10) {
         list ($msg, $html) = channelUserInfoRadarHTML($cid);
     } else {
         $msg = 'Unsupported channel type:['.$ctid.']';
