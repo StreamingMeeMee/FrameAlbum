@@ -71,12 +71,9 @@ public function load( $Pdbh, $chanid )
 {
 $ret = false;
 
-print 'loading:['.$chanid."]\n";
-
     if( isset( $chanid ) and isset( $Pdbh ) and ( $chanid > 0 ) ) {        # load an existing one
         $this->dbh = $Pdbh;
 
-print 'loading:['.$chanid."]\n"; 
         $chanid = prepDBVal( $chanid ); 
         $sql = "SELECT * FROM user_channels WHERE iduserchannels=$chanid";
         $sth = $this->dbh->prepare( $sql );
@@ -97,7 +94,6 @@ print 'loading:['.$chanid."]\n";
 
             $ret = true;
 
-print 'loaded:['.$this->nick."]\n";
         }
     }
 
@@ -128,7 +124,6 @@ $ret = false;
                 item_limit=$this->item_limit, status='$this->status', channel_ttl=$this->chan_ttl 
                 WHERE iduserchannels=$this->iduserchannel LIMIT 1";
         }
-print "save SQL[$sql]\n";
 
         $sth = $this->dbh->prepare( $sql );
         if( $sth->execute() ) {
@@ -149,7 +144,6 @@ $ret = false;
 
     if( isset( $this->dbh ) and ( $this->iduserchannel != 0 ) ) {
         $sql = "DELETE FROM user_channels WHERE iduserchannels=" . $this->iduserchannel . " AND user_id=" . $this->user_id . " LIMIT 1";
-print "save SQL[$sql]\n";
 
         $sth = $this->dbh->prepare( $sql );
         if( $sth->execute() ) {
