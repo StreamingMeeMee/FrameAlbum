@@ -2,6 +2,12 @@
 #------------------------------------------
 # DB configuration options for PHP code
 #
+# 2012-aug-4 - TimC
+#   - start conversion to using PDO
+#   - move prepDBVal() here
+#
+# 2012-aug-6 - TimC
+#   - prepDBVal() returns 'NULL' if call with a un-set variable
 #------------------------------------------
 
 #--- DB configuration
@@ -19,15 +25,22 @@ function dbStart()
     @mysql_select_db($GLOBALS['db_name']) or die( "Unable to select database:[".$GLOBALS['db_name']."]");
 
     mysql_set_charset('utf8');
+
+    $GLOBALS['dbh'] = new PDO( "mysql:host=$GLOBALS['db_host'];dbname=$GLOBALS['db_name']", $GLOBALS['db_user'], $GLOBALS['db_pass'] );
+
+    return $GLOBALS['dbh'];
+
 }
 
 #----------------------------
-function prepDBVal($val)
+function prepDBVal( $val )
 #----------------------------
 {
-    if (isset($val)) {
-        $val = stripslashes($val);
-        $val = mysql_real_escape_string($val);
+    if ( isset( $val ) ) {
+        $val = stripslashes( $val );
+        $val = mysql_real_escape_string( $val );
+    } else {
+        $val = 'NULL';
     }
 
     return $val;
