@@ -11,6 +11,7 @@ include_once 'inc/helpers.php';
 include_once 'inc/chan_helpers.php';
 include_once 'inc/frame_helpers.php';
 include_once 'inc/helper_user.php';
+require_once 'inc/user_channel_class.php';
 
     if (session_id() == '') { session_start(); }
 
@@ -18,7 +19,7 @@ include_once 'inc/helper_user.php';
         header('Location:/');
     }
 
-    dbStart();
+    $dbh = dbStart();
 
 #----------------------------
 function doGET($id, $ctid, $action, $fid, $showtest)
@@ -92,20 +93,26 @@ function doPOST($id, $fid, $showtest)
     if (isset($_REQUEST['ctid'])) { $ctid=$_REQUEST['ctid']; } else { $ctid = 0; }
     if (isset($_REQUEST['action'])) { $action=$_REQUEST['action']; } else { $action = ''; }
 
-    $errs = 0;
-    $body = '';
-    $redir = '';
+    $chn = new UserChannel( $dbh, $id );              # Load the channel
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        list ($msg, $body, $redir) = doPOST($id, $fid, userIsAdmin($_SESSION['uid']) );
+    if( !$chn->isOwner( $_SESSION['uid'] ) ) {          # is the current user the owner?
+        $msg='You are not the owner of that channel.';
+        $body = '';
     } else {
-        list ($msg, $body) = doGET($id, $ctid, $action, $fid, userIsAdmin($_SESSION['uid']) );
-    }
+        $errs = 0;
+        $body = '';
+        $redir = '';
 
-    if ( strlen($redir) > 0 ) {
-        header('Location: ' . $redir);
-    }
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            list ($msg, $body, $redir) = doPOST($id, $fid, userIsAdmin($_SESSION['uid']) );
+        } else {
+            list ($msg, $body) = doGET($id, $ctid, $action, $fid, userIsAdmin($_SESSION['uid']) );
+        }
 
+        if ( strlen($redir) > 0 ) {
+            header('Location: ' . $redir);
+        }
+    }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

@@ -1,4 +1,11 @@
 <?php
+#---------------------------------------
+# UserChannel class - a model of a single feed channel for a given user
+#
+# 2012-aug-4 - TimC
+#   - First Go
+#
+#---------------------------------------
 
 class UserChannel 
 {
@@ -29,7 +36,7 @@ class UserChannel
     private $dirty = 0;         # =1 - values changed, save required
 
 #----------------------------
-function __construct( $Pdbh, $chanid=0, $nick='', $user_id=0, $chan_type_id=0, $attrib='' )
+function __construct( $Pdbh, $chanid=0, $user_id=0, $chan_type_id=0, $nick='My channel', $attrib='' )
 #----------------------------
 {
     if( isset( $chanid ) and isset( $Pdbh ) and ( $chanid > 0 ) ) {        # load an existing one
@@ -64,9 +71,12 @@ public function load( $Pdbh, $chanid )
 {
 $ret = false;
 
+print 'loading:['.$chanid."]\n";
+
     if( isset( $chanid ) and isset( $Pdbh ) and ( $chanid > 0 ) ) {        # load an existing one
         $this->dbh = $Pdbh;
-   
+
+print 'loading:['.$chanid."]\n"; 
         $chanid = prepDBVal( $chanid ); 
         $sql = "SELECT * FROM user_channels WHERE iduserchannels=$chanid";
         $sth = $this->dbh->prepare( $sql );
@@ -83,8 +93,11 @@ $ret = false;
             $this->status =  $row['status'];
             $this->last_updated =  $row['last_updated'];
             $this->chan_ttl =  $row['channel_ttl'];
+            $this->dirty = 0;
 
             $ret = true;
+
+print 'loaded:['.$this->nick."]\n";
         }
     }
 
@@ -98,17 +111,50 @@ public function save( )
 $ret = false;
 
     if( isset( $this->dbh ) ) {
+        $this->nick = prepDBVal( $this->nick );
+        $this->attrib = prepDBval( $this->attrib );
+        $this->status = prepDBVal( $this->status );
 
-        $sql = "INSERT INTO user_channels
-            (iduserchannels, user_id, channel_type_id, chan_nickname, active, attrib,
-             attrib_valid, item_limit, status, channel_ttl)
-            VALUES ($this->iduserchannel, $this->user_id, $this->chan_type_id, '".prepDBVal( $this->nick )."', '".$this->active."', '".prepDBVal( $this->attrib )."', '"
-             .prepDBVal( $this->attrib_valid )."', $this->item_limit, '".prepDBVal( $this->status )."', $this->chan_ttl )".
-             " ON DUPLICATE KEY UPDATE iduserchannel=$this->iduserchannel";
+        if( $this->iduserchannel == 0 ) {
+            $sql = "INSERT INTO user_channels
+                (iduserchannels, user_id, channel_type_id, chan_nickname, active, attrib,
+                attrib_valid, item_limit, status, channel_ttl)
+                VALUES ($this->iduserchannel, $this->user_id, $this->chan_type_id, '".$this->nick."', '".$this->active."', '".$this->attrib."', '"
+             . $this->attrib_valid ."', $this->item_limit, '". $this->status ."', $this->chan_ttl )";
+        } else {
+            $sql = "UPDATE user_channels SET
+                user_id=$this->user_id, channel_type_id=$this->chan_type_id, chan_nickname='$this->nick',
+                active='$this->active', attrib='$this->attrib', attrib_valid='$this->attrib_valid',
+                item_limit=$this->item_limit, status='$this->status', channel_ttl=$this->chan_ttl 
+                WHERE iduserchannels=$this->iduserchannel LIMIT 1";
+        }
+print "save SQL[$sql]\n";
 
         $sth = $this->dbh->prepare( $sql );
         if( $sth->execute() ) {
             $this->dirty = 0;
+
+            $ret = true;
+        }
+    }
+
+    return $ret;
+}
+
+#-----------------------------
+public function delete( )
+#-----------------------------
+{
+$ret = false;
+
+    if( isset( $this->dbh ) and ( $this->iduserchannel != 0 ) ) {
+        $sql = "DELETE FROM user_channels WHERE iduserchannels=" . $this->iduserchannel . " AND user_id=" . $this->user_id . " LIMIT 1";
+print "save SQL[$sql]\n";
+
+        $sth = $this->dbh->prepare( $sql );
+        if( $sth->execute() ) {
+            $this->dirty = 0;
+            $this->iduserchannel = 0;
 
             $ret = true;
         }
@@ -127,6 +173,19 @@ public function needsave( $val )
     }
 
     return $this->dirty;
+}
+
+#-----------------------------
+public function isOwner( $testme )
+#-----------------------------
+{
+$ret = false;
+
+    if( isset( $testme ) ) {
+        $ret = ( $testme == $this->user_id );
+    }
+
+    return $ret;
 }
 
 #-----------------------------
