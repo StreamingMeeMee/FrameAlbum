@@ -4,6 +4,7 @@ include_once 'inc/config.php';
 include_once 'inc/helpers.php';
 include_once 'inc/frame_helpers.php';
 include_once 'inc/chan_helpers.php';
+require_once 'inc/frame_class.php';
 
     if (session_id() == '') { session_start(); }
 
@@ -11,7 +12,7 @@ include_once 'inc/chan_helpers.php';
         header('Location:/');
     }
 
-    dbStart();
+    $dbh = dbStart();
 
 #----------------------------
 function doGET($fid, $action, $cid)
@@ -78,18 +79,25 @@ function doPOST($id)
     if (isset($_REQUEST['fid'])) { $fid=$_REQUEST['fid']; } else { $fid = 0; $action='add';}
     if (isset($_REQUEST['cid'])) { $cid=$_REQUEST['cid']; } else { $cid = 0; }
 
-    $errs = 0;
-    $body = '';
-    $redir = '';
+    $fr = new Frame( $dbh, $fid );
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        list ($msg, $body, $redir) = doPOST($fid);
+    if( !$fr->isOwner( $_SESSION['uid'] ) ) {          # is the current user the owner?
+        $msg='You are not the owner of that frame.';
+        $body = '';
     } else {
-        list ($msg, $body, $redir) = doGET($fid, $action, $cid);
-    }
+        $errs = 0;
+        $body = '';
+        $redir = '';
 
-    if ( strlen($redir) > 0 ) {
-        header('Location: ' . $redir);
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            list ($msg, $body, $redir) = doPOST($fid);
+        } else {
+            list ($msg, $body, $redir) = doGET($fid, $action, $cid);
+        }
+
+        if ( strlen($redir) > 0 ) {
+            header('Location: ' . $redir);
+        }
     }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
