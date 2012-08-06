@@ -93,7 +93,7 @@ function doPOST($id, $fid, $showtest)
     if (isset($_REQUEST['ctid'])) { $ctid=$_REQUEST['ctid']; } else { $ctid = 0; }
     if (isset($_REQUEST['action'])) { $action=$_REQUEST['action']; } else { $action = ''; }
 
-    $chn = new UserChannel( $dbh, $id );              # Load the channel
+    $chn = new UserChannel( $dbh, $id, $_SESSION['uid'] );      # Load the channel
 
     if( !$chn->isOwner( $_SESSION['uid'] ) ) {          # is the current user the owner?
         $msg='You are not the owner of that channel.';
