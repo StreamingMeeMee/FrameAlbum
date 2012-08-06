@@ -75,7 +75,7 @@ function doPOST($id, $fid, $showtest)
                 $redir = '/frame.php?fid=' . $fid;
                 $msg .= $m . $m2;
             } else {
-                list ($d, $html) = doGET($ret, $_REQUEST['chantype'],'', $showtest);
+                list ($d, $html) = doGET($ret, $_REQUEST['chantype'], '', $fid, $showtest);
             }
         } else {
             $msg .= 'Channel creation failed - bummer. fid:['.$fid.']';
