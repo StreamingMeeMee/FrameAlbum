@@ -20,6 +20,9 @@
 #
 # 2012-may-25 - TimC
 #   - move frameIsActive(), frameIsActiveFID() to helper_frame.inc
+#
+# 2012-aug-5 - TimC
+#   - Move prepDBVal() to dbconfig.php
 #-------------------------------------------
 $GLOBALS['PROGRAMNAME'] = '';
 $GLOBALS['PROGRAMOWNER'] = 'user@email.com';
@@ -263,18 +266,6 @@ function OLDuserFindFID($fid)
     }
 
     return $ret;
-}
-
-#----------------------------
-function prepDBVal($val)
-#----------------------------
-{
-    if (isset($val)) {
-        $val = stripslashes($val);
-        $val = mysql_real_escape_string($val);
-    }
-
-    return $val;
 }
 
 #----------------------------
