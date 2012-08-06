@@ -96,7 +96,7 @@ function doPOST($id, $fid, $showtest)
     $chn = new UserChannel( $dbh, $id );              # Load the channel
 
     if( !$chn->isOwner( $_SESSION['uid'] ) ) {          # is the current user the owner?
-        $msg='You are not the owner of that channel. ['.$_SESSION['uid'].'] != ['.$chn->user_id.']';
+        $msg='You are not the owner of that channel.';
         $body = '';
     } else {
         $errs = 0;

@@ -13,7 +13,7 @@ class UserChannel
 
     private $iduserchannel = 0;
 
-    public $user_id = 0;
+    private $user_id = 0;
 
     private $chan_type_id = 0;
 
