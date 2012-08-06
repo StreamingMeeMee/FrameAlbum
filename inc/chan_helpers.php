@@ -17,6 +17,9 @@
 #
 # 2012-aug-4 - TimC
 #   - update channelUserForm(), channelUserInfoHTML() with correct channel_type_ids (Bug#68) 
+#
+# 2012-aug-6 - TimC
+#   - fix missing quote mark to complete support for Flickr tags in user channels
 #-------------------------------------------
 require_once("phpFlickr/phpFlickr.php");
 
@@ -619,7 +622,7 @@ function channelUserFormFlickr($cid, $ctid, $fid)
     $html .= '<td><input type="text" maxlength="64" size="32" name="flickr_user" id="flickr_user" value="'. $attribs[0] . '" onblur="validFlickrUser()" onchange="constructAttribFlickr()"></td><td><div><img id="flickr_user_msg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Tags:</td>';
 #    $html .= '<td><input style="background-color : #d9d9d9;" disabled type="text" maxlength="64" size="32" name="f_tags" id="f_tags" value="'. $attribs[1] . '"</td></tr>';
-    $html .= '<td><input type="text" maxlength="64" size="32" name="f_tags" id="f_tags" value="'. $attribs[1] . '" onchange="constructAttribFlickr()></td></tr>';
+    $html .= '<td><input type="text" maxlength="64" size="32" name="f_tags" id="f_tags" value="'. $attribs[1] . '" onchange="constructAttribFlickr()"></td></tr>';
     if ($cid != 0) {
         $html .= '<tr><td>Delete channel</td>';
         $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
