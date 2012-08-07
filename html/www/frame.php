@@ -79,7 +79,7 @@ function doPOST($id)
     if (isset($_REQUEST['fid'])) { $fid=$_REQUEST['fid']; } else { $fid = 0; $action='add';}
     if (isset($_REQUEST['cid'])) { $cid=$_REQUEST['cid']; } else { $cid = 0; }
 
-    $fr = new Frame( $dbh, $fid );
+    $fr = new Frame( $dbh, $fid, $_SESSION['uid'] );
 
     if( !$fr->isOwner( $_SESSION['uid'] ) ) {          # is the current user the owner?
         $msg='You are not the owner of that frame.';
