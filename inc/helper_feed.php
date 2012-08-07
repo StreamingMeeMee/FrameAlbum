@@ -2,6 +2,9 @@
 #-----------------------------
 # 2011-nov-27 - TimC
 #   - fix the SQL in feedChannelsListFID() to not return ALL users channesl -- DOH!
+#
+# 2012-aug-7 - TimC
+#   - modify feedActiveFrameFeed() to send a skeleton feed if the requested feed is not available.
 #-----------------------------
 
 #--------
@@ -133,13 +136,33 @@ function feedActiveFrameFeed($fid)
 
     if ( is_readable($fn) ) {
         $fh = fopen($fn, 'r');
-        $d = fread($fh, filesize($fn));
+        $rss = fread($fh, filesize($fn));
         fclose($fh);
-    } else {
+    } else {                # feed file is missing -- send a skeleton
         $d = 'RSS file not found or not readable:['.$fn.']';
+        $url = $GLOBALS['image_url_root'] . '/Feed_Not_Avail.jpg';
+
+        $rss = feedRssHead();
+        $rss .= feedRssChannelHead('public', 60, 'Frame Feed Is Unavailable');
+
+        $rss .= '<item>
+        <title>FrameAlbum Info</title>
+        <link>'.$url.'</link>
+        <category>FrameAlbum Info</category>
+        <description>&lt;img src=&quot;'.$url.'&quot;&gt;</description>
+        <pubDate>Thu, 23 Jun 2011 17:04:46 -0400</pubDate>
+        <guid isPermaLink="false">30f8b8d1-80af-38e7-8616-b3e793dc289b</guid>
+        <media:content url="'.$url.'" type="image/jpeg" height="480" width="800" duration="3" />
+        <media:thumbnail  url="'.$url.'" height="60" width="60" />
+        <tsmx:sourcelink>'.$url.'</tsmx:sourcelink>
+</item>'."\n";
+
+    $rss .= feedRssChannelTail();
+    $rss .= feedRssTail();
+
     }
 
-    feedSendRSS($d);
+    feedSendRSS($rss);
 
     return;
 }
@@ -205,7 +228,7 @@ $rss .= '<item>
         <guid isPermaLink="false">30f8b8d1-80af-38e7-8616-b3e793dc289b</guid>
         <media:content url="'.$url.'" type="image/jpeg" height="480" width="800" duration="3" />
         <media:thumbnail  url="'.$url.'" height="60" width="60" />
-        <tsmx:sourcelink></tsmx:sourcelink>
+        <tsmx:sourcelink>'.$url.'</tsmx:sourcelink>
 </item>'."\n";
 
     $rss .= feedRssChannelTail();
