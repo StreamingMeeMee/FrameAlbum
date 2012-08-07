@@ -20,6 +20,10 @@
 #
 # 2012-aug-6 - TimC
 #   - fix missing quote mark to complete support for Flickr tags in user channels
+#
+# 2012-aug-7 - TimC
+#   - Add 'edit' and 'delete' actions with icons to channel info page
+#   - style channeltype icons & sample images
 #-------------------------------------------
 require_once("phpFlickr/phpFlickr.php");
 
@@ -135,7 +139,7 @@ function channelSample($id)
             $html .= '<table border="0"><tr>';
             $rc = 1;
             while( $row = mysql_fetch_assoc( $result ) ) {
-                $html .= '<td align="center"><a href="'.$row['media_content_url'].'" target="_blank"><img style="margin: 5px;" width="118" height="118" title="'.$row['title'].'" alt="'.$row['title'].'" src="'.$row['media_thumbnail_url'].'"/></a></td>';
+                $html .= '<td align="center"><a href="'.$row['media_content_url'].'" target="_blank"><img style="margin: 5px;" class="sampleImage" title="'.$row['title'].'" alt="'.$row['title'].'" src="'.$row['media_thumbnail_url'].'"/></a></td>';
                 if ($rc > 3) {
                     $rc = 1;
                     $html .= '</tr><tr>';
@@ -292,9 +296,9 @@ function channelUserAdd($uid, $ctid, $nick, $attrib, $acv, $status)
 }
 
 #----------------------------
-function channelUserForm($cid, $ctid, $fid)
+function channelUserForm($cid, $ctid, $fid, $action)
 #----------------------------
-# Returns a HTML form to add/update a FLickr channel
+# Returns a HTML form to add/update a user channel
 #
 #============================
 {
@@ -314,13 +318,13 @@ function channelUserForm($cid, $ctid, $fid)
     }
 
     if ($ctid == 1) {
-        list ($msg, $html) =  channelUserFormFlickr($cid, $ctid, $fid);
+        list ($msg, $html) =  channelUserFormFlickr($cid, $ctid, $fid, $action);
     } else if ($ctid == 3) {
-        list ($msg, $html) =  channelUserFormText($cid, $ctid, $fid);
+        list ($msg, $html) =  channelUserFormText($cid, $ctid, $fid, $action);
     } else if ($ctid == 8) {
-        list ($msg, $html) =  channelUserFormPicasa($cid, $ctid, $fid);
+        list ($msg, $html) =  channelUserFormPicasa($cid, $ctid, $fid, $action);
     } else if ($ctid == 10) {
-        list ($msg, $html) =  channelUserFormRadar($cid, $ctid, $fid);
+        list ($msg, $html) =  channelUserFormRadar($cid, $ctid, $fidi, $action);
     } else {
         $msg = 'Unsupported channel type:['.$ctid.']';
         $html = '';
@@ -330,7 +334,7 @@ function channelUserForm($cid, $ctid, $fid)
 }
 
 #----------------------------
-function channelUserFormText($cid, $ctid, $fid)
+function channelUserFormText($cid, $ctid, $fid, $action)
 #----------------------------
 # Returns a HTML form to add/update a generic text panel channel
 #
@@ -340,6 +344,11 @@ function channelUserFormText($cid, $ctid, $fid)
     $html = '';
 
     if (!isset($cid))   { $cid =0; }
+
+    if ( $action == 'delete' ) {
+        $delcb = ' checked="yes" ';
+        $msg .= 'Are you sure you want to delete this channel?';
+    }
 
     if ($cid > 0) {                     # don't edit channels with no ID
         $cid = prepDBVal($cid);
@@ -387,7 +396,7 @@ function channelUserFormText($cid, $ctid, $fid)
     $html .= '<input type="hidden" id="attrib" name="attrib" value="' . $attrib . '">';
     $html .= '<input type="hidden" id="chantype" name="chantype" value='. $ctid . '">';
     $html .= '<table border="0">';
-    $html .= '<tr><td rowspan="6"><img src="' . $chan_icon_url . '" width="128"/></td><td>Nickname:</td>';
+    $html .= '<tr><td rowspan="6"><img src="' . $chan_icon_url . '" class="channelTypeIcnLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttrib()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Background Color:</td>';
     $html .= '<td><input type="text" maxlength="64" size="32" name="attrib0" id="attrib0" value="'. $attribs[0] . '" onchange="constructAttrib()"></td><td><div><img id="attrib0_msg" height="24" src="/images/blank.png"/></div></td></tr>';
@@ -399,7 +408,7 @@ function channelUserFormText($cid, $ctid, $fid)
     $html .= '<td><input type="text" maxlength="64" size="32" name="attrib3" id="attrib3" value="'. $attribs[3] . '" onchange="constructAttrib()"></td><td><div><img id="attrib1_msg" height="24" src="/images/blank.png"/></div></td></tr>';
     if ($cid != 0) {
         $html .= '<tr><td>Delete channel</td>';
-        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
+        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
     }
     $html .= '</table>';
     $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
@@ -410,7 +419,7 @@ function channelUserFormText($cid, $ctid, $fid)
 }
 
 #----------------------------
-function channelUserFormRadar($cid, $ctid, $fid)
+function channelUserFormRadar($cid, $ctid, $fid, $action)
 #----------------------------
 # Returns a HTML form to add/update a weather radar channel
 #
@@ -420,6 +429,11 @@ function channelUserFormRadar($cid, $ctid, $fid)
     $html = '';
 
     if (!isset($cid))   { $cid =0; }
+
+    if ( $action == 'delete' ) {
+        $delcb = ' checked="yes" ';
+        $msg .= 'Are you sure you want to delete this channel?';
+    }
 
     if ($cid > 0) {                     # don't edit channels with no ID
         $cid = prepDBVal($cid);
@@ -466,14 +480,14 @@ function channelUserFormRadar($cid, $ctid, $fid)
     $html .= '<input type="hidden" id="attrib" name="attrib" value="' . $attrib . '">';
     $html .= '<input type="hidden" id="chantype" name="chantype" value='. $ctid . '">';
     $html .= '<table border="0">';
-    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" width="128"/></td><td>Nickname:</td>';
+    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttrib1()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>US ZIP code:</td>';
     $html .= '<td><input type="text" maxlength="64" size="32" name="attrib0" id="attrib0" value="'. $attribs[0] . '" onblur="validZIPCode()" onchange="constructAttrib1()"></td><td><div><img id="attrib0_msg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
 #    $html .= '<td><input style="background-color : #d9d9d9;" disabled type="text" maxlength="64" size="32" name="attrib1" id="attrib1" value="'. $attribs[1] . '"</td></tr>';
     if ($cid != 0) {
         $html .= '<tr><td>Delete channel</td>';
-        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
+        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
 
     }
     $html .= '</table>';
@@ -485,7 +499,7 @@ function channelUserFormRadar($cid, $ctid, $fid)
 }
 
 #----------------------------
-function channelUserFormPicasa($cid, $ctid, $fid)
+function channelUserFormPicasa($cid, $ctid, $fid, $action)
 #----------------------------
 # Returns a HTML form to add/update a PicasaWeb channel
 #
@@ -495,6 +509,11 @@ function channelUserFormPicasa($cid, $ctid, $fid)
     $html = '';
 
     if (!isset($cid))   { $cid =0; }
+
+    if ( $action == 'delete' ) {
+        $delcb = ' checked="yes" ';
+        $msg .= 'Are you sure you want to delete this channel?';
+    }
 
     if ($cid > 0) {                     # don't edit channels with no ID
         $cid = prepDBVal($cid);
@@ -540,7 +559,7 @@ function channelUserFormPicasa($cid, $ctid, $fid)
     $html .= '<input type="hidden" id="attrib" name="attrib" value="' . $attrib . '">';
     $html .= '<input type="hidden" id="chantype" name="chantype" value='. $ctid . '">';
     $html .= '<table border="0">';
-    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" width="128"/></td><td>Nickname:</td>';
+    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttrib2()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>PicasaWeb User:</td>';
     $html .= '<td><input type="text" maxlength="64" size="32" name="attrib0" id="attrib0" value="'. $attribs[0] . '" onblur="validEmailAddr(this)" onchange="constructAttrib2()"></td><td><div><img id="attrib0_msg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
@@ -548,7 +567,7 @@ function channelUserFormPicasa($cid, $ctid, $fid)
     $html .= '<td><input style="background-color : #d9d9d9;" disabled type="text" maxlength="64" size="32" name="attrib1" id="attrib1" value="'. $attribs[1] . '"</td></tr>';
     if ($cid != 0) {
         $html .= '<tr><td>Delete channel</td>';
-        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
+        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
     }
     $html .= '</table>';
     $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
@@ -559,7 +578,7 @@ function channelUserFormPicasa($cid, $ctid, $fid)
 }
 
 #----------------------------
-function channelUserFormFlickr($cid, $ctid, $fid)
+function channelUserFormFlickr($cid, $ctid, $fid, $action)
 #----------------------------
 # Returns a HTML form to add/update a Flickr channel
 #
@@ -567,8 +586,14 @@ function channelUserFormFlickr($cid, $ctid, $fid)
 {
     $msg = '';
     $html = '';
+    $delcb = '';
 
     if (!isset($cid))   { $cid =0; }
+
+    if ( $action == 'delete' ) {
+        $delcb = ' checked="yes" ';
+        $msg .= 'Are you sure you want to delete this channel?';
+    }
 
     if ($cid > 0) {                     # don't edit channels with no ID
         $cid = prepDBVal($cid);
@@ -614,7 +639,7 @@ function channelUserFormFlickr($cid, $ctid, $fid)
     $html .= '<input type="hidden" id="attrib" name="attrib" value="' . $attrib . '">';
     $html .= '<input type="hidden" id="chantype" name="chantype" value='. $ctid . '">';
     $html .= '<table border="0">';
-    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" width="128"/></td><td>Nickname:</td>';
+    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" width="channelTypeIconLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttribFlickr()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Flickr User:</td>';
 #    $html .= '<td><input type="text" maxlength="64" size="32" name="reg_email" id="reg_email" value="'. $attribs[0] . '" onblur="validEmail()" onchange="constructAttribFlickr()"></td><td><div><img id="emailmsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
@@ -625,7 +650,7 @@ function channelUserFormFlickr($cid, $ctid, $fid)
     $html .= '<td><input type="text" maxlength="64" size="32" name="f_tags" id="f_tags" value="'. $attribs[1] . '" onchange="constructAttribFlickr()"></td></tr>';
     if ($cid != 0) {
         $html .= '<tr><td>Delete channel</td>';
-        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
+        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
     }
     $html .= '</table>';
     $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
@@ -660,12 +685,12 @@ $item_cnt = 0;
             if (mysql_num_rows( $result ) > 0) {
                 while( $row = mysql_fetch_assoc( $result ) ) {
                     if ($item_cnt > $GLOBALS['row_item_limit']) { $h .= "</tr>\n<tr>";  $item_cnt = 0; }
-                    $h .= '<td align="center"><a href="channel.php?cid='.$row['iduserchannels'].'" title="View channel details" alt="View channel details"><img src="'.$row['channel_icon_url'].'" width="128" title="View channel details" alt="View channel details"/><br/>' . $row['chan_nickname'] . '</a>&nbsp;<a href="/frame.php?fid='.$fid.'&action=adch&cid='.$row['iduserchannels'].'"><img height="18" src="/images/knobs/Add.png" title="Add this channel to this frame" alt="Add this channel to this frame"/></a></td>';
+                    $h .= '<td align="center"><a href="channel.php?cid='.$row['iduserchannels'].'" title="View channel details" alt="View channel details"><img src="'.$row['channel_icon_url'].'" class="channelTypeIconLrg" title="View channel details" alt="View channel details"/><br/>' . $row['chan_nickname'] . '</a>&nbsp;<a href="/frame.php?fid='.$fid.'&action=adch&cid='.$row['iduserchannels'].'"><img height="18" src="/images/knobs/Add.png" title="Add this channel to this frame" alt="Add this channel to this frame"/></a></td>';
                     $item_cnt++;
                 }
             }
             if ($item_cnt > $GLOBALS['row_item_limit']) { $h .= "</tr>\n<tr>";  $item_cnt = 0; }
-            $h .= '<td align="center"><a href="channel.php?fid='.$fid.'" title="Add a new channel"><img src="/images/add_channel.png" width="128" title="Add a new channel" alt="Add a channel"/><br/>Add a new channel</a></td>';
+            $h .= '<td align="center"><a href="channel.php?fid='.$fid.'" title="Add a new channel"><img src="/images/add_channel.png" class="channelTypeIconLrg" title="Add a new channel" alt="Add a channel"/><br/>Add a new channel</a></td>';
             $h .= '</tr></table>';
         }
     } else {
@@ -704,7 +729,7 @@ $msg = '';
             $ret .= '<table border="0"><tr>';
             while( $row = mysql_fetch_assoc( $result ) ) {
                 if ($item_cnt > $GLOBALS['row_item_limit']) { $ret .= "</tr>\n<tr>";  $item_cnt = 0; }
-                $ret .= '<td align="center"><a href="channel.php?ctid='.$row['idchanneltypes'].$fl.'"><img src="'.$row['channel_icon_url'].'" width="128"/><br/>' . $row['channel_name'] . '</a></td>';
+                $ret .= '<td align="center"><a href="channel.php?ctid='.$row['idchanneltypes'].$fl.'"><img src="'.$row['channel_icon_url'].'" class="channelTypeIconLrg" /><br/>' . $row['channel_name'] . '</a></td>';
                 $item_cnt++;
                 }
             $ret .= '</tr></table>';
@@ -743,14 +768,14 @@ $item_cnt = 0;
             if (mysql_num_rows( $result ) > 0) {
                 while( $row = mysql_fetch_assoc( $result ) ) {
                     if ($item_cnt > $GLOBALS['row_item_limit']) { $ret .= "</tr>\n<tr>";  $item_cnt = 0; }
-                    $ret .= '<td align="center"><a href="channel.php?cid='.$row['iduserchannels'].'"><img src="'.$row['channel_icon_url'].'" width="128" title="View channel details" alt="View channel details"/><br/>' . $row['chan_nickname'] . "</a></td>\n";
+                    $ret .= '<td align="center"><a href="channel.php?cid='.$row['iduserchannels'].'"><img src="'.$row['channel_icon_url'].'" class="channelTypeIconLrg" title="View channel details" alt="View channel details"/><br/>' . $row['chan_nickname'] . "</a></td>\n";
                     $item_cnt++;
                 }
             }
 
             if ($item_cnt > $GLOBALS['row_item_limit']) { $ret .= '</tr><tr>';  $item_cnt = 0; }
-#            $ret .= '<td align="center"><a href="channel.php"><img src="/images/add_channel.png" width="128" title="Add a channel" alt="Add a new channel"/><br/>Add a new channel</a></td>';
-            $ret .= '<td align="center"><a href="channel.php"><img src="/images/add_channel.png" width="128" title="View channel details" alt="View channel details"/><br/>Add a new channel</a></td>';
+#            $ret .= '<td align="center"><a href="channel.php"><img src="/images/add_channel.png" class="channelTypeIconMed" title="Add a channel" alt="Add a new channel"/><br/>Add a new channel</a></td>';
+            $ret .= '<td align="center"><a href="channel.php"><img src="/images/add_channel.png" class="channelTypeIconLrg" title="View channel details" alt="View channel details"/><br/>Add a new channel</a></td>';
             $ret .= "\n</tr></table>\n";
 
         }
@@ -807,7 +832,13 @@ function channelUserInfoTextHTML($cid)
 #
 #============================
 {
-    $ret = '<div class="body_title">Channel details <a href="/channel.php?cid='.$cid.'&action=edit">(edit)</a></div>';
+    $msg = '';
+
+    $ret = '<div class="body_title">Channel details ';
+    $ret .= '<a href="/channel.php?cid='.$cid.'&action=edit"><img src="/images/edit.png" alt="edit channel" title="Edit Channel" class="actionIcon"></a>';
+    $ret .= '&nbsp;<a href="/channel.php?cid='.$cid.'&action=delete"><img src="/images/delete.png" alt="delete channel" title="Delete Channel" class="actionIcon"></a>';
+    $ret .= '</div>';
+
     $ret .= '<div class="body_textarea">';
     if (!isset($cid))   { $cid =0; }
 
@@ -826,7 +857,7 @@ function channelUserInfoTextHTML($cid)
                 if (strlen($attribs[1]) == 0) { $attribs[1] = '-'; }
 
                 $ret .= '<table border="0">';
-                $ret .= '<tr><td rowspan="6"><img src="' . $row['channel_icon_url']. '" width="128"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
+                $ret .= '<tr><td rowspan="6"><img src="' . $row['channel_icon_url']. '" class="channelTypeIconLrg"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
                 $ret .= '<tr><td>Background Color:</td><td>' . $attribs[0] . '</td></tr>';
                 $ret .= '<tr><td>Font Color:</td><td>' . $attribs[1] . '</td></tr>';
                 $ret .= '<tr><td>Font Size:</td><td>' . $attribs[2] . '</td></tr>';
@@ -855,7 +886,11 @@ function channelUserInfoPicasaHTML($cid)
 {
     $msg = '';
 
-    $ret = '<div class="body_title">Channel details <a href="/channel.php?cid='.$cid.'&action=edit">(edit)</a></div>';
+    $ret = '<div class="body_title">Channel details ';
+    $ret .= '<a href="/channel.php?cid='.$cid.'&action=edit"><img src="/images/edit.png" alt="edit channel" title="Edit Channel" class="actionIcon"></a>';
+    $ret .= '&nbsp;<a href="/channel.php?cid='.$cid.'&action=delete"><img src="/images/delete.png" alt="delete channel" title="Delete Channel" class="actionIcon"></a>';
+    $ret .= '</div>';
+
     $ret .= '<div class="body_textarea">';
     if (!isset($cid))   { $cid =0; }
 
@@ -874,7 +909,7 @@ function channelUserInfoPicasaHTML($cid)
                 if (strlen($attribs[1]) == 0) { $attribs[1] = '-'; }
 
                 $ret .= '<table border="0">';
-                $ret .= '<tr><td rowspan="3"><img src="' . $row['channel_icon_url']. '" width="128"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
+                $ret .= '<tr><td rowspan="3"><img src="' . $row['channel_icon_url']. '" class="channelTypeIconLrg"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
                 $ret .= '<tr><td>Picasa User:</td><td>' . $attribs[0] . '</td></tr>';
 #                $ret .= '<tr><td>Tags:</td><td>' . $attribs[1] . '</td></tr>';
                 $ret .= '<tr><td>Last updated:</td><td>' . $row['last_updated'] . ' GMT</td></tr>';
@@ -901,7 +936,11 @@ function channelUserInfoRadarHTML($cid)
 {
     $msg = '';
 
-    $ret = '<div class="body_title">Channel details <a href="/channel.php?cid='.$cid.'&action=edit">(edit)</a></div>';
+    $ret = '<div class="body_title">Channel details ';
+    $ret .= '<a href="/channel.php?cid='.$cid.'&action=edit"><img src="/images/edit.png" alt="edit channel" title="Edit Channel" class="actionIcon"></a>';
+    $ret .= '&nbsp;<a href="/channel.php?cid='.$cid.'&action=delete"><img src="/images/delete.png" alt="delete channel" title="Delete Channel" class="actionIcon"></a>';
+    $ret .= '</div>';
+
     $ret .= '<div class="body_textarea">';
     if (!isset($cid))   { $cid =0; }
 
@@ -920,7 +959,7 @@ function channelUserInfoRadarHTML($cid)
                 if (strlen($attribs[1]) == 0) { $attribs[1] = '-'; }
 
                 $ret .= '<table border="0">';
-                $ret .= '<tr><td rowspan="3"><img src="' . $row['channel_icon_url']. '" width="128"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
+                $ret .= '<tr><td rowspan="3"><img src="' . $row['channel_icon_url']. '" class="channelTypeIconLrg"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
                 $ret .= '<tr><td>US ZIP code:</td><td>' . $attribs[0] . '</td></tr>';
 #                $ret .= '<tr><td>Tags:</td><td>' . $attribs[1] . '</td></tr>';
                 $ret .= '<tr><td>Last updated:</td><td>' . $row['last_updated'] . ' GMT</td></tr>';
@@ -945,7 +984,11 @@ function channelUserInfoFlickrHTML($cid)
 #
 #============================
 {
-    $ret = '<div class="body_title">Channel details <a href="/channel.php?cid='.$cid.'&action=edit">(edit)</a></div>';
+    $ret = '<div class="body_title">Channel details ';
+    $ret .= '<a href="/channel.php?cid='.$cid.'&action=edit"><img src="/images/edit.png" alt="edit channel" title="Edit Channel" class="actionIcon"></a>';
+    $ret .= '&nbsp;<a href="/channel.php?cid='.$cid.'&action=delete"><img src="/images/delete.png" alt="delete channel" title="Delete Channel" class="actionIcon"></a>';
+    $ret .= '</div>';
+
     $ret .= '<div class="body_textarea">';
     if (!isset($cid))   { $cid =0; }
 
@@ -964,7 +1007,7 @@ function channelUserInfoFlickrHTML($cid)
                 if (strlen($attribs[1]) == 0) { $attribs[1] = '-'; }
 
                 $ret .= '<table border="0">';
-                $ret .= '<tr><td rowspan="4"><img src="' . $row['channel_icon_url']. '" width="128"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
+                $ret .= '<tr><td rowspan="4"><img src="' . $row['channel_icon_url']. '" class="channelTypeIconLrg"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
                 $ret .= '<tr><td>Flickr User:</td><td>' . $attribs[0] . '</td></tr>';
                 $ret .= '<tr><td>Tags:</td><td>' . $attribs[1] . '</td></tr>';
                 $ret .= '<tr><td>Last updated:</td><td>' . $row['last_updated'] . ' GMT</td></tr>';

@@ -49,6 +49,35 @@
     background-color: #FEEFB3;
 }
 
+.actionIcon {
+    height: 24px;
+    width: auto;
+}
+
+.channelTypeIconSm {
+    height: 24px;
+    width: auto;
+    margin: 2px;
+}
+
+.channelTypeIconMed {
+    height: 60px;
+    width: auto;
+    margin: 5px;
+}
+
+.channelTypeIconLrg {
+    height: 130px;
+    width: auto;
+    margin: 10px;
+}
+
+.sampleImage {
+    height: 100px;
+    width: auto;
+    margin: 10px;
+}
+
 body{
 	margin:0;
 	color:#232323;

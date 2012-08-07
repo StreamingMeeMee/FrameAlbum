@@ -32,11 +32,11 @@ function doGET($id, $ctid, $action, $fid, $showtest)
         if ($ctid == 0) {       # need to pick channel type;
             list ($msg, $html) = channelTypeEnumHTML($fid, $showtest);
         } else {
-            list ($msg, $html) = channelUserForm($id, $ctid, $fid);
+            list ($msg, $html) = channelUserForm($id, $ctid, $fid, $action);
         }
     } else {
-        if ($action == 'edit') {
-            list ($msg, $html) = channelUserForm($id, $ctid, $fid);
+        if ( ( $action == 'edit' ) or ( $action == 'delete' ) ) {
+            list ($msg, $html) = channelUserForm($id, $ctid, $fid, $action);
         } else {
             list ($msg, $html) = channelUserInfoHTML($id);
         }
