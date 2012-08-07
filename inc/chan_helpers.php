@@ -24,6 +24,7 @@
 # 2012-aug-7 - TimC
 #   - Add 'edit' and 'delete' actions with icons to channel info page
 #   - style channeltype icons & sample images
+#   - add a cancel button when deleting a channel
 #-------------------------------------------
 require_once("phpFlickr/phpFlickr.php");
 
@@ -411,7 +412,9 @@ function channelUserFormText($cid, $ctid, $fid, $action)
         $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
     }
     $html .= '</table>';
-    $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
+    $html .= '<div align="center">';
+    $html .= '<input type="submit" value=" Submit " name="submit" />';
+    if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
     $html .= '</form>';
     $html .= '</div>';
 
@@ -491,7 +494,11 @@ function channelUserFormRadar($cid, $ctid, $fid, $action)
 
     }
     $html .= '</table>';
-    $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
+
+    $html .= '<div align="center">';
+    $html .= '<input type="submit" value=" Submit " name="submit" />';
+    if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
+
     $html .= '</form>';
     $html .= '</div>';
 
@@ -570,7 +577,11 @@ function channelUserFormPicasa($cid, $ctid, $fid, $action)
         $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
     }
     $html .= '</table>';
-    $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
+
+    $html .= '<div align="center">';
+    $html .= '<input type="submit" value=" Submit " name="submit" />';
+    if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
+
     $html .= '</form>';
     $html .= '</div>';
 
@@ -653,7 +664,12 @@ function channelUserFormFlickr($cid, $ctid, $fid, $action)
         $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
     }
     $html .= '</table>';
-    $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
+
+    $html .= '<div align="center">';
+    $html .= '<input type="submit" value=" Submit " name="submit" />';
+    if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
+    $html .= '</div>';
+
     $html .= '</form>';
     $html .= '</div>';
 
@@ -828,7 +844,7 @@ function channelUserInfoHTML($cid)
 #----------------------------
 function channelUserInfoTextHTML($cid)
 #----------------------------
-# Returns a HTML formated detail of a single Flickr users channel
+# Returns a HTML formated detail of a single Text panel users channel
 #
 #============================
 {
