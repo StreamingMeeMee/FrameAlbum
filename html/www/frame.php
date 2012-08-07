@@ -22,8 +22,8 @@ function doGET($fid, $action, $cid)
     $html = '';
     $redir = '';
 
-    if (($action == 'edit') or ($action == 'add')) {
-        list ($msg, $html) = frameForm($fid);
+    if (($action == 'edit') or ($action == 'add') or ($action == 'delete') ) {
+        list ($msg, $html) = frameForm($fid, $action);
     } elseif ($action == 'adch') {
         list ($msg, $html) = frameAddChan($fid, $cid);
         list ($m, $html, $r) = doGET($fid, '', '');             # redraw the page with the added channel
@@ -31,7 +31,7 @@ function doGET($fid, $action, $cid)
         list ($msg, $html) = frameDelChan($fid, $cid);
         list ($m, $html, $r) = doGET($fid, '', '');             # redraw the page with the channel removed
     } else {
-        list ($msg, $html) = frameInfoHTML($_SESSION['uid'], $fid);
+        list ($msg, $html) = frameInfoHTML($_SESSION['uid'], $fid, $action);
         if ( $GLOBALS['enable_frame_samples'] ) {
             list ($m, $h) = frameSample($fid);
             $msg .= $m;

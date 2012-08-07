@@ -5,6 +5,11 @@
 #
 # 2011-aug-21- TimC
 #   - Reduce frame PIN to 4 digits - not all frames allow > 4 digit PINs
+#
+# 2012-aug-7 - TimC
+#   - Add 'edit' and 'delete' actions with icons to frame info page
+#   - add a cancel button when deleting a frame
+#
 #-------------------------------------------
 
 #----------------------------
@@ -423,7 +428,11 @@ function frameInfoHTML($uid, $fid)
     if (!isset($fid))   { $fid =0; }
     if (!isset($fid))   { $uid = 0;} 
 
-    $ret = '<div class="body_title">Frame details <a href="/frame.php?fid='.$fid.'&action=edit">(edit)</a></div>';
+    $ret = '<div class="body_title">Frame details ';
+    $ret .= '<a href="/frame.php?fid='.$fid.'&action=edit"><img src="/images/edit.png" alt="edit frame" title="Edit Frame" class="actionIcon"></a>';
+    $ret .= '&nbsp;<a href="/frame.php?fid='.$fid.'&action=delete"><img src="/images/delete.png" alt="delete frame" title="Delete Frame" class="actionIcon"></a>';
+    $ret .= '</div>';
+
     $ret .= '<div class="body_textarea">';
 
     if ($fid > 0) {                     # don't add frames with no ID
@@ -485,7 +494,7 @@ function frameInfoHTML($uid, $fid)
 }
 
 #----------------------------
-function frameForm($fid)
+function frameForm($fid, $action)
 #----------------------------
 # Returns a HTML form to add/update a frame
 #
@@ -495,6 +504,11 @@ function frameForm($fid)
     $html = '';
 
     if (!isset($fid))   { $fid =0; }
+
+    if ( $action == 'delete' ) {
+        $delcb = ' checked="yes" ';
+        $msg .= 'Are you sure you want to delete this frame?';
+    }
 
     if ($fid > 0) {                     # get info for existing frame
         $fid = prepDBVal($fid);
@@ -533,9 +547,14 @@ function frameForm($fid)
     $html .= '<tr><td>Model:</td><td><SELECT NAME = "prodid" STYLE = "Width: 50">' . optionProdID($prodid) . '</select></td></tr>';
     $html .= '<tr><td>Shuffle Images:</td><td>' . optionActiveStatus($shuffle, 'shuffle_images') . '</td></tr>';
     $html .= '<tr><td>Delete frame</td>';
-    $html .= '<td><input type="checkbox" name="del_frame" id="del_frame" value="delframe" onclick="setDelIcon();"></td><td><div><img id="del_frame_msg" height="24" src="/images/blank.png"/></div></tr>';
+    $html .= '<td><input type="checkbox" name="del_frame" id="del_frame" value="delframe" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_frame_msg" height="24" src="/images/blank.png"/></div></tr>';
     $html .= '</table>';
-    $html .= '<div align="center"><input type="submit" value=" Submit " name="submit" /></div>';
+
+    $html .= '<div align="center">';
+    $html .= '<input type="submit" value=" Submit " name="submit" />';
+    if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
+    $html .= '</div>';
+
     $html .= '</form>';
     $html .= '</div>';
 

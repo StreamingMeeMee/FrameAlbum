@@ -412,9 +412,11 @@ function channelUserFormText($cid, $ctid, $fid, $action)
         $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
     }
     $html .= '</table>';
+
     $html .= '<div align="center">';
     $html .= '<input type="submit" value=" Submit " name="submit" />';
     if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
+
     $html .= '</form>';
     $html .= '</div>';
 
