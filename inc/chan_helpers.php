@@ -416,6 +416,7 @@ function channelUserFormText($cid, $ctid, $fid, $action)
     $html .= '<div align="center">';
     $html .= '<input type="submit" value=" Submit " name="submit" />';
     if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
+    $html .= '</div>';
 
     $html .= '</form>';
     $html .= '</div>';
