@@ -639,7 +639,7 @@ function channelUserFormFlickr($cid, $ctid, $fid, $action)
     $html .= '<input type="hidden" id="attrib" name="attrib" value="' . $attrib . '">';
     $html .= '<input type="hidden" id="chantype" name="chantype" value='. $ctid . '">';
     $html .= '<table border="0">';
-    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" width="channelTypeIconLrg"/></td><td>Nickname:</td>';
+    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttribFlickr()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Flickr User:</td>';
 #    $html .= '<td><input type="text" maxlength="64" size="32" name="reg_email" id="reg_email" value="'. $attribs[0] . '" onblur="validEmail()" onchange="constructAttribFlickr()"></td><td><div><img id="emailmsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
