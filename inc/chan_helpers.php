@@ -655,7 +655,7 @@ function channelUserFormFlickr($cid, $ctid, $fid, $action)
     $html .= '<table border="0">';
     $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttribFlickr()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
-    $html .= '<tr><td>Flickr User:</td>';
+    $html .= '<tr><td>Flickr Screename:</td>';
 #    $html .= '<td><input type="text" maxlength="64" size="32" name="reg_email" id="reg_email" value="'. $attribs[0] . '" onblur="validEmail()" onchange="constructAttribFlickr()"></td><td><div><img id="emailmsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
 
     $html .= '<td><input type="text" maxlength="64" size="32" name="flickr_user" id="flickr_user" value="'. $attribs[0] . '" onblur="validFlickrUser()" onchange="constructAttribFlickr()"></td><td><div><img id="flickr_user_msg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
@@ -1027,7 +1027,7 @@ function channelUserInfoFlickrHTML($cid)
 
                 $ret .= '<table border="0">';
                 $ret .= '<tr><td rowspan="4"><img src="' . $row['channel_icon_url']. '" class="channelTypeIconLrg"/></td><td>Nickname:</td><td>' . $row['chan_nickname'] . '</td></tr>';
-                $ret .= '<tr><td>Flickr User:</td><td>' . $attribs[0] . '</td></tr>';
+                $ret .= '<tr><td>Flickr Screename:</td><td>' . $attribs[0] . '</td></tr>';
                 $ret .= '<tr><td>Tags:</td><td>' . $attribs[1] . '</td></tr>';
                 $ret .= '<tr><td>Last updated:</td><td>' . $row['last_updated'] . ' GMT</td></tr>';
                 $ret .= '</table>';
