@@ -12,7 +12,6 @@
 #-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
-include_once 'inc/helper_gen.php';
 include_once 'inc/helper_feed.php';
 include_once 'inc/helper_frame.php';
 include_once 'inc/helper_user.php';

@@ -95,9 +95,9 @@ include_once 'inc/helper_feed.php';
         feedActiveFrameFeed( $parms['fid'] );
     } else {
         if ( isset( $parms['fid'] ) ) {
-            feedInactiveFrameFeed( $parms['fid'], '**', 'UKNW' );
+            feedInactiveFrameFeed( $parms['fid'], '**', 'UKNW', '' );
         } else {
-            feedInactiveFrameFeed( 'Not supplied', '**', 'UKNW' );
+            feedInactiveFrameFeed( 'Not supplied', '**', 'UKNW', '' );
         }
     }
 ?>
