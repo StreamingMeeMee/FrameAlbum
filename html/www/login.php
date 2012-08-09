@@ -9,7 +9,7 @@
 ?>
 </head>
 
-<body onLoad="mpmetrics.track('Register');">
+<body onLoad="mpmetrics.track('Login');">
 <?php
     include_once "topheader.inc";
     include_once "search_strip.inc";
