@@ -4,10 +4,15 @@ use Net::SMTP;
 # 2012-aug-2 - TimC
 #   - rename getSysParms() -> getSysParm(); It only gets one parm at a time. ;-)
 #   - in SendTextEMail(),SendHTMLEmail() reduce missing parm. msg severity to 'INFO' to reduce possibility of SysMsg loops
+#
+# 2012-aug-11 - TimC
+#   - Add featureEnabled() to check feature status.
 #--------------------------------------
 #==============================
 # G L O B A L S
 #==============================
+our %GLOBALS;
+
 our $DEBUG = 0;
 
 #--- SysMsg() Globals
@@ -61,6 +66,19 @@ if ($DEBUG) { $EMAIL_TO = $PROGRAMOWNER; }
 our $BCC_EMAIL_ADDR = $PROGRAMOWNER;
 
 our $EMAIL_CC = '';
+
+#================================================
+sub featureEnabled( $ )
+#================================================
+{
+my $feat = shift;
+
+my $ret = 0;
+
+    $ret = ( exists( $GLOBALS{ $feat } ) and ( $GLOBALS{ $feat } == 'TRUE' ) );
+
+    return $ret;
+}
 
 #================================================
 sub getSysParm($$$)
