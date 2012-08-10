@@ -23,6 +23,9 @@
 #
 # 2012-aug-5 - TimC
 #   - Move prepDBVal() to dbconfig.php
+#
+# 2012-aug-9 - TimC
+#   - Add featureEnabled() to check feature status.
 #-------------------------------------------
 $GLOBALS['PROGRAMNAME'] = '';
 $GLOBALS['PROGRAMOWNER'] = 'user@email.com';
@@ -71,6 +74,16 @@ $GLOBALS['EMAIL_FROM'] = $GLOBALS['PROGRAMOWNER'];
 if ($GLOBALS['DEBUG']) { $GLOBALS['EMAIL_TO'] = $GLOBALS['PROGRAMOWNER']; }
 
 $GLOBALS['EMAIL_CC'] = '';
+
+#---------------------------
+function featureEnabled( $feat )
+{
+$ret = false;
+
+    $ret = (bool) ( isset( $GLOBALS[ $feat ] ) and $GLOBALS[ $feat ] );
+
+    return $ret;
+}
 
 #---------------------------
 function showActiveStatus($status)
