@@ -5,6 +5,10 @@
 #
 # 2012-aug-7 - TimC
 #   - modify feedActiveFrameFeed() to send a skeleton feed if the requested feed is not available.
+#
+# 2012-aug-11 - TimC
+#   - modify feedRssChannelHead() to accept 'registered' status and set <frameuserinfo:unregistered> appropriately.
+#       Default is 'registered' state.
 #-----------------------------
 
 #--------
@@ -30,7 +34,7 @@ function feedRssTail()
 }
 
 #--------
-function feedRssChannelHead($user, $ttl, $desc)
+function feedRssChannelHead($user, $ttl, $desc, $reg=TRUE)
 #--------
 {
     $t = '';
@@ -43,7 +47,7 @@ function feedRssChannelHead($user, $ttl, $desc)
     $t .= "<frameuserinfo:firstname>-</frameuserinfo:firstname>\n";
     $t .= "<frameuserinfo:lastname>-</frameuserinfo:lastname>\n";
     $t .= "<frameuserinfo:username>$user</frameuserinfo:username>\n";
-    $t .= "<frameuserinfo:unregistered>FALSE</frameuserinfo:unregistered>\n";
+    $t .= "<frameuserinfo:unregistered>" . ( $reg  ? 'FALSE' : 'TRUE' ) . "</frameuserinfo:unregistered>\n";
 
     return $t;
 }
