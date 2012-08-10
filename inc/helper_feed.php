@@ -9,6 +9,7 @@
 # 2012-aug-11 - TimC
 #   - modify feedRssChannelHead() to accept 'registered' status and set <frameuserinfo:unregistered> appropriately.
 #       Default is 'registered' state.
+#   - set inactive frame feed TTL to 10m
 #-----------------------------
 
 #--------
@@ -221,7 +222,7 @@ Your frameID is $frameid";
     }
 
     $rss = feedRssHead();
-    $rss .= feedRssChannelHead('inactive_frame', 60, 'Channel for inactive frame');
+    $rss .= feedRssChannelHead('inactive_frame', 10, 'Channel for inactive frame', FALSE);
 
 $rss .= '<item>
         <title>FrameAlbum Info</title>
