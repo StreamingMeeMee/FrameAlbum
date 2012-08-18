@@ -8,6 +8,11 @@
 #
 # 2012-aug-6 - TimC
 #   - prepDBVal() returns 'NULL' if call with a un-set variable
+#
+# 2012-aug-18 -TimC
+#   - Return prepDBVal() to it's original behaviour and add q() to return either
+#     a quoted, prep'ed string or NULL.
+#
 #------------------------------------------
 
 #--- DB configuration
@@ -39,6 +44,19 @@ function prepDBVal( $val )
     if ( isset( $val ) ) {
         $val = stripslashes( $val );
         $val = mysql_real_escape_string( $val );
+    }
+
+    return $val;
+}
+
+#----------------------------
+function q( $val )
+#----------------------------
+{
+    if( isset( $val ) ) {
+        if( !is_numeric( $val ) ) {
+            $val = "'" . prepDBVal( $val ) . "'";
+        }
     } else {
         $val = 'NULL';
     }
