@@ -2,7 +2,41 @@
 #--------------------------------
 # 2012-jul-31 - TimC
 #   - Add userRegForm(), userRegFormProc() and restore userSendWelcomeEmail()
+#
+# 2012-aug-13 - TimC
+#   - Add userFindFBUser() to locate a user ID given a FB uid
+#   - Add userFindEmail() to locate a user by email address
+#
+# 2012-aug-20 -TimC
+#   - Add  userGetUIDByToken()
 #--------------------------------
+
+#----------------------------
+function userFindFBUser( $fbuid )
+#----------------------------
+{
+    if( isset( $fbuid ) and $fbuid > 0 ) {
+        $fbuid=prepDBVal( $fbuid );
+
+        $sql="SELECT * FROM users WHERE fb_user_id = $fbuid AND active='Y'";
+        $result=mysql_query($sql);
+        $count=mysql_num_rows($result);
+
+        if( $count==1 ) {
+            $row = mysql_fetch_assoc($result);
+            $_SESSION['username']=$row['username'];
+            $_SESSION['uid'] = $row['idusers'];
+            $_SESSION['useremail'] = $row['email'];
+            $_SESSION['isadmin'] = $row['admin'];
+            $_SESSION['loggedin'] = 'N';
+
+            $sql="UPDATE users SET last_login=now() WHERE idusers=".$_SESSION['uid'];
+            $result=mysql_query($sql);
+        }
+    }
+
+    return $row['idusers'];             # returns NULL if nothing found
+}
 
 #----------------------------
 function userSendWelcomeEmail($email)
@@ -36,6 +70,19 @@ function userRegForm( $tok, $username, $email, $zip )
     if (strlen($tok) > 0) {
         list ($username, $email, $zip) = userGetInfoByToken($tok);
         $html .= '<input type="hidden" name="tok" value="'.$tok.'">';
+    }
+
+    if ( featureEnabled( 'enable_fb_login' ) ) {
+        $html .= '<iframe src="https://www.facebook.com/plugins/registration?';
+        $html .= 'client_id=' . $GLOBALS['fb_api_key'] . '&';
+        $html .= 'redirect_uri=' . $GLOBALS['www_url_root'] . '%2Fapi%2Ffbsignreq.php&fields=name,location,email"';
+        $html .= 'scrolling="auto"
+                frameborder="no"
+                style="border:none"
+                allowTransparency="true"
+                width="100%"
+                height="330">
+            </iframe>';
     }
 
     $html .= '<input type="hidden" name="stage" value="2">';
@@ -225,6 +272,30 @@ function userGetInfoByToken($tok)
 }
 
 #----------------------------
+function userGetUIDByToken( $tok )
+#----------------------------
+{
+    $ret = 0;
+
+    if (!(isset($tok))) { return $ret; }
+
+    if ( strlen( $tok ) != 0) {                    # nothing to lookup
+        $tok = prepDBVal( $tok );
+        $sql = "SELECT iduser FROM users WHERE token='$tok'";        # Is this a valid user?
+        $result = mysql_query($sql);
+        if (!$result) {
+            die("[$sql]: Invalid query: " . mysql_error());
+        }
+
+        if (mysql_num_rows( $result ) == 1) {
+            list ($ret) = mysql_fetch_row( $result );
+        }
+    }
+
+    return $ret;
+}
+
+#----------------------------
 function userIsAdmin($uname)
 #----------------------------
 # Returns 1 if user has admin flag set, 0 otherwise
@@ -264,6 +335,35 @@ function userFind($user)
     if (strlen($user) != 0) {                    # nothing to lookup
         $user = prepDBVal($user);
         $sql = "SELECT idusers,email FROM users where username='$user'";        # Is this a valid user?
+        $result = mysql_query($sql);
+        if (!$result) {
+            die("[$sql]: Invalid query: " . mysql_error());
+        }
+
+        if (mysql_num_rows( $result ) == 1) {
+            $tmp = mysql_fetch_row( $result );
+            $ret = $tmp[0];
+        } else {
+            $ret = '0';
+        }
+    } else {
+        $ret = '0';
+    }
+
+    return $ret;
+}
+
+#----------------------------
+function userFindEmail($em)
+#----------------------------
+# Returns iduser of user with given email.  =0 if user is not found
+#============================
+{
+    if ( ! ( isset( $em ) ) ) { return 0; }
+
+    if ( strlen( $em ) != 0 ) {                    # nothing to lookup
+        $em = prepDBVal( $em );
+        $sql = "SELECT idusers FROM users where lower(email)=lower('$em')";        # Is this a valid user?
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
