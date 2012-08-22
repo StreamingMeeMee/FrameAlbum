@@ -10,6 +10,8 @@
 #   - Add 'edit' and 'delete' actions with icons to frame info page
 #   - add a cancel button when deleting a frame
 #
+# 2012-aug-22 - TimC
+#   - close <body_textarea> div in frameInfoHTML()
 #-------------------------------------------
 
 #----------------------------
@@ -490,6 +492,7 @@ function frameInfoHTML($uid, $fid)
         $msg = 'No info for frame ['.$fid.'].';
     }
 
+    $ret .= "</div>\n";
     return array ($msg, $ret);
 }
 
