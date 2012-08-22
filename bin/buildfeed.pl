@@ -241,7 +241,7 @@ my $title = '';
         if( $$ref{'description'} ) {
             $t .= "    ".'<description>' . uri_escape( $$ref{'description'} ) . "</description>\n";
         } else {
-            $t .= "    ".'<description>' . encode_entities('<img src="' . $$ref{'link'} . '">, $ENCODE_CHARS) . "</description>\n";
+            $t .= "    ".'<description>' . encode_entities('<img src="' . $$ref{'link'} . '">', $ENCODE_CHARS) . "</description>\n";
         }
         $t .= "    ".'<pubDate>' .  $pubDate . "</pubDate>\n";
         $t .= "    ".'<guid isPermaLink="false">' .  encode_entities($$ref{'guid'}, $ENCODE_CHARS) . "</guid>\n";
