@@ -4,11 +4,9 @@ include_once 'inc/config.php';
 include_once 'inc/helpers.php';
 include_once 'inc/helper_frame.php';
 
-    if (session_id() == '') { session_start(); }
+    if (session_id() == "") { session_start(); }
 
-    if ( !( isset( $_SESSION['username'] ) ) ) {
-        header('Location:/login.php?msg=' . urlencode("You must be logged in to activate a frame.") . '&redir=' . urlencode( 'activate.php' ) );
-    }
+    loginChk( 'activate.php', 'You must be logged in to activate a frame.' );
 
     dbStart();
 
@@ -56,7 +54,7 @@ function doPOST( $msg )
         $errs++;
     } else {
         $msg = frameActivateKey( $akey, $_SESSION['uid'] );
-        $redir = urlencode( '/frame.php?fid=' . $fid . '&msg=' . $msg );
+        $redir = '/frame.php?fid=' . $fid . '&msg=' . urlencode( $msg );
     }
 
     return array ( $msg, $html, $redir );
