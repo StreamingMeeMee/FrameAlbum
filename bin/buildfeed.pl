@@ -239,7 +239,7 @@ my $title = '';
         $t .= "    ".'<link>' . encode_entities($$ref{'link'}, $ENCODE_CHARS) . "</link>\n";
         $t .= "    ".'<category>' . encode_entities($$ref{'category'}, $ENCODE_CHARS) . "</category>\n";
         if( $$ref{'description'} ) {
-            $t .= "    ".'<description>' . uri_escape( $$ref{'description'} ) . "</description>\n";
+            $t .= "    ".'<description>' . encode_entities( $$ref{'description'} ) . "</description>\n";
         } else {
             $t .= "    ".'<description>' . encode_entities('<img src="' . $$ref{'link'} . '">', $ENCODE_CHARS) . "</description>\n";
         }
