@@ -35,6 +35,11 @@
 #   - Make sure rss directory exists before putting files there - DOH!
 #   - try eliminating blank line after <channel> and before </channel>
 #   - try adding 'tsmx:sourcelink' tags
+#
+# 2012-aug-22- TimC
+#   - change item type from 'image/jpg' to 'image/jpeg'
+#   - if there is no descriptive text for an image include a <img> link to the image instead.
+#      Was sending just link to image
 #-------------------------------------
 use DBI;
 
@@ -233,14 +238,17 @@ my $title = '';
         $t .= "    ".'<title>' . encode_entities($$ref{'title'}, $ENCODE_CHARS) . "</title>\n";
         $t .= "    ".'<link>' . encode_entities($$ref{'link'}, $ENCODE_CHARS) . "</link>\n";
         $t .= "    ".'<category>' . encode_entities($$ref{'category'}, $ENCODE_CHARS) . "</category>\n";
-#        $t .= "    ".'<description>' . uri_escape( $$ref{'description'} ) . "</description>\n";
-        $t .= "    ".'<description>' . encode_entities($$ref{'link'}, $ENCODE_CHARS) . "</description>\n";
+        if( $$ref{'description'} ) {
+            $t .= "    ".'<description>' . uri_escape( $$ref{'description'} ) . "</description>\n";
+        } else {
+            $t .= "    ".'<description>' . encode_entities('<img src="' . $$ref{'link'} . '">, $ENCODE_CHARS) . "</description>\n";
+        }
         $t .= "    ".'<pubDate>' .  $pubDate . "</pubDate>\n";
         $t .= "    ".'<guid isPermaLink="false">' .  encode_entities($$ref{'guid'}, $ENCODE_CHARS) . "</guid>\n";
-        $t .= "    ".'<media:content url="' . $$ref{'media_content_url'} . '" type="image/jpg" duration="10" />'."\n";
+        $t .= "    ".'<media:content url="' . $$ref{'media_content_url'} . '" type="image/jpeg" duration="10" />'."\n";
         $t .= "    ".'<media:thumbnail url="' . $$ref{'media_thumbnail_url'} . '" />'."\n";
 
-        $t .= "    ".'<tsmx:sourcelink></tsmx:sourcelink>'."\n";
+        $t .= "    ".'<tsmx:sourcelink>' . $$ref{'media_content_url'} . '</tsmx:sourcelink>'."\n";
 
         $t .= "</item>\n";
 
