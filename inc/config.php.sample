@@ -44,6 +44,9 @@
     $GLOBALS['PUB_CHAN_USERID'] = 2;                # 'Public' channels are owned by this user.
                                                     # This user also owns all un-activated frames.
 
+
+    $GLOBALS['footer_copyright'] = '';              # this appears in the footer of the web interface
+
 #--------------------------------------------
 # API KEYS
 #--------------------------------------------

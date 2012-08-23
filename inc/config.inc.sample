@@ -35,7 +35,9 @@ our %GLOBALS;
     $GLOBALS{'email_from'} = 'user@email.com';
     $GLOBALS{'email_reply_to'} = $GLOBALS{'email_from'};
 
-    $GLOBALS{'no_frame_content_channel'} = 0;     # send this to frames with no content (channels)
+    $GLOBALS{'no_frame_content_channel'} = 0;       # send this to frames with no content (channels)
+
+    $GLOBALS{'footer_copyright'} = '';              # this appears in the footer of the web interface
 
 #--------------------------------------------
 # API KEYS
