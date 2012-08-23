@@ -505,13 +505,14 @@ function frameForm($fid, $action)
 {
     $msg = '';
     $html = '';
+    $delcb = '';
 
     if (!isset($fid))   { $fid =0; }
 
     if ( $action == 'delete' ) {
         $delcb = ' checked="yes" ';
         $msg .= 'Are you sure you want to delete this frame?';
-    }
+    } 
 
     if ($fid > 0) {                     # get info for existing frame
         $fid = prepDBVal($fid);
