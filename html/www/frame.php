@@ -8,9 +8,7 @@ require_once 'inc/frame_class.php';
 
     if (session_id() == '') { session_start(); }
 
-    if (!(isset($_SESSION['username']))) {
-        header('Location:/');
-    }
+    loginChk();
 
     $dbh = dbStart();
 
@@ -51,7 +49,7 @@ function doPOST($id)
     $redir = '';
 
     if ($id != 0) {
-        if ($_REQUEST['del_frame'] == 'delframe') {
+        if ( isset( $_REQUEST['del_frame']) and ( $_REQUEST['del_frame'] == 'delframe' ) ) {
             frameDel($id);
             $msg = 'Frame "' . $_REQUEST['nickname'] . '" deleted.';
         } else {
@@ -136,8 +134,6 @@ function setDelIcon()
 
   <div class="midarea">
 <?php
-
-#    if ( isset($msg) and (strlen($msg) > 0) ) { echo '<div class="body_message">' . $msg . '</div>'; }
 
     if ( isset($body) ) { echo $body; }
 ?>
