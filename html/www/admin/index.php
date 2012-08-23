@@ -39,6 +39,9 @@ include_once '../inc/helper_user.php';
       <div align="justify"><a href="/admin/releasepre.php">Release pre-registrants</a></div>
     </div>
     <div class="body_textarea">
+      <div align="justify"><a href="/admin/prodlist.php">Frame ProductIDs</a></div>
+    </div>
+    <div class="body_textarea">
       <div align="justify"><a href="/admin/info.php">PHP Info.</a></div>
     </div>
     <div class="body_textarea">
