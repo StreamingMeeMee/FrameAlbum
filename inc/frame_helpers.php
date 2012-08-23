@@ -306,6 +306,8 @@ function frameUpdate($fid,$frameid,$nick,$prodid,$acv, $shuffle)
 #
 #============================
 {
+$msg = '';
+
     if (!isset($nick))  { $nick = ''; }
     if (!isset($fid))   { $fid = 0; }
     if (!isset($frameid))   { $frameid = ''; }
