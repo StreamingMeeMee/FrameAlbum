@@ -26,7 +26,19 @@
 #
 # 2012-aug-9 - TimC
 #   - Add featureEnabled() to check feature status.
+#
+# 2012-aug-16 - TimC
+#   - Add loginChk(), loginInit();
+#
+# 2012-aug-18 - TimC
+#   - Change optionActiveStatus() to accept an option 'third state'.  This to support '?' or 'T'(test) flag values.
+#
+# 2012-aug-20 - TimC
+#   - Add sendEmail()
 #-------------------------------------------
+require_once 'config.php';
+require_once 'eventlog_class.php';
+
 $GLOBALS['PROGRAMNAME'] = '';
 $GLOBALS['PROGRAMOWNER'] = 'user@email.com';
 $GLOBALS['VERSIONSTRING'] = '';
@@ -75,8 +87,69 @@ if ($GLOBALS['DEBUG']) { $GLOBALS['EMAIL_TO'] = $GLOBALS['PROGRAMOWNER']; }
 
 $GLOBALS['EMAIL_CC'] = '';
 
+#----------------------------
+function sendEmail( $from, $to, $subj, $txt, $uid=NULL)
+#----------------------------
+{
+    $headers = 'From: ' . $from . "\r\n" .
+        'Reply-To: ' . $GLOBALS['email_reply_to'] . "\r\n";
+
+    $ret = mail($to, $subj, $txt, $headers);
+
+    $l = new EventLog( );       # new 'email sent to user event
+    $log->logSystemEvent( 4, 0, 'To:' . $to . "\n" . $headers . $txt );
+    if( isset( $uid ) ) { $l->user_id( $uid ); }
+    $l->save();
+
+    if (!ret) {
+        $msg = 'There was a problem sending a message to ' . $to . '.';
+    }
+
+    return array ($ret, $msg);
+}
+
+#---------------------------
+function loginChk( $redir = '', $msg = '' )
+#---------------------------
+{
+    if (session_id() == "") {
+        session_start();
+    }
+
+    if ( !( isset( $_SESSION['loggedin'] ) ) or ( $_SESSION['loggedin'] != 'Y' ) ) {
+        $loc = 'Location:/login.php';
+        if( $msg != '' ) { $loc .= '?msg=' . urlencode( $msg ); }
+        if( $redir != '' ) { $loc .= ( ( $msg != '' ) ? '&' : '?' ) . urlencode( $redir ); }
+        header( $loc );
+    }
+
+}
+
+#---------------------------
+function loginInit( )
+#---------------------------
+{
+$fbuser = 0;        # logged in Facebook user ID
+$fb_btn = '';
+
+    if (session_id() == "") {
+        session_start();
+    }
+
+    if ( featureEnabled( 'enable_fb_login' ) and ( !isset($_SESSION['loggedin'] ) or ( $_SESSION['loggedin'] != 'Y' ) ) ) {
+        require_once 'inc/fb/facebook.php';
+        include_once 'inc/helper_user.php';
+        include_once 'inc/helper_fb.php';
+        include_once 'inc/dbconfig.php';
+        list ( $fbuser, $fb_btn ) =  fbInit( );
+    }
+
+    return array ( $fbuser, $fb_btn );
+}
+
 #---------------------------
 function featureEnabled( $feat )
+#---------------------------
 {
 $ret = false;
 
@@ -100,16 +173,23 @@ function showActiveStatus($status)
 }
 
 #---------------------------
-function optionActiveStatus($selected_value, $name)
+function optionActiveStatus($selected_value, $name, $thirdstate=NULL)
 #---------------------------
 {
-  $html = '';
-  $html .= "<input type='radio' name='$name' value='Y'";
-  if ($selected_value == 'Y') { $html .= " checked"; }
-  $html .="><img src='/images/on.png' width='16' height='16'>&nbsp;&nbsp;&nbsp;";
-  $html .= "<input type='radio' name='$name' value='N'";
-  if ($selected_value == 'N') { $html .= " checked"; }
-  $html .="><img src='/images/off.png' width='16' height='16'>";
+    $html = '';
+    $html .= "<input type='radio' name='$name' value='Y'";
+    if ($selected_value == 'Y') { $html .= " checked"; }
+    $html .="><img src='/images/on.png' width='16' height='16'>&nbsp;&nbsp;&nbsp;";
+    $html .= "<input type='radio' name='$name' value='N'";
+    if ($selected_value == 'N') { $html .= " checked"; }
+    $html .="><img src='/images/off.png' width='16' height='16'>";
+
+    if( isset( $thirdstate ) ) {
+        $html .= '&nbsp;&nbsp;&nbsp;';
+        $html .= '<input type="radio" name="' . $name . '" value="' . $thirdstate . '"';
+        if ( $selected_value == $thirdstate ) { $html .= " checked"; }
+        $html .= '><img src="/images/grey.png" width="16" height="16">';
+    }
 
   return $html;
 }
