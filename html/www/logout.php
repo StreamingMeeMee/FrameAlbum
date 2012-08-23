@@ -5,15 +5,24 @@ include_once 'inc/helpers.php';
 
     if (session_id() == '') { session_start(); }
 
-    if (!(isset($_SESSION['username']))) {
-        header('Location:/');
+    if( $_SESSION['loggedin'] == 'Y' ) {
+        $msg = 'Logged out';
     } else {
-        unset($_SESSION['username']);
-        unset($_SESSION['isadmin']);
-        unset($_SESSION['uid']);
-        session_unset();
-        session_destroy();
-    
-        header('Location:/');
+        $msg = 'Not logged in.';
     }
+
+    $_SESSION = array ();
+    $sname = session_name();
+#    unset( $_SESSION['username'] );
+#    unset( $_SESSION['isadmin'] );
+#    unset( $_SESSION['uid'] );
+#    unset( $_SESSION['loggedin'] );
+#    session_unset();
+    session_destroy();
+
+    if ( isset( $_COOKIE[ $sname ] ) ) {            # expire the session cookie
+        setcookie( $sname, '', time()-3600, '/' );
+    }
+    
+    header('Location:/?msg=' . $msg);
 ?>

@@ -1,11 +1,15 @@
 <?php
 include_once 'inc/config.php';
+include_once 'inc/helpers.php';
 
     if (session_id() == "") { session_start(); }
 
-    if (isset($_SESSION['username'])) {
+    if ( isset( $_SESSION['loggedin'] ) and ( $_SESSION['loggedin'] == 'Y' ) ) {
         header('Location:/usermain.php');
     }
+
+    list ( $fbuser, $fb_btn ) =  loginInit( );
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

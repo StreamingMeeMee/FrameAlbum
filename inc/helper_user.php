@@ -18,7 +18,7 @@ function userFindFBUser( $fbuid )
     if( isset( $fbuid ) and $fbuid > 0 ) {
         $fbuid=prepDBVal( $fbuid );
 
-        $sql="SELECT * FROM users WHERE fb_user_id = $fbuid AND active='Y'";
+        $sql="SELECT * FROM users WHERE fb_user_id = $fbuid AND (active='Y' or active='R')";
         $result=mysql_query($sql);
         $count=mysql_num_rows($result);
 
@@ -281,7 +281,7 @@ function userGetUIDByToken( $tok )
 
     if ( strlen( $tok ) != 0) {                    # nothing to lookup
         $tok = prepDBVal( $tok );
-        $sql = "SELECT iduser FROM users WHERE token='$tok'";        # Is this a valid user?
+        $sql = "SELECT idusers FROM users WHERE token='$tok'";        # Is this a valid user?
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());

@@ -48,11 +48,13 @@ function __construct( $Pdbh, $fid=0, $user_id=0, $frameid='', $prodid=0, $nick='
     if( isset( $fid ) and isset( $Pdbh ) and ( $fid > 0 ) ) {        # load an existing one
         $this->load( $Pdbh, $fid );
     } else {
+        $this->dbh = $Pdbh;
         $this->idframe = 0;
         $this->nick = $nick;
         $this->user_id = $user_id;
         $this->frame_id = $frameid;
         $this->product_id = $prodid;
+        $this->activation_key = $this->genActivationKey();
 
         $this->needsave( 1 );               # Force a save
     }
@@ -124,15 +126,15 @@ $ret = false;
 
         if( $this->idframe == 0 ) {
             $sql = "INSERT INTO frames
-                (idframes, frame_id, user_id, user_nickname, active, product_id,
+                (frame_id, user_id, user_nickname, active, product_id,
                 created, last_seen, feed_ttl, feed_pin, item_limit,
                 shuffle_items, security_key, activation_key)
-                VALUES ($this->idframe, '" . $this->frame_id . "', $this->user_id, '".$this->nick."', '".$this->active."', '".$this->product_id."', '"
+                VALUES ('" . $this->frame_id . "', $this->user_id, '".$this->nick."', '".$this->active."', '".$this->product_id."', "
              .  "now(), now(), $this->feed_ttl, $this->feed_pin, $this->item_limit, "
              .  "'" . $this->shuffle . "', '" . $this->security_key . "', '" . $this->activation_key . "')";
         } else {
             $sql = "UPDATE frames SET
-                idframes=$this->idframe, frame_id='" . $this->frame_id . "', user_id=$this->user_id,
+                frame_id='" . $this->frame_id . "', user_id=$this->user_id,
                 user_nickname='" . $this->nick . "', active='" . $this->active . "', product_id='" . $this->product_id."', 
                 created='" . $this->created . "', last_seen='" . $this->last_seen . "', feed_ttl=$this->feed_ttl, 
                 feed_pin=$this->feed_pin, item_limit=$this->item_limit,
@@ -143,6 +145,8 @@ $ret = false;
         $sth = $this->dbh->prepare( $sql );
         if( $sth->execute() ) {
             $this->dirty = 0;
+
+            if( $this->idframe == 0 ) { $this->idframe = $this->dbh->lastInsertId(); }        # grab the id of a newly added user
 
             $ret = true;
         }
@@ -251,6 +255,40 @@ public function owner( )
     return $this->user_id;
 }
 
+#----------------------------
+public function genActivationKey()
+#----------------------------
+# Generate a unique activation key by combining 2 entries in the 'words' table.
+# If after 5 attempts it is unable to generate a unique key it will use the current epoch time as the key.
+#----------------------------
+{
+    $tries = 0;
+    $LIMIT = 5;
+    $ret = '';
+
+    $sql = 'SELECT word FROM words ORDER BY RAND() LIMIT 2';
+    $sth = $this->dbh->prepare( $sql );
+
+    do {
+        $sth->execute();
+        $row = $sth->fetch( PDO::FETCH_ASSOC );
+        $key = $row['word'];
+
+        $row = $sth->fetch( PDO::FETCH_ASSOC );
+        $key .= $row['word'];
+
+        $sql = "SELECT idframes FROM frames WHERE activation_key='$key'";
+
+        $sth2 = $this->dbh->prepare( $sql );
+        $sth2->execute();
+        if( $sth2->rowCount() == 0 ) { $ret = $key; }
+        $tries++;
+    } while( ( $sth->rowCount() > 0 ) and ( strlen( $ret ) == 0 ) and ( $tries <= $LIMIT ) );
+
+    if ( strlen( $ret ) == 0 ) { $ret = time(); }          # as a last resort use epoch time
+
+    return $ret; 
+}
 
 } #-- class
 ?>

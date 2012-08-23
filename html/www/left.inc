@@ -4,7 +4,7 @@
     <div class="left_menu_area">
       <div align="right">
 <?php
-    if (isset($_SESSION['username']) ) {
+    if ( isset($_SESSION['loggedin']) and ( $_SESSION['loggedin'] == 'Y' ) ) {
         echo '          <a href="/usermain.php" id="leftnav_userhome" class="left_menu">Home</a><br />';
         if (isset($_SESSION['isadmin']) and ($_SESSION['isadmin'] == 'Y')) {
             echo '          <a href="/admin" id="leftnav_admin" class="left_menu">Admin</a><br />';
@@ -17,7 +17,7 @@
         echo '          <a href="/register.php" id="leftnav_register" class="left_menu">Register</a><br />';
     }
 
-    if (isset($_SESSION['username'])) {
+    if (  isset($_SESSION['loggedin']) and ( $_SESSION['loggedin'] == 'Y' ) ) {
         echo '          <a href="/logout.php" id="leftnav_logout" class="left_menu">Logout</a><br />';
     }
 ?>
@@ -35,7 +35,7 @@
     </div>
 <script type="text/javascript">
 <?php
-    if (isset($_SESSION['username'])) {
+    if (  isset($_SESSION['loggedin']) and ( $_SESSION['loggedin'] == 'Y' ) ) {
         echo '   mpmetrics.track_links("#leftnav_userhome", "leftnav click", {"type": "userhome"});';
     } else {
         echo '   mpmetrics.track_links("#leftnav_home", "leftnav click", {"type": "home"});';
@@ -45,7 +45,7 @@
         echo '   mpmetrics.track_links("#leftnav_register", "leftnav click", {"type": "register"});';
     }
 
-    if (isset($_SESSION['username'])) {
+    if (  isset($_SESSION['loggedin']) and ( $_SESSION['loggedin'] == 'Y' ) ) {
         echo '   mpmetrics.track_links("#leftnav_logout", "leftnav click", {"type": "logout"});';
     }
 ?>

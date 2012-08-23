@@ -3,10 +3,15 @@ include_once '../inc/dbconfig.php';
 include_once '../inc/config.php';
 include_once '../inc/helpers.php';
 include_once '../inc/helper_user.php';
+include_once '../inc/user_class.php';
 
     if (session_id() == '') { session_start(); }
 
-    dbStart();
+    if (!(isset($_SESSION['loggedin'])) or ($_SESSION['loggedin'] != 'Y' )) {
+        header('Location:/');
+    }
+
+    $dbh = dbStart();
 
     if (!isset($_SESSION['username']) or !userIsAdmin($_SESSION['username'])) {
         header('Location:/');
@@ -37,7 +42,7 @@ function userList()
 }
 
 #----------------------------
-function doGET($uid, $action)
+function doGET($dbh, $uid, $action)
 #----------------------------
 {
     $msg = '';
@@ -45,10 +50,17 @@ function doGET($uid, $action)
     $redir = '';
 
     if (($action == 'edit') or ($action == 'add')) {
-        list ($msg, $html) = userForm($uid);
+        $u = new User( $dbh, $uid );
+        $uid = $u->iduser();
+        if( ( $action == 'edit' ) and ( !isset( $uid ) ) ) {
+            $msg .= 'User does not exist. (UID = [' . $uid . ']';
+        } else { 
+            $html .= $u->htmlForm();
+        }
     } else {
         list ($msg, $html) = userList();
     }
+$html .= 'action:['.$action.']  uid:['.$uid.']  Loaded:[' . $u->iduser() . ']';
 
     return array ($msg, $html, $redir);
 }
@@ -86,8 +98,8 @@ function doPOST($id)
 #---------------------------
 # M A I N
 #---------------------------
-    if (isset($_REQUEST['action'])) { $action=$_REQUEST['action']; } else { $action = ''; }
-    if (isset($_REQUEST['uid'])) { $fid=$_REQUEST['uid']; } else { $uid = 0; $action='add';}
+    if (isset($_REQUEST['action'])) { $action=$_REQUEST['action']; } else { $action = 'edit'; }
+    if (isset($_REQUEST['uid'])) { $uid=$_REQUEST['uid']; } else { $uid = 0; $action='add';}
 
     $errs = 0;
     $body = '';
@@ -96,7 +108,7 @@ function doPOST($id)
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         list ($msg, $body, $redir) = doPOST($fid);
     } else {
-        list ($msg, $body, $redir) = doGET($fid, $action, $cid);
+        list ($msg, $body, $redir) = doGET($dbh ,$uid, $action);
     }
 
     if ( strlen($redir) > 0 ) {
@@ -224,9 +236,13 @@ background-color: #F3F3F3;
 
   <div class="midarea">
     <div class="body_textarea">
-      <div align="justify"><a href="/admin/releasepre.php">Release pre-registrants</a></div>
+<?php
 
-      <div align="justify"><a href="/admin/info.php">PHP Info.</a></div>
+
+    if ( isset($msg) and (strlen($msg) > 0) ) { echo '<div class="body_message">' . $msg . '</div>'; }
+
+    if ( isset($body) ) { echo '<div class="body_textarea"><div align="justify">' . $body . '</div></div>'; } 
+?>
     </div>
   </div>
 <!-- end of 'midarea' DIV -->

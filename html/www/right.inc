@@ -1,7 +1,12 @@
-<? include_once 'inc/config.php'; ?>
+<?php
+    include_once 'inc/config.php';
+    include_once "inc/helpers.php";
+?>
  <div class="right">
 <?php
-    if (!(isset($_SESSION['username'])) ) {
+echo '<pre>'.print_r( $_SESSION, true ) .'</pre>';
+
+    if (!(isset($_SESSION['loggedin'])) or ($_SESSION['loggedin'] != 'Y' ) ) {
         echo '
             <form id="loginform" name="loginform" method="post" action="loginproc.php">';
     if( isset( $_REQUEST['redir'] ) ) { echo '<input name="redir" type="hidden" value="' . $_REQUEST['redir'] . '"/>'; }
@@ -35,9 +40,9 @@
                     </div>
                     <div class="right_text">
                         <div align="center"><input type="submit" value="Login" name="login" /></div>
-                    </div>
-                </div>
-                <div class="login_bottom"></div>
+                    </div>';
+        echo '  </div>
+             <div class="login_bottom"></div>
             </div>
         </form>';
 
@@ -58,13 +63,38 @@
                         </div>
                         <div class="right_text">
                             <div align="center"><input type="submit" value="Signup" name="signup"/></div>
-                        </div>
-                    </div>
+                        </div>';
+
+#            if( $fbuser ) { echo $fb_btn; }
+
+            echo '        </div>
                     <div class="login_bottom"></div>
                 </div>
             </form>
         ';
         }
+
     }
+
+    if ( ($_SERVER['REQUEST_URI'] != '/register.php') and featureEnabled( 'enable_fb_login' ) and ( $_SESSION['loggedin'] != 'Y' ) ) {
+        echo '<div class="login_area">';
+            echo '<div class="login_top"></div>';
+            echo '<div class="login_bodyarea">';
+                echo '<div class="right_head">';
+                    echo '<div align="center"><strong>via Facebook</strong></div>';
+                echo '</div>';
+                echo '<div align="center">';
+                    if ( isset( $_SESSION['fb_' . $GLOBALS['fb_api_key'] . '_user_id'] ) ) {
+                        echo '<a href="/login.php">login as ' . $_SESSION['username'] . '</a>';
+                    } else {
+                        echo $fb_btn;
+                    }
+                echo '</div>';
+            echo '</div>';
+
+            echo '<div class="login_bottom"></div>';
+        echo '</div>';
+    }
+
 ?>
 </div>

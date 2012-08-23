@@ -1,3 +1,14 @@
+<?php
+    include_once "inc/config.php";
+    include_once "inc/helpers.php";
+
+    list ( $fbuser, $fb_btn ) =  loginInit( );
+
+    if( featureEnabled( 'enable_fb_login' ) and ( $_SESSION['fblogin'] == 'Y' ) ) {
+        $_SESSION['loggedin'] = 'Y';
+        header( "Location:/usermain.php" );
+    }
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>

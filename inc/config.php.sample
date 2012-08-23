@@ -8,7 +8,7 @@
 # Set VERSION
 #------------------------------------------
 
-    $GLOBALS['version'] = 'GIT - v2012-Jul-09';
+    $GLOBALS['version'] = 'GIT - v2012-aug-23';
 
 #------------------------------------------
 # Feature switches are first
@@ -27,6 +27,11 @@
     $GLOBALS['enable_frame_samples'] = FALSE;   # display sample images from a given frame
 
     $GLOBALS['enable_google_plus_one'] = TRUE;
+
+    $GLOBALS['enable_fb_login'] = FALSE;    # allow logins with Facebook IDs
+
+    $GLOBALS['enable_fb_register'] = FALSE;    # allow new registrations with Facebook IDs
+
 #--------------------------------------------
 # Option settings
 #--------------------------------------------

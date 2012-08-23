@@ -30,9 +30,9 @@ function enumPreReg()
         $r = '<p>#FAIL - An error occured.</p>';
     } else {
         if (mysql_num_rows( $result ) > 0) {
-            $r .= '<table border="0">';
+            $r .= '<table border="1">';
             while( $row = mysql_fetch_assoc( $result ) ) {
-                $r .= '<tr><td><a href="/admin/releasepre.php?uid='.$row['idusers'].'">' . $row['username'] . '</a></td><td>' . $row['date_registered'] . '</tr>';
+                $r .= '<tr><td><a href="/admin/releasepre.php?uid='.$row['idusers'].'">' . $row['username'] . '</a></td><td>' .  $row['email'] . '</a></td><td>' . $row['date_registered'] . '</tr>';
             }
             $r .= '</table>';
         } else {

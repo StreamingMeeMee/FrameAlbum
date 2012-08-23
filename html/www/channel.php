@@ -13,11 +13,9 @@ include_once 'inc/frame_helpers.php';
 include_once 'inc/helper_user.php';
 require_once 'inc/user_channel_class.php';
 
-    if (session_id() == '') { session_start(); }
+    if (session_id() == "") { session_start(); }
 
-    if (!(isset($_SESSION['username']))) {
-        header('Location:/');
-    }
+    loginChk();
 
     $dbh = dbStart();
 
