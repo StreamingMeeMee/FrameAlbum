@@ -4,7 +4,7 @@
 ?>
  <div class="right">
 <?php
-echo '<pre>'.print_r( $_SESSION, true ) .'</pre>';
+#echo '<pre>'.print_r( $_SESSION, true ) .'</pre>';
 
     if (!(isset($_SESSION['loggedin'])) or ($_SESSION['loggedin'] != 'Y' ) ) {
         echo '
