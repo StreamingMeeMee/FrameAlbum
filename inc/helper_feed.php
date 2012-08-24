@@ -10,6 +10,11 @@
 #   - modify feedRssChannelHead() to accept 'registered' status and set <frameuserinfo:unregistered> appropriately.
 #       Default is 'registered' state.
 #   - set inactive frame feed TTL to 10m
+#
+# 2012-aug-24 - TimC
+#   - for inactive frames set the item duration of the info pane to 30 (was 3).  DSM-210 (perhaps others) _refreshed_ the image at this interval rather than
+#     simply moving the next image in the list.
+#   - Modify the channel header for inactive frames to include the frameID in the channel name and description.  DSM-210 frames use this info in the 'getuserlist' call.
 #-----------------------------
 
 #--------
@@ -157,7 +162,7 @@ function feedActiveFrameFeed($fid)
         <description>&lt;img src=&quot;'.$url.'&quot;&gt;</description>
         <pubDate>Thu, 23 Jun 2011 17:04:46 -0400</pubDate>
         <guid isPermaLink="false">30f8b8d1-80af-38e7-8616-b3e793dc289b</guid>
-        <media:content url="'.$url.'" type="image/jpeg" height="480" width="800" duration="3" />
+        <media:content url="'.$url.'" type="image/jpeg" height="480" width="800" duration="180" />
         <media:thumbnail  url="'.$url.'" height="60" width="60" />
         <tsmx:sourcelink>'.$url.'</tsmx:sourcelink>
 </item>'."\n";
@@ -187,7 +192,7 @@ function feedInactiveFrameFeed($fid, $frameid, $prodid, $akey)
             $fid = prepDBVal($fid);
             $res = mysql_query("SELECT activation_key FROM frames WHERE idframes=$fid");
             if (!$res) { die("Invalid query: " . mysql_error()); }
-            $row = mysql_fetch_assoc($res);     # get the first word
+            $row = mysql_fetch_assoc($res);     # get the first row
             $akey = $row['activation_key'];
         }
         $fontName = 'Helvetica';
@@ -222,7 +227,7 @@ Your frameID is $frameid";
     }
 
     $rss = feedRssHead();
-    $rss .= feedRssChannelHead('inactive_frame', 10, 'Channel for inactive frame', FALSE);
+    $rss .= feedRssChannelHead('inactive_frame' . $frameid, 10, 'Inactive Frame (' . $frameid . ')', FALSE);
 
 $rss .= '<item>
         <title>FrameAlbum Info</title>
@@ -231,7 +236,7 @@ $rss .= '<item>
         <description>&lt;img src=&quot;'.$url.'&quot;&gt;</description>
         <pubDate>Thu, 23 Jun 2011 17:04:46 -0400</pubDate>
         <guid isPermaLink="false">30f8b8d1-80af-38e7-8616-b3e793dc289b</guid>
-        <media:content url="'.$url.'" type="image/jpeg" height="480" width="800" duration="3" />
+        <media:content url="'.$url.'" type="image/jpeg" height="480" width="800" duration="30" />
         <media:thumbnail  url="'.$url.'" height="60" width="60" />
         <tsmx:sourcelink>'.$url.'</tsmx:sourcelink>
 </item>'."\n";
