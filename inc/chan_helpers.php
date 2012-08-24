@@ -311,7 +311,7 @@ function channelUserForm($cid, $ctid, $fid, $action)
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
-            $msg = '#FAIL - An error occured in channelUserInfoHTML.';
+            $msg = '#FAIL - An error occured in channelUserForm.';
         } else {
             $row = mysql_fetch_assoc( $result );
             $ctid = $row['channel_type_id'];
