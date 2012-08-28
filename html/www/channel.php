@@ -57,9 +57,8 @@ function doPOST($id, $fid, $showtest)
             $ret = channelUserDel($id);
             $redir = '/?msg='.$msg;
         } else {
-            list ($ret, $msg) = channelUserUpdate($id, $_REQUEST['nickname'], $_REQUEST['attrib'], 'Y', '');
+            list ($ret, $msg) = channelUserUpdate2($id, $_REQUEST['nickname'], $_REQUEST['attrib'], 'Y', '');
             if ( $ret ) {
-#                if($msg) { $msg = $msg . '<br>Channel Updated.'; } else { $msg = 'Channel Updated.'; }
                 list ($d, $html) = doGET( $id, $_REQUEST['chantype'], '', $fid, $showtest );
             }
         }
@@ -149,7 +148,7 @@ function constructAttribFlickr()
 {
     var e=document.getElementById('flickr_user').value;
     var t=document.getElementById('f_tags').value;
-    var ma=(document.getElementById('f_maxage_yr').value * 365) + (document.getElementById('f_maxage_dy').value * 1) ;
+    var ma=(document.getElementById('maxage_yr').value * 365) + (document.getElementById('maxage_dy').value * 1) ;
     var a=e + "|" + t + "|" + ma;
 
     document.getElementById('attrib').value=a;
