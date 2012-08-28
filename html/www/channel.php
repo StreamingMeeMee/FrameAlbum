@@ -149,7 +149,8 @@ function constructAttribFlickr()
 {
     var e=document.getElementById('flickr_user').value;
     var t=document.getElementById('f_tags').value;
-    var a=e + "|" + t;
+    var ma=(document.getElementById('f_maxage_yr').value * 365) + (document.getElementById('f_maxage_dy').value * 1) ;
+    var a=e + "|" + t + "|" + ma;
 
     document.getElementById('attrib').value=a;
 
@@ -170,7 +171,8 @@ function constructAttrib2()
 {
     var a0=document.getElementById('attrib0').value;
     var a1=document.getElementById('attrib1').value;
-    var a=(a0 + '|' + a1);
+    var ma=(document.getElementById('maxage_yr').value * 365) + (document.getElementById('maxage_dy').value * 1) ;
+    var a=a0 + '|' + a1 + "|" + ma;
 
     document.getElementById('attrib').value=a;
 
@@ -193,8 +195,8 @@ function constructAttrib()
 function validateForm()
 {
     var valid = validNickname();
-
     valid = (valid && validEmail() );
+    valid = (valid && validMaxAge() );
 
     return valid;
 }
@@ -228,6 +230,62 @@ function validZIPCode()
     }
 
     document.getElementById('attrib0_msg').src='/images/knobs/Valid_Green.png';
+
+    return true;
+}
+
+function validMaxAge()
+{
+    if (document.getElementById('maxage_yr').length == 0) {
+        var yr=0;
+    } else {
+        var yr=(document.getElementById('maxage_yr').value * 1);
+        if (yr != document.getElementById('maxage_yr').value) {
+            alert("Please enter a number (or blank) in the 'year' field.");
+            document.getElementById('attrib2_msg').src='/images/knobs/Attention.png';
+            document.getElementById('maxage_yr').focus();
+            return false;
+        }
+        if (yr > 10) {
+            alert("The maxmimum age is 10 years.");
+            document.getElementById('attrib2_msg').src='/images/knobs/Attention.png';
+            document.getElementById('maxage_yr').focus();
+            return false;
+        }
+        if (yr < 0) {
+            alert("Negative years are not allowed.");
+            document.getElementById('attrib2_msg').src='/images/knobs/Attention.png';
+            document.getElementById('maxage_yr').focus();
+            return false;
+        }
+    }
+
+    if (document.getElementById('maxage_dy').length == 0) {
+        var dy=0;
+    } else {
+        var dy=(document.getElementById('maxage_dy').value * 1);
+        if (dy != document.getElementById('maxage_dy').value) {
+            alert("Please enter a number (or blank) in the 'days' field.");
+            document.getElementById('attrib2_msg').src='/images/knobs/Attention.png';
+            document.getElementById('maxage_dy').focus();
+            return false;
+        }
+        if (dy > 365) {
+            alert("There are only 365 days in a year.");
+            document.getElementById('attrib2_msg').src='/images/knobs/Attention.png';
+            document.getElementById('maxage_dy').focus();
+            return false;
+        }
+        if (dy < 0) {
+            alert("Negative days are not allowed.");
+            document.getElementById('attrib2_msg').src='/images/knobs/Attention.png';
+            document.getElementById('maxage_dy').focus();
+            return false;
+        }
+
+    }
+
+    document.getElementById('attrib2_msg').src='/images/knobs/Valid_Green.png';
 
     return true;
 }
