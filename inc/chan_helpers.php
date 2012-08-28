@@ -187,7 +187,6 @@ function channelUserUpdate2($id,$nick,$attrib,$acv,$status)
         $status = prepDBVal($status);
 
         $d = explode('|', $attrib);
-        $msg2 = $d[0];
         list ($msg2, $valid) = verifyFlickrUser($d[0]);
 
         $sql = "UPDATE user_channels SET  chan_nickname='$nick', active='$acv', attrib='$attrib', status='$status' WHERE iduserchannels=$id LIMIT 1";
@@ -208,8 +207,6 @@ function channelUserUpdate2($id,$nick,$attrib,$acv,$status)
         $ret = false ;
     }
 
-    if (!empty($msg2)) { $msg .= '<br>' . $msg2; }
-    $msg .= '<br>' . $msg2;
     return array ($ret, $msg );
 }
 
@@ -566,7 +563,7 @@ function channelUserFormPicasa($cid, $ctid, $fid, $action)
         }
     }
 
-    if( !isset( $attribs[2] ) ) { $attribs[2] = 5 * 365; }          # max age of 5 years is default
+    if( !isset( $attribs[2] ) or ( $attribs[2] == '' ) or ( $attribs[2] == 0 ) ) { $attribs[2] = 5 * 365; }          # max age of 5 years is default
 
     $html = '<div class="body_title">Edit Channel details</div>';
     $html .= '<div class="body_textarea">';
@@ -580,7 +577,7 @@ function channelUserFormPicasa($cid, $ctid, $fid, $action)
     $html .= '<tr><td>PicasaWeb User:</td>';
     $html .= '<td><input type="text" maxlength="64" size="32" name="attrib0" id="attrib0" value="'. $attribs[0] . '" onblur="validEmailAddr(this)" onchange="constructAttrib2()"></td><td><div><img id="attrib0_msg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Tags:</td>';
-    $html .= '<td><input type="text" maxlength="64" size="32" name="attrib1" id="attrib1" value="'. $attribs[1] . '"</td></tr>';
+    $html .= '<td><input type="text" maxlength="64" size="32" name="attrib1" id="attrib1" value="'. $attribs[1] . '" onchange="constructAttrib2()"></td></tr>';
     $html .= '<tr><td>Max Age:</td>';
     $html .= '<td>';
     $html .= '<input type="text" maxlength="3" size="2" name="maxage_yr" id="maxage_yr" value="'. intval( $attribs[2] / 365 ) . '" onblur="validMaxAge()" onchange="constructAttrib2()"> years&nbsp;';
@@ -661,7 +658,7 @@ function channelUserFormFlickr($cid, $ctid, $fid, $action)
         }
     }
 
-    if( !isset( $attribs[2] ) ) { $attribs[2] = 5 * 365; }          # max age of 5 years is default
+    if( !isset( $attribs[2] ) or ( $attribs[2] == '' ) or ( $attribs[2] == 0 ) ) { $attribs[2] = 5 * 365; }          # max age of 5 years is default
 
     $html = '<div class="body_title">Edit Channel details</div>';
     $html .= '<div class="body_textarea">';
