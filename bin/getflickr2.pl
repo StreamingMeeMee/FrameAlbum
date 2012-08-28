@@ -52,6 +52,9 @@
 #
 # 2012-aug-2 - TimC
 #   - don't calc. channels/sec if no channels were processed
+#
+# 2012-aug-28 - TimC
+#   - add '-c' option to grab a specific channelID
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -73,6 +76,7 @@ our $PROGRAMOWNER = 'user@email.com';
 our $VERSIONSTRING = 'v2012-aug-2';
 
 our $CHAN_TYPE = 1;
+our $CHANID = 0;
 
 our $DEBUG = 0;
 
@@ -297,14 +301,21 @@ my $et = 0;
 my $chn_cnt = 0;
 my $item_cnt = 0;
 my $max_items = 0;
+my $sql = '';
 
 my $pidfile='';
 my $pid;
 
-    getopts("dl:",\%opts);          # Get CLI options
+    getopts("c:dl:",\%opts);          # Get CLI options
 
     if (defined $opts{d}) { $DEBUG = 1; }                     # Debug option?
     if ($DEBUG) { $MSG_PRINT_THRESHOLD = $MSG_DEBUG; }
+
+    if (defined $opts{c}) {
+        $CHANID = $opts{c}; 
+        SysMsg($MSG_DEBUG, 'Channel ID:['.$CHANID.']');
+    }
+
     if (defined $opts{l}) { $CHN_LIMIT = $opts{l}; } 
     SysMsg($MSG_DEBUG, 'Channel limit:['.$CHN_LIMIT.']');
 
@@ -332,13 +343,13 @@ my $pid;
 
     dbStart();
 
-    $sth_chan_type = $dbh->prepare("SELECT * FROM channel_types WHERE idchanneltypes=?");
+    $sth_chan_type = $dbh->prepare("SELECT * FROM channel_types WHERE idchanneltypes=? LIMIT 1");
     if (!defined $sth_chan_type) {
         SysMsg($MSG_CRIT, "Unable to prepare channel_type SELECT statement: " . $dbh->errstr);
         exit 1;
     }
 
-    $sth_touch_user_chan = $dbh->prepare("UPDATE user_channels SET last_updated=now(), status=?, attrib_valid=? WHERE iduserchannels=?");
+    $sth_touch_user_chan = $dbh->prepare("UPDATE user_channels SET last_updated=now(), status=?, attrib_valid=? WHERE iduserchannels=? LIMIT 1");
     if (!defined $sth_touch_user_chan) {
         SysMsg($MSG_CRIT, "Unable to prepare user_channels UPDATE statement: " . $dbh->errstr);
         exit 1;
@@ -350,7 +361,11 @@ my $pid;
         exit 1;
     }
 
-    $sth = $dbh->prepare("SELECT * FROM user_channels WHERE channel_type_id=$CHAN_TYPE AND active='Y' AND attrib_valid!='N'");
+    $sql = "SELECT * FROM user_channels WHERE channel_type_id=$CHAN_TYPE AND active='Y' AND attrib_valid!='N'";
+    if( $CHANID != 0 ) {            # grab a specific one
+        $sql .= ' AND iduserchannels=' . $CHANID;
+    }
+    $sth = $dbh->prepare( $sql );
     if (!defined $sth) {
         SysMsg($MSG_CRIT, "Unable to prepare reports SELECT statement: " . $dbh->errstr);
         exit 1;
