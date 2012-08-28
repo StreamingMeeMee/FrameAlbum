@@ -25,6 +25,9 @@
 #   - Add 'edit' and 'delete' actions with icons to channel info page
 #   - style channeltype icons & sample images
 #   - add a cancel button when deleting a channel
+#
+# 2012-aug-29 - TimC
+#   - add max age fields to Flickr and Picasa channel forms
 #-------------------------------------------
 require_once("phpFlickr/phpFlickr.php");
 
@@ -547,7 +550,7 @@ function channelUserFormPicasa($cid, $ctid, $fid, $action)
     } else {
         $nickname = 'My PicasaWeb Public Folder';
         $attribs[0] = $_SESSION['useremail'];
-        $attribs[1] = '-';
+        $attribs[1] = '';
         $attrib = $attribs[0] . '|' . $attribs[1];
         $chan_icon_url = '';
         $sql = "SELECT * FROM channel_types WHERE idchanneltypes = '$ctid'";
@@ -562,6 +565,9 @@ function channelUserFormPicasa($cid, $ctid, $fid, $action)
             }
         }
     }
+
+    if( !isset( $attribs[2] ) ) { $attribs[2] = 5 * 365; }          # max age of 5 years is default
+
     $html = '<div class="body_title">Edit Channel details</div>';
     $html .= '<div class="body_textarea">';
     $html .= '<form id="userchannel" name="userchannel" method="post" action="#">';
@@ -569,12 +575,19 @@ function channelUserFormPicasa($cid, $ctid, $fid, $action)
     $html .= '<input type="hidden" id="attrib" name="attrib" value="' . $attrib . '">';
     $html .= '<input type="hidden" id="chantype" name="chantype" value='. $ctid . '">';
     $html .= '<table border="0">';
-    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
+    $html .= '<tr><td rowspan="5"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttrib2()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>PicasaWeb User:</td>';
     $html .= '<td><input type="text" maxlength="64" size="32" name="attrib0" id="attrib0" value="'. $attribs[0] . '" onblur="validEmailAddr(this)" onchange="constructAttrib2()"></td><td><div><img id="attrib0_msg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Tags:</td>';
-    $html .= '<td><input style="background-color : #d9d9d9;" disabled type="text" maxlength="64" size="32" name="attrib1" id="attrib1" value="'. $attribs[1] . '"</td></tr>';
+    $html .= '<td><input type="text" maxlength="64" size="32" name="attrib1" id="attrib1" value="'. $attribs[1] . '"</td></tr>';
+    $html .= '<tr><td>Max Age:</td>';
+    $html .= '<td>';
+    $html .= '<input type="text" maxlength="3" size="2" name="maxage_yr" id="maxage_yr" value="'. intval( $attribs[2] / 365 ) . '" onblur="validMaxAge()" onchange="constructAttrib2()"> years&nbsp;';
+    $html .= '<input type="text" maxlength="4" size="3" name="maxage_dy" id="maxage_dy" value="'. ( $attribs[2] % 365 ) . '" onblur="validMaxAge()" onchange="constructAttrib2()"> days';
+    $html .= '<td><div><img id="attrib2_msg" height="24" src="/images/blank.png"/></div>';
+    $html .= '</td></tr>';
+
     if ($cid != 0) {
         $html .= '<tr><td>Delete channel</td>';
         $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
@@ -584,6 +597,7 @@ function channelUserFormPicasa($cid, $ctid, $fid, $action)
     $html .= '<div align="center">';
     $html .= '<input type="submit" value=" Submit " name="submit" />';
     if( $action == 'delete' ) { $html .= '&nbsp;<a href="/usermain.php"><input type="button" name="cancel" value=" Cancel " /></a>'; }
+    $html .= '</div>';
 
     $html .= '</form>';
     $html .= '</div>';
@@ -646,6 +660,9 @@ function channelUserFormFlickr($cid, $ctid, $fid, $action)
             }
         }
     }
+
+    if( !isset( $attribs[2] ) ) { $attribs[2] = 5 * 365; }          # max age of 5 years is default
+
     $html = '<div class="body_title">Edit Channel details</div>';
     $html .= '<div class="body_textarea">';
     $html .= '<form id="userchannel" onsubmit="validateForm();" name="userchannel" method="post" action="#">';
@@ -653,18 +670,24 @@ function channelUserFormFlickr($cid, $ctid, $fid, $action)
     $html .= '<input type="hidden" id="attrib" name="attrib" value="' . $attrib . '">';
     $html .= '<input type="hidden" id="chantype" name="chantype" value='. $ctid . '">';
     $html .= '<table border="0">';
-    $html .= '<tr><td rowspan="4"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
+    $html .= '<tr><td rowspan="5"><img src="' . $chan_icon_url . '" class="channelTypeIconLrg"/></td><td>Nickname:</td>';
     $html .= '<td><input type="text" maxlength="32" size="32" name="nickname" id="nickname" value="'.$nickname.'" onblur="validNickname()" onchange="constructAttribFlickr()"></td><td><div><img id="nicknamemsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Flickr Screename:</td>';
 #    $html .= '<td><input type="text" maxlength="64" size="32" name="reg_email" id="reg_email" value="'. $attribs[0] . '" onblur="validEmail()" onchange="constructAttribFlickr()"></td><td><div><img id="emailmsg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
 
     $html .= '<td><input type="text" maxlength="64" size="32" name="flickr_user" id="flickr_user" value="'. $attribs[0] . '" onblur="validFlickrUser()" onchange="constructAttribFlickr()"></td><td><div><img id="flickr_user_msg" height="24" src="/images/knobs/Grey.png"/></div></td></tr>';
     $html .= '<tr><td>Tags:</td>';
-#    $html .= '<td><input style="background-color : #d9d9d9;" disabled type="text" maxlength="64" size="32" name="f_tags" id="f_tags" value="'. $attribs[1] . '"</td></tr>';
     $html .= '<td><input type="text" maxlength="64" size="32" name="f_tags" id="f_tags" value="'. $attribs[1] . '" onchange="constructAttribFlickr()"></td></tr>';
+    $html .= '<tr><td>Max Age:</td>';
+    $html .= '<td>';
+	$html .= '<input type="text" maxlength="3" size="2" name="maxage_yr" id="maxage_yr" value="'. intval( $attribs[2] / 365 ) . '" onblur="validMaxAge()" onchange="constructAttribFlickr()"> years&nbsp;';
+    $html .= '<input type="text" maxlength="4" size="3" name="maxage_dy" id="maxage_dy" value="'. ( $attribs[2] % 365 ) . '" onblur="validMaxAge()" onchange="constructAttribFlickr()"> days';
+    $html .= '<td><div><img id="attrib2_msg" height="24" src="/images/blank.png"/></div>';
+	$html .= '</td></tr>';
+
     if ($cid != 0) {
         $html .= '<tr><td>Delete channel</td>';
-        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></tr>';
+        $html .= '<td><input type="checkbox" name="del_chan" id="del_chan" value="delchan" onclick="setDelIcon();"' . $delcb . '></td><td><div><img id="del_chan_msg" height="24" src="/images/blank.png"/></div></td></tr>';
     }
     $html .= '</table>';
 
