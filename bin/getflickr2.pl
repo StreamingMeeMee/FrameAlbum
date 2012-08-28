@@ -55,6 +55,7 @@
 #
 # 2012-aug-28 - TimC
 #   - add '-c' option to grab a specific channelID
+#   - if first check of rssFlickrRecent() didn't return any photo try again with a limit of 10 years
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -407,7 +408,11 @@ my $pid;
             if ( ($$row{'item_limit'}) && ($$row{'item_limit'} > 0) ) { $item_limit = $$row{'item_limit'}; } else { $item_limit = $$chan{'default_item_limit'}; }
             SysMsg($MSG_DEBUG, 'User Chan Item Limit:[' . $item_limit . ']');
 
-            rssFlickrRecent($api, $user->{NSID}, $age, $attribs[1], $cid, $item_limit);
+            my $cnt = rssFlickrRecent($api, $user->{NSID}, $age, $attribs[1], $cid, $item_limit);
+            if( $cnt == 0 ) {       # didn't find any so far -- maybe didn't look back far enough
+                $age = ($age > 3650 ) ? $age : 3650;
+                 rssFlickrRecent($api, $user->{NSID}, $age, $attribs[1], $cid, $item_limit);
+            }
 
             SysMsg($MSG_INFO, 'Found ' . keys(%PHOTOS) . ' photos for this channel.');
 
