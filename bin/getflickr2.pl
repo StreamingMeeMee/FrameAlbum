@@ -56,6 +56,7 @@
 # 2012-aug-28 - TimC
 #   - add '-c' option to grab a specific channelID
 #   - if first check of rssFlickrRecent() didn't return any photo try again with a limit of 10 years
+#   - attrib[2] (max_age) is in days NOT years - duh
 #----------------------------------------
 use Flickr::API2;
 use POSIX qw( strftime );
@@ -388,7 +389,7 @@ my $pid;
 
         my @attribs = split(/\|/, $$row{'attrib'});
         unless ($attribs[1]) { $attribs[1] = ''; }
-        if ($attribs[2]) { $age = $attribs[2] * 365; } else { $age = $MAX_AGE; }
+        if ($attribs[2]) { $age = $attribs[2]; } else { $age = $MAX_AGE; }
 
         $user = undef;
         if ($attribs[0] =~ /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/gi ) {
