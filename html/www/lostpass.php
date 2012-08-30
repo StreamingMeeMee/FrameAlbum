@@ -127,10 +127,14 @@ function doPOST( $dbh, $user='', $uid='' )
             if( $u->password( $_REQUEST['reg_passwd1'] ) ) {
                 $msg = 'Password changed.';
                 $html .= '<p>You may now login normally with your new password.</p>';
+                $u->email_conf( 'Y' );                  # might as well mark it
+                if( $u->active() != 'N' ) { $u->active( 'Y' } }     # if they are not inactive, make sure they are active (not just registered)
             } else {
                 $msg = 'Unable to change password.';
                 $html .= '<p>Hmm...  Sorry, Something went pear-shaped.  Please <a href="/lostpass.php">try again</a>.</p>';
             }
+
+            if( $u->needsave() ) { $u->save();  }   # commit to DB
         }
     } else {
         $html .= doGET( $dbh, '' );
