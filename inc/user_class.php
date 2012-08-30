@@ -78,7 +78,7 @@ public function stringify()
     $ret .= '  PIN:[' . $this->pin . ']';
     $ret .= '  Active:[' . $this->active . ']';
     $ret .= '  Admin:[' . $this->admin . ']';
-    $ret .= '  ZIP:[' . $this->zip . ']  Registered:[' . $this->registered . ']';
+    $ret .= '  ZIP:[' . $this->zip . ']  Registered:[' . $this->date_registered . ']';
     $ret .= '  Last:[' . $this->last_login . ']  Token:['. $this->token . ']';
     $ret .= '  FB UID:[' . $this->fb_uid . ']  FB Auth:[' . $this->fb_auth . ']';
     $ret .= '  FB Auth Expire:[' . $this->fb_auth_expire . ']';
