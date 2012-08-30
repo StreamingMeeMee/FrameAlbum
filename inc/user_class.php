@@ -8,6 +8,9 @@
 # 2012-aug-25 - TimC
 #   - Add user level PIN.  Use a default for new frames assigned to this user
 #   - Allow '?' as a value for email_conf; email has been sent but not confirmed
+#
+# 2012-aug-29 - TimC
+#   - fix some DB field names when loading a user
 #---------------------------------------
 
 class User 
@@ -103,14 +106,14 @@ $ret = false;
             $this->email = $row['email'];
             $this->email_conf = $row['email_conf'];
             $this->pin = $row['pin'];
-            $this->zip = $row['zip'];
+            $this->zip = $row['ZIP'];
             $this->date_registered = $row['date_registered'];
             $this->last_login =  $row['last_login'];
             $this->admin =  $row['admin'];
             $this->token =  $row['token'];
             $this->fb_auth =  $row['fb_auth'];
             $this->fb_auth_expire = $row['fb_auth_expire'];
-            $this->fb_uid =  $row['fb_user_d'];
+            $this->fb_uid =  $row['fb_user_id'];
             $this->dirty = 0;
 
             $ret = true;
