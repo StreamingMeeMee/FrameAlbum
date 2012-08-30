@@ -11,6 +11,7 @@
 #
 # 2012-aug-29 - TimC
 #   - fix some DB field names when loading a user
+#   - fix check of return value of mail send in sendPwdResetMsg()
 #---------------------------------------
 
 class User 
@@ -511,7 +512,7 @@ If you have any questions, drop me an email at " . $GLOBALS['email_from'] . ".";
 
     list ($ret, $msg) = sendEmail( $GLOBALS['email_from'], $this->email, 'FrameAlbum password reset request', $txt, $this->iduser );
 
-    if (!ret) {
+    if (!$ret) {
         $msg = 'There was a problem sending a message to ' . $this->email . '.  You may not receive your Welcome email message.';
     }
 
