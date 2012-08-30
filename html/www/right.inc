@@ -39,6 +39,9 @@
                     <div class="right_text">
                         <div align="center"><input type="submit" value="Login" name="login" /></div>
                     </div>';
+        echo '      <div class="fotter_links">
+                        <div align="center"><a href="/lostpass.php">Forgot password?</a></div>
+                    </div>';
         echo '  </div>
              <div class="login_bottom"></div>
             </div>

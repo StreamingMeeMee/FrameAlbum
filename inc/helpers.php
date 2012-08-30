@@ -97,9 +97,7 @@ function sendEmail( $from, $to, $subj, $txt, $uid=NULL)
     $ret = mail($to, $subj, $txt, $headers);
 
     $l = new EventLog( );       # new 'email sent to user event
-    $log->logSystemEvent( 4, 0, 'To:' . $to . "\n" . $headers . $txt );
-    if( isset( $uid ) ) { $l->user_id( $uid ); }
-    $l->save();
+    $l->logSystemEvent( 4, $uid, 'To:' . $to . "\n" . $headers . $txt );   # logSystemEvent ( $eid, $uid=NULL, $msg=NULL )
 
     if (!ret) {
         $msg = 'There was a problem sending a message to ' . $to . '.';
