@@ -35,6 +35,10 @@
 #
 # 2012-aug-20 - TimC
 #   - Add sendEmail()
+#
+# 2012-aug-29 - TimC
+#   - fix typo in return code test within sendEmail()
+#   - define $msg in sendEmail()
 #-------------------------------------------
 require_once 'config.php';
 require_once 'eventlog_class.php';
@@ -91,6 +95,8 @@ $GLOBALS['EMAIL_CC'] = '';
 function sendEmail( $from, $to, $subj, $txt, $uid=NULL)
 #----------------------------
 {
+$msg = '';
+
     $headers = 'From: ' . $from . "\r\n" .
         'Reply-To: ' . $GLOBALS['email_reply_to'] . "\r\n";
 
@@ -99,7 +105,7 @@ function sendEmail( $from, $to, $subj, $txt, $uid=NULL)
     $l = new EventLog( );       # new 'email sent to user event
     $l->logSystemEvent( 4, $uid, 'To:' . $to . "\n" . $headers . $txt );   # logSystemEvent ( $eid, $uid=NULL, $msg=NULL )
 
-    if (!ret) {
+    if (!$ret) {
         $msg = 'There was a problem sending a message to ' . $to . '.';
     }
 
