@@ -55,7 +55,7 @@ if ($_REQUEST) {
     if( $uid ) {            # link to an existing user
         $user = new User( $dbh, $uid );
 
-#echo '<pre>'. print_r($response, true) . '</pre>';
+#echo '<pre>response:['. print_r($response, true) . ']</pre>';
 
         $user->active( 'Y' );
         $user->fb_uid( $response['user_id'] );
