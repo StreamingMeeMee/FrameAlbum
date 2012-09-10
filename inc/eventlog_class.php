@@ -152,7 +152,7 @@ public function logSystemDebugEvent ( $uid=NULL, $msg='Debug Message' )
 {
 $ret = false;
 
-    $ret = $this->logSystemEvent( 1, $msg );
+    $ret = $this->logSystemEvent( 1, $uid, $msg );
 
     return $ret;
 }
@@ -163,7 +163,7 @@ public function logSystemInfoEvent ( $uid=NULL, $msg='Info Message' )
 {
 $ret = false;
 
-    $ret = $this->logSystemEvent( 2, $msg );
+    $ret = $this->logSystemEvent( 2, $uid, $msg );
 
     return $ret;
 }
