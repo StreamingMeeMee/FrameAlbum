@@ -47,15 +47,19 @@ if ($_REQUEST) {
     if( $uid ) {            # link to an existing user
         $user = new User( $dbh, $uid );
         $user->fb_uid( 0 ); # unlink the user
-        $user->fb_auth( '' );
+        $user->fb_auth( 'xx' );
+        $user->fb_auth_expire( 0 );
         $user->save();
         $msg = 'Your Facebook account has been un-linked from your FrameAlbum account.';
         error_log( 'deauth: FrameAlbum userID:[' . $uid . '] has been deauthorized by FaceBook userID:['. $response['user_id'] . ']' );
     }
 
-    echo $msg;
+    $l = new EventLog();
+    $l->logSystemInfoEvent($uid, 'FB DEAUTH' );
 
-    echo $user->stringify();
+#    echo $msg;
+
+#    echo $user->stringify();
     
 } else {
     header('Location:/?msg=An error occured during registration.');
