@@ -191,14 +191,57 @@ function feedShowSetupInfo( $fid )
 #-------------------------
 {
     $rss = '';
+    $fid = prepDBVal($fid);
+
+    $sql = "SELECT * FROM frames AS f, users AS u
+        WHERE f.idframes='$fid' AND f.user_id=u.idusers";
+    $res = mysql_query($sql)or die("ShowSetupInfo lookup failed.");
 
     $rss = feedRssHead();
 
-    $rss .= feedRssChannelHead('', 15, 'Setup Info for [' . $fid . ']', TRUE);
+    if ( mysql_num_rows($res) > 0 ) {
+        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', FALSE);
+    } else {
+        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', TRUE);
+    }
 
     $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
     $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
+             $GLOBALS['image_url_root'] . '/' . $fid . '-info.jpg', $icon_url);
+
+    $rss .= feedRssChannelTail();
+    $rss .= feedRssTail();
+
+    return $rss;
+}
+
+#-------------------------
+function feedGetUserList( $fid )
+#-------------------------
+{
+    $rss = '';
+
+    $fid = prepDBVal($fid);
+
+    $sql = "SELECT * FROM frames AS f, users AS u
+        WHERE f.idframes='$fid' AND f.user_id=u.idusers";
+    $res = mysql_query($sql)or die("GetUserList lookup failed.");
+
+    $rss = feedRssHead();
+
+    if ( mysql_num_rows($res) > 0 ) {
+        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', FALSE);
+        while( $row = mysql_fetch_assoc( $res ) ) {
+            $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
+            $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
+                 $icon_url, '');
+        }
+    } else {
+        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', TRUE);
+        $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
+        $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
              $GLOBALS['image_url_root'] . '/' . $fid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
+    }
 
     $rss .= feedRssChannelTail();
     $rss .= feedRssTail();
