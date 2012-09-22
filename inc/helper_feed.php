@@ -25,6 +25,7 @@
 #
 # 2012-sept-22 - TimC
 #   - add feedShowSetupInfo( $fid ) to display setup/activation info
+#   - move info panel creation to feedMakeInfoPanel()
 #-----------------------------a
 
 #--------
@@ -121,6 +122,7 @@ function feedRssTail()
 function feedRssChannelHead($user, $ttl, $desc, $reg=TRUE)
 #--------
 {
+#echo 'user:['.$user.'] ['.$ttl.'] ['.$desc.'] ['.$reg.']';
     $t = '';
 
     $t .= "<channel>\n";
@@ -131,7 +133,7 @@ function feedRssChannelHead($user, $ttl, $desc, $reg=TRUE)
     $t .= "<frameuserinfo:firstname>-</frameuserinfo:firstname>\n";
     $t .= "<frameuserinfo:lastname>-</frameuserinfo:lastname>\n";
     $t .= "<frameuserinfo:username>$user</frameuserinfo:username>\n";
-    $t .= "<frameuserinfo:unregistered>" . ( $reg  ? 'FALSE' : 'TRUE' ) . "</frameuserinfo:unregistered>\n";
+    $t .= "<frameuserinfo:unregistered>" . ( $reg ? 'FALSE' : 'TRUE' ) . "</frameuserinfo:unregistered>\n";
 
     return $t;
 }
@@ -187,27 +189,33 @@ function feedSendRSS($rss)
 }
 
 #-------------------------
-function feedShowSetupInfo( $fid )
+function feedShowSetupInfo( $frameid, $fid )
 #-------------------------
 {
+#echo 'ShowSetupInfo:['.$frameid.'] ['.$fid.']';
     $rss = '';
-    $fid = prepDBVal($fid);
+    $frameid = prepDBVal($frameid);
 
-    $sql = "SELECT * FROM frames AS f, users AS u
-        WHERE f.idframes='$fid' AND f.user_id=u.idusers";
+    $sql = "SELECT * FROM frames AS f, users AS u WHERE f.frame_id='$frameid' AND f.user_id=u.idusers";
     $res = mysql_query($sql)or die("ShowSetupInfo lookup failed.");
 
     $rss = feedRssHead();
 
     if ( mysql_num_rows($res) > 0 ) {
-        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', FALSE);
+        list ($ret, $active) = frameIsActiveFID( $frameid );
+        $rss .= feedRssChannelHead($frameid, 5, 'Setup Info for [' . $frameid . ']', $active);
     } else {
-        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', TRUE);
+        $rss .= feedRssChannelHead($frameid, 15, 'Setup Info for [' . $frameid . ']', FALSE);
     }
 
-    $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
+    $fn = $GLOBALS['image_path'] . '/'. $frameid.'-info.jpg';
+    $url = $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg';
+
+    feedMakeInfoPanel( $fid, $fn );
+
+    $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
     $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
-             $GLOBALS['image_url_root'] . '/' . $fid . '-info.jpg', $icon_url);
+             $url, $icon_url);
 
     $rss .= feedRssChannelTail();
     $rss .= feedRssTail();
@@ -216,7 +224,7 @@ function feedShowSetupInfo( $fid )
 }
 
 #-------------------------
-function feedGetUserList( $fid )
+function feedGetUserList( $frameid, $fid)
 #-------------------------
 {
     $rss = '';
@@ -230,17 +238,17 @@ function feedGetUserList( $fid )
     $rss = feedRssHead();
 
     if ( mysql_num_rows($res) > 0 ) {
-        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', FALSE);
+        $rss .= feedRssChannelHead($frameid, 15, 'User list for [' . $frameid . ']', FALSE);
         while( $row = mysql_fetch_assoc( $res ) ) {
-            $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
+            $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg'; 
             $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
                  $icon_url, '');
         }
     } else {
-        $rss .= feedRssChannelHead('', 15, 'User list for [' . $fid . ']', TRUE);
-        $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
+        $rss .= feedRssChannelHead('', 5, 'User list for [' . $frameid . ']', TRUE);
+        $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
         $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
-             $GLOBALS['image_url_root'] . '/' . $fid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
+             $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
     }
 
     $rss .= feedRssChannelTail();
@@ -379,6 +387,64 @@ $rss = '';
 }
 
 #------------------------------
+function feedMakeInfoPanel( $fid, $fn )
+#------------------------------
+{
+#echo 'MakeInfoPanel:['.$fid.'] ['.$fn.']';
+
+    if ( isset($fid) and ( strlen( $fid ) > 0 ) ) {
+        $fid = prepDBVal($fid);
+        $res = mysql_query("SELECT activation_key,frame_id FROM frames WHERE idframes='$fid'");
+        if (!$res) { die("Invalid query: " . mysql_error()); }
+        $row = mysql_fetch_assoc($res);     # get the first row
+        $akey = $row['activation_key'];
+        $prodid = $row['product_id'];
+        $frameid = $row['frame_id'];
+        list ($idproduct, $manuf, $model, $hres, $vres) = frameGetProductInfo($prodid);
+    } else {
+        $fid = 'Unknown';
+        $akey = '**ERROR**';
+        $prodid = 'Unknown';
+        $frameid = 'Unknown';
+        $hres = 640; $vres=480;
+    }
+
+    list ($idproduct, $manuf, $model, $hres, $vres) = frameGetProductInfo($prodid);
+
+    $fontName = 'Helvetica';
+    $fontColor = '#efefef';
+    $fontSize = 36;
+    $text = "FrameChannel have ceased operation.
+
+You can register for the new FrameAlbum
+service at www.framealbum.com.
+
+Your Activation Key is $akey
+
+Your frameID is $frameid";
+
+    # make a transparent pallete
+    $pallete = new Imagick;
+    $pallete->newimage($hres, $vres, "green");
+    $pallete->setimageformat("jpg");
+
+    # make a draw object with settings
+    $draw = new imagickdraw();
+    $draw->setgravity(imagick::GRAVITY_CENTER);
+    $draw->setfont("$fontName");
+    $draw->setfontsize($fontSize);
+
+    # set font color
+    $draw->setfillcolor($fontColor);
+    # center annotate on top of offset annotates
+    $pallete->annotateImage ( $draw, 0 ,0, 0, $text );
+
+    $pallete->writeImage($fn);
+
+    return;
+}
+
+#------------------------------
 function feedInactiveFrameFeed($fid, $frameid, $prodid, $akey)
 #------------------------------
 {
@@ -388,44 +454,9 @@ function feedInactiveFrameFeed($fid, $frameid, $prodid, $akey)
     $fn = $GLOBALS['image_path'] . '/'. $frameid.'-info.jpg';
     $url = $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg';
 
-    if ( !(file_exists($fn)) ) {
-        if (($fid > 0) and ($akey == '')) {
-            $fid = prepDBVal($fid);
-            $res = mysql_query("SELECT activation_key FROM frames WHERE idframes=$fid");
-            if (!$res) { die("Invalid query: " . mysql_error()); }
-            $row = mysql_fetch_assoc($res);     # get the first row
-            $akey = $row['activation_key'];
-        }
-        $fontName = 'Helvetica';
-        $fontColor = '#efefef';
-        $fontSize = 36;
-        $text = "FrameChannel have ceased operation.
-
-You can register for the new FrameAlbum
-service at www.framealbum.com.
-
-Your Activation Key is $akey
-
-Your frameID is $frameid";
-
-        # make a transparent pallete
-        $pallete = new Imagick;
-        $pallete->newimage($hres, $vres, "green");
-        $pallete->setimageformat("jpg");
-
-        # make a draw object with settings
-        $draw = new imagickdraw();
-        $draw->setgravity(imagick::GRAVITY_CENTER);
-        $draw->setfont("$fontName");
-        $draw->setfontsize($fontSize);
-
-        # set font color
-        $draw->setfillcolor($fontColor);
-        # center annotate on top of offset annotates
-        $pallete->annotateImage ( $draw,0 ,0, 0, $text );
-
-        $pallete->writeImage($fn);
-    }
+#    if ( !(file_exists($fn)) ) {
+        feedMakeInfoPanel( $fid, $fn );
+#    }
 
     $rss = feedRssHead();
     $rss .= feedRssChannelHead('inactive_frame' . $frameid, 10, 'Inactive Frame (' . $frameid . ')', FALSE);

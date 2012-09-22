@@ -396,18 +396,15 @@ function frameCheckInFrameID2($frameid, $prodid)
 
     if (!(isset($prodid))) { $prodid = 'UKNW'; }
     $idproduct = frameFindIDProd($prodid);
-
     if ( (isset($frameid)) && (strlen($frameid) != 0) ) {                     # don't add frames with no ID
         $sql = 'SELECT * FROM frames WHERE frame_id="' . $frameid . '"';
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
         }
-
-        if (mysql_num_rows($result) > 0) {
+        if ( mysql_num_rows( $result ) > 0) {
             $row = mysql_fetch_assoc( $result );
             $akey = $row['activation_key'];
-
             if ( $row['product_id'] != $idproduct ) {
                 $sql = "UPDATE frames SET product_id='$idproduct', last_seen = now() WHERE frame_id = '$frameid' LIMIT 1";
             } else {
