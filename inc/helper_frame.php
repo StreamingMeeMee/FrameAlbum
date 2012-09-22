@@ -15,6 +15,10 @@
 # 2012-aug-2 - TimC
 #   - add frameFindUsernamePin() to support frames that request via username and PIN (Viewsonic)
 #   - rename parms ('fid' vs 'idframe' vs 'frameid') to clarify which is being used
+#
+# 2012-sep-22 - TimC
+#   - fix frameCheckInFrameID2() to correctly return idframes value of a newly addeed frame
+#   - modify frameCheckInFrameID2() to return idframes on existing, and new frames
 #--------------------------------
 
 #----------------------------
@@ -382,7 +386,7 @@ function frameCheckInFrameID2($frameid, $prodid)
 #
 # $frameid is the frameId value supplied by the frame, it is NOT idframes used internally (often called 'fid')
 #
-# Returns: 0 on error, 1 if specified frame was touched. $newfid is idframe of new frame. $akey is activationkey of new frame
+# Returns: 0 on error, idframes if specified frame was touched. $newfid is idframe of new frame. $akey is activationkey of new frame
 #============================
 {
     $frameid = prepDBVal($frameid);
@@ -392,18 +396,15 @@ function frameCheckInFrameID2($frameid, $prodid)
 
     if (!(isset($prodid))) { $prodid = 'UKNW'; }
     $idproduct = frameFindIDProd($prodid);
-
     if ( (isset($frameid)) && (strlen($frameid) != 0) ) {                     # don't add frames with no ID
         $sql = 'SELECT * FROM frames WHERE frame_id="' . $frameid . '"';
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
         }
-
-        if (mysql_num_rows($result) > 0) {
+        if ( mysql_num_rows( $result ) > 0) {
             $row = mysql_fetch_assoc( $result );
             $akey = $row['activation_key'];
-
             if ( $row['product_id'] != $idproduct ) {
                 $sql = "UPDATE frames SET product_id='$idproduct', last_seen = now() WHERE frame_id = '$frameid' LIMIT 1";
             } else {
@@ -415,11 +416,13 @@ function frameCheckInFrameID2($frameid, $prodid)
                 $ret = 0;
                 $newfid = 0;
                 $akey = '';
+            } else {
+                $ret = $row['idframes'];
             }
         } else {
             $newfid = 0;
-            list ($newid, $msg, $akey) = frameAdd(2, $frameid, NULL, $idproduct, 'N', 0, '');   # '2' is the 'Public Channels' user
-            $ret = 1;
+            list ($newfid, $msg, $akey) = frameAdd(2, $frameid, NULL, $idproduct, 'N', 0, '');   # '2' is the 'Public Channels' user
+            $ret = $newfid;
         }
     } else {
         $ret = 0;
