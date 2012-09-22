@@ -15,7 +15,85 @@
 #   - for inactive frames set the item duration of the info pane to 30 (was 3).  DSM-210 (perhaps others) _refreshed_ the image at this interval rather than
 #     simply moving the next image in the list.
 #   - Modify the channel header for inactive frames to include the frameID in the channel name and description.  DSM-210 frames use this info in the 'getuserlist' call.
-#-----------------------------
+#
+# 2012-aug-25 - TimC
+#   - add feedChannelListUID( $uid, $uname ) to send a list of all channels defined by the specified users.
+#   - add feedGetUserList( $parms ) to send a list of users associated with a given frame.
+#
+# 2012-sept-5 - TimC
+#   - add feedActiveUserFeed($uid) to send all content for a given user
+#
+# 2012-sept-22 - TimC
+#   - add feedShowSetupInfo( $fid ) to display setup/activation info
+#-----------------------------a
+
+#--------
+function feedRssUserBody( $uid, $shuffle='N', $item_limit=999 )
+#--------
+{
+
+$t = '';
+$pubDate = '';
+$title = '';
+#echo "feedRssUserBody:[".$uid."]\n";
+    if( $shuffle == 'Y' ) {
+        $ord = ' ORDER BY  rand()';
+    } else {
+        $ord = ' ORDER BY iditems';
+    }
+    $uid =q( $uid );
+
+    $sql = "SELECT *,DATE_FORMAT( `pubDate`, '%a, %d %b %Y %T GMT' ) AS pubDateF FROM items AS it, user_channels AS uc WHERE uc.user_id=$uid AND it.user_channel_id=uc.iduserchannels" . $ord;
+#echo $sql;
+    $items_result = mysql_query($sql);
+    if (!$items_result) {
+        die("[$sql]: Invalid query: " . mysql_error());
+    }
+
+    $row = mysql_fetch_assoc( $items_result );
+#print_r( $row );
+    while ( ($row) && ($item_limit > 0) ) {
+
+        if ( $row{'pubDateF'} ) {
+            $pubDate = $row{'pubDateF'};
+        } else {
+            $pubDate = strftime('%a, %d %b %Y %H:%M:%S GMT', time() );
+        }
+
+        if ( $row{'title'} ) {
+            $title = $row{'title'};
+        } else {
+            $title = 'Untitled';
+        }
+#echo "title:[".$title."]\n";
+        $t .= "<item>\n";
+
+        $t .= "    ".'<title>' . htmlentities( $row{'title'}, ENT_COMPAT | ENT_XML1 ) . "</title>\n";
+        $t .= "    ".'<link>' . htmlentities( $row{'link'}, ENT_COMPAT | ENT_XML1 ) . "</link>\n";
+        $t .= "    ".'<category>' .  htmlentities( $row{'category'}, ENT_COMPAT | ENT_XML1) . "</category>\n";
+#        if( $$ref{'description'} ) {
+#            $t .= "    ".'<description>' . encode_entities( $$ref{'description'} ) . "</description>\n";
+#        } else {
+            $t .= "    ".'<description>' . htmlentities('<img src="' . $row{'link'} . '">', ENT_COMPAT | ENT_XML1) . "</description>\n";
+#        }
+        $t .= "    ".'<pubDate>' .  $pubDate . "</pubDate>\n";
+        $t .= "    ".'<guid isPermaLink="false">' .  htmlentities( $row{'guid'}, ENT_COMPAT | ENT_XML1) . "</guid>\n";
+        $t .= "    ".'<media:content url="' . $row{'media_content_url'} . '" type="image/jpeg" duration="10" />'."\n";
+        $t .= "    ".'<media:thumbnail url="' . $row{'media_thumbnail_url'} . '" />'."\n";
+
+        $t .= "    ".'<tsmx:sourcelink>' . $row{'media_content_url'} . '</tsmx:sourcelink>'."\n";
+
+        $t .= "</item>\n";
+
+        $item_limit--;
+
+        $row = mysql_fetch_assoc( $items_result );
+
+    }
+
+    return $t;
+
+}
 
 #--------
 function feedRssHead()
@@ -109,6 +187,26 @@ function feedSendRSS($rss)
 }
 
 #-------------------------
+function feedShowSetupInfo( $fid )
+#-------------------------
+{
+    $rss = '';
+
+    $rss = feedRssHead();
+
+    $rss .= feedRssChannelHead('', 15, 'Setup Info for [' . $fid . ']', TRUE);
+
+    $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
+    $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
+             $GLOBALS['image_url_root'] . '/' . $fid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
+
+    $rss .= feedRssChannelTail();
+    $rss .= feedRssTail();
+
+    return $rss;
+}
+
+#-------------------------
 function feedChannelListFID($fid)
 #-------------------------
 {
@@ -122,6 +220,35 @@ function feedChannelListFID($fid)
 
     $rss = feedRssHead();
     $rss .= feedRssChannelHead('', 15, 'Channel list for ' . userFindFID($fid) . ' [FID:'. $fid . ']');
+
+    if ( mysql_num_rows($res) > 0 ) {
+        while( $row = mysql_fetch_assoc( $res ) ) {
+            $icon_url = $GLOBALS['www_url_root'] . $row['frame_icon_url'];
+            $rss .= feedRssChannelListItem($row['chan_nickname'], '', $row['channel_category'], '', '', $row['iduserchannels'],
+                 $icon_url, '');
+        }
+    }
+
+    $rss .= feedRssChannelTail();
+    $rss .= feedRssTail();
+
+    return $rss;
+}
+
+#-------------------------
+function feedChannelListUID( $uid, $uname )
+#-------------------------
+{
+    $rss = '';
+    $uid = q( $uid );
+
+    $sql = "SELECT * FROM user_channels AS uc, channel_types AS ct
+        WHERE uc.iduserchannels=" . $uid . "
+        AND ct.idchanneltypes=uc.channel_type_id";
+    $res = mysql_query($sql)or die("channelList lookup failed.");
+
+    $rss = feedRssHead();
+    $rss .= feedRssChannelHead('', 15, 'Channel list for ' . $uname);
 
     if ( mysql_num_rows($res) > 0 ) {
         while( $row = mysql_fetch_assoc( $res ) ) {
@@ -171,6 +298,37 @@ function feedActiveFrameFeed($fid)
     $rss .= feedRssTail();
 
     }
+
+    feedSendRSS($rss);
+
+    return;
+}
+
+#---------------------------
+function feedActiveUserFeed( $uid )
+#---------------------------
+{
+$rss = '';
+    $url = $GLOBALS['image_url_root'] . '/Feed_Not_Avail.jpg';
+
+    $rss = feedRssHead();
+    $rss .= feedRssChannelHead($uid, 60, 'Feed for ['.$uid.']');
+
+#    $rss .= '<item>
+#    <title>FrameAlbum Info</title>
+#    <link>'.$url.'</link>
+#    <category>FrameAlbum Info</category>
+#    <description>&lt;img src=&quot;'.$url.'&quot;&gt;</description>
+#    <pubDate>Thu, 23 Jun 2011 17:04:46 -0400</pubDate>
+#    <guid isPermaLink="false">30f8b8d1-80af-38e7-8616-b3e793dc289b</guid>
+#    <media:content url="'.$url.'" type="image/jpeg" height="480" width="800" duration="180" />
+#    <media:thumbnail  url="'.$url.'" height="60" width="60" />
+#    <tsmx:sourcelink>'.$url.'</tsmx:sourcelink>
+#</item>'."\n";
+
+    $rss .= feedRssUserBody( $uid );
+    $rss .= feedRssChannelTail();
+    $rss .= feedRssTail();
 
     feedSendRSS($rss);
 

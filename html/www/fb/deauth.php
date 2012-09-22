@@ -4,6 +4,7 @@ require_once 'inc/config.php';
 require_once 'inc/helper_user.php';
 require_once 'inc/helper_fb.php';
 require_once 'inc/user_class.php';
+require_once 'inc/eventlog_class.php';
 
 function parse_signed_request($signed_request, $secret) {
   list($encoded_sig, $payload) = explode('.', $signed_request, 2); 
@@ -32,32 +33,30 @@ function base64_url_decode($input) {
 }
 
 if ($_REQUEST) {
-//  echo '<p>signed_request contents:</p>';
     $response = parse_signed_request($_REQUEST['signed_request'], $GLOBALS['fb_api_secret']);
-
-    error_log( 'deauth:[' . print_r( $response, TRUE ) . ']' );
-    error_log( 'deauth: FB userID:[' . $response['user_id'] . ']');
 
     $dbh = dbStart();
 
-//    echo 'Searching for match:['. $response['registration']['email'] .']';
+    $l = new EventLog();
+
+    $l->logSystemDebugEvent($uid, 'FB DEAUTH: [' . print_r( $response, true) . ']' );
+
     $uid = userFindFBUser( $response['user_id'] );
-//    echo 'found UID:[' . $uid . ']';
+
+    $l->logSystemInfoEvent($uid, 'FB DEAUTH UID:['.$uid.']  FB UID:['.$response['user_id'].']' );
 
     if( $uid ) {            # link to an existing user
         $user = new User( $dbh, $uid );
         $user->fb_uid( 0 ); # unlink the user
-        $user->fb_auth( '' );
+        $user->fb_auth( 'xx' );
+        $user->fb_auth_expire( 0 );
         $user->save();
         $msg = 'Your Facebook account has been un-linked from your FrameAlbum account.';
-        error_log( 'deauth: FrameAlbum userID:[' . $uid . '] has been deauthorized by FaceBook userID:['. $response['user_id'] . ']' );
+    } else {
+        $l->logSystemInfoEvent( $uid, 'deauth: FB UID:[' . $response['user_id'] . '] - no matching FrameAlbum user found.' );
     }
-
-    echo $msg;
-
-    echo $user->stringify();
     
 } else {
-    header('Location:/?msg=An error occured during registration.');
+    header('Location:/?msg=An error occured during de-authorization.');
 }
 ?>
