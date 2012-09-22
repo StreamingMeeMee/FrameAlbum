@@ -13,6 +13,9 @@
 # 2012-aug-27 - TimC
 #   - add support for 'route' parms
 #   - a 'user' request now gets all content for all channels owned by the specified user.
+#
+# 2012-sep-22 - TimC
+#   - support showSetupInfo
 #-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
