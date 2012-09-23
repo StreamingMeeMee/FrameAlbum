@@ -28,16 +28,24 @@ include_once 'inc/helper_user.php';
 function handleRoute( $parms )
 #--------------------------
 {
-#echo "handleRoute()\n";
+#echo "handleRoute( " . $parms['frameid'] .','.$parms['productid'] .")\n";
+
+    if( strlen( $parms['frameid'] ) > 0 ) {
+        list ($fid, $newfid, $akey) = frameCheckInFrameID2( $parms['frameid'], $parms['productid'] );
+        $active = isFrameActive( $parms['frameid'] );
+    } else {
+        $fid = 0;
+        $active = 0;
+    }
 
     switch( $parms['route'] ) {
         case 'getUserList':
-            $rss = feedGetUserList( $parms['frameid'] );
+            $rss = feedGetUserList( $parms['frameid'], $fid );
             feedSendRSS( $rss );
             break;
 
         case 'showSetupInfo':
-            $rss = feedShowSetupInfo( $parms['frameid'] );
+            $rss = feedShowSetupInfo( $parms['frameid'], $fid );
             feedSendRSS( $rss );
             break;
 
