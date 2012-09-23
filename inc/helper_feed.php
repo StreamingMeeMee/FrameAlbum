@@ -192,7 +192,6 @@ function feedSendRSS($rss)
 function feedShowSetupInfo( $frameid, $fid )
 #-------------------------
 {
-#echo 'ShowSetupInfo:['.$frameid.'] ['.$fid.']';
     $rss = '';
     $frameid = prepDBVal($frameid);
 
@@ -202,10 +201,12 @@ function feedShowSetupInfo( $frameid, $fid )
     $rss = feedRssHead();
 
     if ( mysql_num_rows($res) > 0 ) {
+        $row = mysql_fetch_assoc( $res );
         list ($ret, $active) = frameIsActiveFID( $frameid );
         $rss .= feedRssChannelHead($frameid, 5, 'Setup Info for [' . $frameid . ']', $active);
     } else {
         $rss .= feedRssChannelHead($frameid, 15, 'Setup Info for [' . $frameid . ']', FALSE);
+        $active = 0;
     }
 
     $fn = $GLOBALS['image_path'] . '/'. $frameid.'-info.jpg';
@@ -214,7 +215,8 @@ function feedShowSetupInfo( $frameid, $fid )
     feedMakeInfoPanel( $fid, $fn );
 
     $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
-    $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
+    $iname = ($active ? $row['user_nickname'] : 'Inactive Frame');
+    $rss .= feedRssChannelListItem( $iname, '', 'user', 'FrameAlbum user', '', 0,
              $url, $icon_url);
 
     $rss .= feedRssChannelTail();
