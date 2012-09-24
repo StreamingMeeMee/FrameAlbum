@@ -26,6 +26,9 @@
 # 2012-sept-22 - TimC
 #   - add feedShowSetupInfo( $fid ) to display setup/activation info
 #   - move info panel creation to feedMakeInfoPanel()
+#
+# 2012-sept-24 - TimC
+#   - feedGetUserList() now returns only 1 user.  It also puts 'username' into the 'frameuserinfo:username' field rather than frameID.
 #-----------------------------a
 
 #--------
@@ -240,12 +243,11 @@ function feedGetUserList( $frameid, $fid)
     $rss = feedRssHead();
 
     if ( mysql_num_rows($res) > 0 ) {
-        $rss .= feedRssChannelHead($frameid, 15, 'User list for [' . $frameid . ']', FALSE);
-        while( $row = mysql_fetch_assoc( $res ) ) {
-            $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg'; 
-            $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
+        $row = mysql_fetch_assoc( $res )
+        $rss .= feedRssChannelHead($row['username'], 15, 'User list for [' . $frameid . ']', FALSE);
+        $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg'; 
+        $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
                  $icon_url, '');
-        }
     } else {
         $rss .= feedRssChannelHead('', 5, 'User list for [' . $frameid . ']', TRUE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
