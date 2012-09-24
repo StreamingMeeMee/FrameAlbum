@@ -297,9 +297,10 @@ function feedChannelListUID( $uid, $uname )
     $rss = '';
     $uid = q( $uid );
 
-    $sql = "SELECT * FROM user_channels AS uc, channel_types AS ct
-        WHERE uc.iduserchannels=" . $uid . "
-        AND ct.idchanneltypes=uc.channel_type_id";
+    $sql = "SELECT * FROM users AS u, user_channels AS uc, channel_types AS ct
+        WHERE (u.idusers=$uid OR u.username=$uid OR u.email=$uid) 
+        AND uc.user_id=u.idusers
+        AND ct.idchanneltypes = uc.channel_type_id";
     $res = mysql_query($sql)or die("channelList lookup failed.");
 
     $rss = feedRssHead();
