@@ -9,6 +9,12 @@
 #
 # 2012-aug-20 -TimC
 #   - Add  userGetUIDByToken()
+#
+# 2012-sept-5 - TimC
+#   - Add userFindPIN() to find a user by username + PIN
+#
+# 2012-sept24 - TimC
+#   - Modify userFindPIN() to optionally search for match on username if PIN field is present but blank
 #--------------------------------
 
 #----------------------------
@@ -333,8 +339,8 @@ function userFind($user)
     if (!(isset($user))) { return 0; }
 
     if (strlen($user) != 0) {                    # nothing to lookup
-        $user = prepDBVal($user);
-        $sql = "SELECT idusers,email FROM users where username='$user'";        # Is this a valid user?
+        $user = q($user);
+        $sql = "SELECT idusers,email FROM users where username=$user AND active!='N'";        # Is this a valid user?
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
@@ -344,10 +350,51 @@ function userFind($user)
             $tmp = mysql_fetch_row( $result );
             $ret = $tmp[0];
         } else {
-            $ret = '0';
+            $ret = 0;
         }
     } else {
-        $ret = '0';
+        $ret = 0;
+    }
+
+    return $ret;
+}
+
+#----------------------------
+function userFindPIN($user, $pin, $lax=FALSE)
+#----------------------------
+# Returns iduser of user with given username and PIN.  =0 if user is not found
+#============================
+{
+    if (!(isset($user))) { return 0; }
+    if (!(isset($pin))) { return 0; }
+    if ( ( strlen($user) != 0 ) )  {                    # nothing to lookup
+        $user = q($user);
+#        $pin = q($pin);                                # don't quote it here as it breaks the strlen check below
+        $sql = "SELECT idusers FROM users where username=$user AND pin=".q($pin)." AND active!='N'";        # Is this a valid user?
+        $result = mysql_query($sql);
+        if (!$result) {
+            die("[$sql]: Invalid query: " . mysql_error());
+        }
+        if (mysql_num_rows( $result ) == 1) {
+            $tmp = mysql_fetch_row( $result );
+            $ret = $tmp[0];
+        } else {
+            if( $lax and ( strlen($pin) == 0 ) ) {                                              # lookup on username only
+                $sql = "SELECT idusers FROM users where username=$user AND active!='N'";        # Is this a valid user?
+                $result = mysql_query($sql);
+                if (!$result) {
+                    die("[$sql]: Invalid query: " . mysql_error());
+                }
+                if (mysql_num_rows( $result ) == 1) {
+                    $tmp = mysql_fetch_row( $result );
+                    $ret = $tmp[0];
+                }
+            } else {
+                $ret = 0;
+            }
+        }
+    } else {
+        $ret = 0;
     }
 
     return $ret;

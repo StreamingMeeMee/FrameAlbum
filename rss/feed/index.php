@@ -58,11 +58,11 @@ function handleRoute( $parms )
 function handleUser( $parms )
 #--------------------------
 {
-#echo "handleUser() user:[".$parms['user']." pin:[".$parms['pin']."]\n";
+#if ( !isset($parms['pin']) ) { echo "PIN is NOT SET"; }
+#echo "handleUser() user:[".$parms['user']."] pin:[".$parms['pin']."]\n";
 
     if ( isset( $parms['user'] ) and isset( $parms['pin'] ) ) {
         $parms['fid'] = frameFindUsernamePin( $parms['user'], $parms['pin'] );          # is it a specific frame?
-#echo "fid:[".$fid."]\n";
         if( $parms['fid'] > 0 ) {
             list ($ret, $parms['frameid'], $akey) = frameCheckIn( $parms['fid'] );
             if( isFrameActive( $parms['fid'] ) ) {
@@ -72,8 +72,7 @@ function handleUser( $parms )
             }
 
         } else {                                                                        # is it all content for this user? 
-            $uid = userFindPIN( $parms['user'], $parms['pin'] );
-#echo "uid:[".$uid."]\n";
+            $uid = userFindPIN( $parms['user'], $parms['pin'], TRUE );
             if( $uid != 0 ) { feedActiveUserFeed( $uid ); }
         }
 
