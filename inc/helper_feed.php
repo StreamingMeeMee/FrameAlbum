@@ -243,7 +243,7 @@ function feedGetUserList( $frameid, $fid)
     $rss = feedRssHead();
 
     if ( mysql_num_rows($res) > 0 ) {
-        $row = mysql_fetch_assoc( $res )
+        $row = mysql_fetch_assoc( $res );
         $rss .= feedRssChannelHead($row['username'], 15, 'User list for [' . $frameid . ']', FALSE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg'; 
         $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
