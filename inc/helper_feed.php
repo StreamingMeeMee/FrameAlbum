@@ -244,12 +244,12 @@ function feedGetUserList( $frameid, $fid)
 
     if ( mysql_num_rows($res) > 0 ) {
         $row = mysql_fetch_assoc( $res );
-        $rss .= feedRssChannelHead($row['username'], 15, 'User list for [' . $frameid . ']', FALSE);
+        $rss .= feedRssChannelHead($row['username'], 15, 'User list for [' . $frameid . ']', TRUE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg'; 
         $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
                  $icon_url, '');
     } else {
-        $rss .= feedRssChannelHead('', 5, 'User list for [' . $frameid . ']', TRUE);
+        $rss .= feedRssChannelHead('', 5, 'User list for [' . $frameid . ']', FALSE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
         $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
              $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
