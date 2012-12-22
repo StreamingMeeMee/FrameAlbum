@@ -31,6 +31,7 @@ function doGET($tok, $username, $email, $zip)
     $html .= '<tr><td>Username:</td><td><input type="text" maxlength="64" size="32" name="reg_username" id="reg_username" value="'.$username.'" onblur="validUsername()"></td><td><div><img id="usernamemsg" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
     $html .= '<tr><td>Password:</td><td><input type="password" maxlength="64" size="32" name="reg_passwd1" id="reg_passwd1" value="" onchange="validPasswd()"></td><td><div><img id="passwdmsg" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
     $html .= '<tr><td>Confirm Password:</td><td><input type="password" maxlength="64" size="32" name="reg_passwd2" id="reg_passwd2" value="" onchange="validPasswd()"></td><td>&nbsp;</td></tr>';
+    $html .= '<tr><td>&nbsp;</td><td><span id="passwdmsgtxt">&nbsp;</span></td></tr>';
     $html .= '<tr><td>Email address:</td><td><input type="text" maxlength="64" size="32" name="reg_email" id="reg_email" value="'.$email.'" onblur="validEmail()"></td><td><div><img id="emailmsg" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
     $html .= '<tr><td>Home ZIP code:<br>(US & Canada only)</td><td><input type="text" maxlength="7" size="6" name="reg_zip" id="reg_zip" value="'.$zip.'" onblur="validZip()"></td><td><div><img id="zipmsg" height="24" src="/images/knobs/Grey.png"</div></td></tr>';
     $html .= '</table>';
@@ -63,17 +64,17 @@ function doPOST()
 #---------------------------
 {
     if (isset($_POST['tok'])) { $tok = $_POST['tok']; } else { $tok = ''; }
-    if (isset($_POST['reg_username'])) { $username = $_POST['reg_username']; } else { $username = '?'; }
     if (isset($_POST['reg_passwd1'])) { $passwd = $_POST['reg_passwd1']; }  else { $passwd = '?'; }
     if (isset($_POST['reg_email']))  { $email = $_POST['reg_email']; } else { $email = '?'; }
-    if (isset($_POST['reg_zip']))    { $zip = $_POST['reg_zip'];     } else { $zip = '?'; }
+    if (isset($_POST['reg_username'])) { $username = $_POST['reg_username']; } else { $username = $email; }
+    if (isset($_POST['reg_zip']))    { $zip = $_POST['reg_zip'];     } else { $zip = ''; }
 
     $msg = '';
     $html = '';
     $errs = 0;
 
     if (!isset($_POST['stage']) or ($_POST['stage'] == 1) ) {               # we only have email during stage1
-        $html .= doGet($tok, $username, $email, $zip);
+        list ($msg, $html) = doGet($tok, $username, $email, $zip);
     } else {
         if (strlen($tok) > 0) {                             # existing user
             list ($o_username, $o_email, $o_zip) = userGetInfoByToken($tok);    # what was the original values?
@@ -120,7 +121,7 @@ function doPOST()
                     if ( userAdd($username, $passwd, $email, $zip, 'R') > 0 ) {
                         list ($d, $msg) = userSendWelcomeEmail($email);
                         $html .= "<p>Welcome!  You are now registered for the FrameAlbum service.  You will receive an email with details of the next step.</p>";
-                        setcookie('registered', $username, mktime(time()+60*60*24*120), '/', '.framealbum.com');
+                        setcookie('registered', $username, ( time() + (60*60*24*120) ), '/', '.framealbum.com');
                     } else {
                         $msg .= "<p>Sorry, something went pear-shaped with the registration.  Please try again with a different email address.</p>";
                         list ($d, $html) = doGet($tok, $username, $email, $zip);
@@ -183,16 +184,22 @@ function validPasswd()
 
     if ( validPwd1 && validPwd2 && (pwd1 == pwd2) ) {
         document.getElementById('passwdmsg').src='/images/knobs/Valid_Green.png';
+        document.getElementById('passwdmsgtxt').innerText='';
         return true;
     } else {
         document.getElementById('passwdmsg').src='/images/knobs/Attention.png';
+        if ( pwd1 == pwd2 ) {
+            document.getElementById('passwdmsgtxt').innerText='Passwords are invalid.';
+        } else {
+            document.getElementById('passwdmsgtxt').innerText='Passwords do not match.';
+        }
         return false;
     }
 }
 
 function validUsername()
 {
-    var userRegex = /^[\w\.]{6,64}$/;
+    var userRegex = /^[\s\.]{6,64}$/;
     var validUname = document.getElementById('reg_username').value.match(userRegex);
   
     if (validUname) {
