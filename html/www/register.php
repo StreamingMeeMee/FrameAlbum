@@ -189,7 +189,7 @@ function validPasswd()
     } else {
         document.getElementById('passwdmsg').src='/images/knobs/Attention.png';
         if ( pwd1 == pwd2 ) {
-            document.getElementById('passwdmsgtxt').innerText='Passwords are invalid.';
+            document.getElementById('passwdmsgtxt').innerText='Passwords are invalid; they must be at least 6 characters long.';
         } else {
             document.getElementById('passwdmsgtxt').innerText='Passwords do not match.';
         }
