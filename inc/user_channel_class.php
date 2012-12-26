@@ -5,6 +5,8 @@
 # 2012-aug-4 - TimC
 #   - First Go
 #
+# 2012-dec-26 - TimC
+#   - Any changes to the record will force attrib_valid = '?' to ensure that it is checked again.
 #---------------------------------------
 
 class UserChannel 
@@ -164,6 +166,8 @@ public function needsave( $val )
 
     if( isset( $val ) ) {   # set it
         $this->dirty = 1;
+
+        $this->attribute_valid( '?' );      # force a retry of the current attribs
     }
 
     return $this->dirty;
@@ -207,7 +211,6 @@ $ret = '';
 
     if( isset( $val ) and ($val != $this->attrib ) ) {   # set it
         $this->attrib = $val;
-        $this->attribute_valid( '?' );
         $this->needsave( 1 );
         $ret = $val;
     } else {                                            # simply return the current val
