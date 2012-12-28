@@ -35,6 +35,7 @@
 #
 # 2012-dec-28 - TimC
 #   - feedGetUserList(): Send 'Unregistered Frame' as 'frameuserinfo:username' for unregistered/inactive frames.
+#   - feedGetUserList(): Remove extraneous '/' in unregistered frame info panel URL
 #-----------------------------a
 
 #--------
@@ -258,7 +259,7 @@ function feedGetUserList( $frameid, $fid)
         $rss .= feedRssChannelHead('Unregistered Frame', 5, 'User list for [' . $frameid . ']', FALSE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
         $rss .= feedRssChannelListItem( 'Unregistered Frame', '', 'user', 'FrameAlbum user', '', 0,
-             $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
+             $GLOBALS['image_url_root'] . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
     }
 
     $rss .= feedRssChannelTail();
