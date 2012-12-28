@@ -19,6 +19,10 @@
 # 2012-sep-22 - TimC
 #   - fix frameCheckInFrameID2() to correctly return idframes value of a newly addeed frame
 #   - modify frameCheckInFrameID2() to return idframes on existing, and new frames
+#
+# 2012-dec-27 - TimC
+#   - create an info panel when a new frame is added
+#
 #--------------------------------
 
 #----------------------------
@@ -215,6 +219,8 @@ function frameAdd( $uid, $frameid, $nick, $prodid, $acv, $pin, $akey )
         if ($result) {              # insert was OK
             $ret = mysql_insert_id();
             $msg = 'FrameID ['.$ret.'] was added.';
+            feedMakeInfoPanel( $ret, $GLOBALS['image_path'] . '/'. $frameid.'-info.jpg' );      # make the info panel
+
         } else {                    # not so much
             $ret = 0;
             $msg = 'Hmmm...  something went wrong.';

@@ -29,6 +29,9 @@
 #
 # 2012-sept-24 - TimC
 #   - feedGetUserList() now returns only 1 user.  It also puts 'username' into the 'frameuserinfo:username' field rather than frameID.
+#
+# 2012-dec-27 - TimC
+#   - feedGetUserList() - Send a 'fake' userlist to inactive frames
 #-----------------------------a
 
 #--------
@@ -237,7 +240,7 @@ function feedGetUserList( $frameid, $fid)
     $fid = prepDBVal($fid);
 
     $sql = "SELECT * FROM frames AS f, users AS u
-        WHERE f.idframes='$fid' AND f.user_id=u.idusers";
+        WHERE f.idframes='$fid' AND f.user_id=u.idusers and f.active='Y'";
     $res = mysql_query($sql)or die("GetUserList lookup failed.");
 
     $rss = feedRssHead();
