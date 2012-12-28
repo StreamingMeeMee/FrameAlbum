@@ -32,6 +32,9 @@
 #
 # 2012-dec-27 - TimC
 #   - feedGetUserList() - Send a 'fake' userlist to inactive frames
+#
+# 2012-dec-28 - TimC
+#   - feedGetUserList(): Send 'Unregistered Frame' as 'frameuserinfo:username' for unregistered/inactive frames.
 #-----------------------------a
 
 #--------
@@ -241,7 +244,7 @@ function feedGetUserList( $frameid, $fid)
 
     $sql = "SELECT * FROM frames AS f, users AS u
         WHERE f.idframes='$fid' AND f.user_id=u.idusers and f.active='Y'";
-    $res = mysql_query($sql)or die("GetUserList lookup failed.");
+    $res = mysql_query($sql)or die("feedGetUserList lookup failed.");
 
     $rss = feedRssHead();
 
@@ -252,9 +255,9 @@ function feedGetUserList( $frameid, $fid)
         $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
                  $icon_url, '');
     } else {
-        $rss .= feedRssChannelHead('', 5, 'User list for [' . $frameid . ']', FALSE);
+        $rss .= feedRssChannelHead('Unregistered Frame', 5, 'User list for [' . $frameid . ']', FALSE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
-        $rss .= feedRssChannelListItem( 'Inactive Frame', '', 'user', 'FrameAlbum user', '', 0,
+        $rss .= feedRssChannelListItem( 'Unregistered Frame', '', 'user', 'FrameAlbum user', '', 0,
              $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
     }
 
