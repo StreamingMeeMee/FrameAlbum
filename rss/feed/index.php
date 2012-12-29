@@ -63,7 +63,7 @@ function handleUser( $parms )
 {
 #if ( !isset($parms['pin']) ) { echo "PIN is NOT SET"; }
 #echo "handleUser() user:[".$parms['user']."] pin:[".$parms['pin']."]\n";
-    $mrkr = 'Unregistered Frame:';
+    $mrkr = 'Unregistered_Frame:';
     if( preg_match('/'.$mrkr.'/', $parms['user'] ) ) {
         $parms['frameid']= str_replace( $mrkr, '', $parms['user'] );
     }

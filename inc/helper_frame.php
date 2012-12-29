@@ -26,6 +26,9 @@
 # 2012-dec-28 - TimC
 #   - frameFindUsername(): if username is in the form 'Unregistered Frame:xxx' then the frameId is 'xxx' else
 #   - frameFindUsernamePin(): recognize 'Unregistered Frame:' form of username
+#
+# 2012-dec-28 - TimC
+#   - change 'Unregistered Frame' to 'Unregistered_Frame' to avoid sending spaces in URLs
 #--------------------------------
 
 #----------------------------
@@ -450,7 +453,7 @@ function frameFindUsername($username)
 #----------------------------
 {
     $ret = 0;
-    $mrkr = 'Unregistered Frame:';
+    $mrkr = 'Unregistered_Frame:';
     if( preg_match('/'.$mrkr.'/', $username) ) {
         $frameid = prepDBVal( str_replace( $mrkr, '', $username ) );
         $sql = 'SELECT idframes fom frames WHERE idframes='.$frameid.'"';
@@ -482,7 +485,7 @@ function frameFindUsernamePin( $username, $pin )
 #----------------------------
 {
     $ret = 0;
-    $mrkr = 'Unregistered Frame:';
+    $mrkr = 'Unregistered_Frame:';
 
     if( preg_match( '/'.$mrkr.'/', $username ) ) {        # is this an unregistered frame?
         $frameid = prepDBVal( str_replace( $mrkr, '', $username ) );
