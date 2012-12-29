@@ -23,6 +23,9 @@
 # 2012-dec-27 - TimC
 #   - create an info panel when a new frame is added
 #
+# 2012-dec-28 - TimC
+#   - frameFindUsername(): if username is in the form 'Unregistered Frame:xxx' then the frameId is 'xxx' else
+#   - frameFindUsernamePin(): recognize 'Unregistered Frame:' form of username
 #--------------------------------
 
 #----------------------------
@@ -442,13 +445,19 @@ function frameCheckInFrameID2($frameid, $prodid)
 #----------------------------
 function frameFindUsername($username)
 #----------------------------
-# Returns the first idframe associated with this user.  Yeah, not a great solution - need to refactor this one
+# if username is in the form 'Unregistered Frame:xxx' then the frameId is 'xxx' else
+# returns the first idframe associated with this user.  Yeah, not a great solution - need to refactor this one
 #----------------------------
 {
     $ret = 0;
-    $username = prepDBVal($username);
-
-    $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers";        # Does
+    $mrkr = 'Unregistered Frame:';
+    if( preg_match('/'.$mrkr.'/', $username) ) {
+        $frameid = prepDBVal( str_replace( $mrkr, '', $username ) );
+        $sql = 'SELECT idframes fom frames WHERE idframes='.$frameid.'"';
+    } else {
+        $username = prepDBVal( $username );
+        $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers";        # Does
+    }
     $result = mysql_query($sql);
     if (!$result) {
         die("[$sql]: Invalid query: " . mysql_error());
@@ -468,13 +477,24 @@ function frameFindUsername($username)
 function frameFindUsernamePin( $username, $pin )
 #----------------------------
 # Returns the idframe of the frame associated with user ($username) and with PIN = $pin.  Returns 0 if no match found.
+#
+# Recognizes the 'Unregisered Frame;' form of username.
 #----------------------------
 {
     $ret = 0;
-    $username = prepDBVal( $username );
-    $pin = prepDBVal( $pin );
+    $mrkr = 'Unregistered Frame:';
 
-    $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers AND feed_pin='$pin'";
+    if( preg_match( '/'.$mrkr.'/', $username ) ) {        # is this an unregistered frame?
+        $frameid = prepDBVal( str_replace( $mrkr, '', $username ) );
+
+        $sql = "SELECT idframes FROM frames WHERE frame_id='$frameid'";
+    } else {                                    # 'real' username
+        $username = prepDBVal( $username );
+        $pin = prepDBVal( $pin );
+
+        $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers AND feed_pin='$pin'";
+    }
+
     $result = mysql_query($sql);
     if (!$result) {
         die("[$sql]: Invalid query: " . mysql_error());

@@ -36,6 +36,7 @@
 # 2012-dec-28 - TimC
 #   - feedGetUserList(): Send 'Unregistered Frame' as 'frameuserinfo:username' for unregistered/inactive frames.
 #   - feedGetUserList(): Remove extraneous '/' in unregistered frame info panel URL
+#   - feedInactiveFrameFeed(): Use 'Unregistered Frame:' rather than 'inactive frame'
 #-----------------------------a
 
 #--------
@@ -225,7 +226,7 @@ function feedShowSetupInfo( $frameid, $fid )
     feedMakeInfoPanel( $fid, $fn );
 
     $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
-    $iname = ($active ? $row['user_nickname'] : 'Inactive Frame');
+    $iname = ($active ? $row['user_nickname'] : 'Unregistered Frame');
     $rss .= feedRssChannelListItem( $iname, '', 'user', 'FrameAlbum user', '', 0,
              $url, $icon_url);
 
@@ -256,10 +257,10 @@ function feedGetUserList( $frameid, $fid)
         $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
                  $icon_url, '');
     } else {
-        $rss .= feedRssChannelHead('Unregistered Frame', 5, 'User list for [' . $frameid . ']', FALSE);
+        $rss .= feedRssChannelHead('Unregistered Frame:'.$frameid, 5, 'User list for [' . $frameid . ']', FALSE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
-        $rss .= feedRssChannelListItem( 'Unregistered Frame', '', 'user', 'FrameAlbum user', '', 0,
-             $GLOBALS['image_url_root'] . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
+        $rss .= feedRssChannelListItem( 'Unregistered Frame:'.$frameid, '', 'user', 'FrameAlbum user', '', 0,
+             $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
     }
 
     $rss .= feedRssChannelTail();
@@ -471,7 +472,7 @@ function feedInactiveFrameFeed($fid, $frameid, $prodid, $akey)
 #    }
 
     $rss = feedRssHead();
-    $rss .= feedRssChannelHead('inactive_frame' . $frameid, 10, 'Inactive Frame (' . $frameid . ')', FALSE);
+    $rss .= feedRssChannelHead('Unregistered Frame:' . $frameid, 10, 'Unregistered Frame:' . $frameid, FALSE);
 
 $rss .= '<item>
         <title>FrameAlbum Info</title>
