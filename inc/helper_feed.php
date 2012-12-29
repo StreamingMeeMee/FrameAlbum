@@ -38,6 +38,9 @@
 #   - feedGetUserList(): Remove extraneous '/' in unregistered frame info panel URL
 #   - feedInactiveFrameFeed(): Use 'Unregistered Frame:' rather than 'inactive frame'
 #   - feedMakeInfoPanel(): Change 'have ceased operation' to 'has ceased operation'.
+#
+# 2012-dec-28 - TimC
+#   - change 'Unregistered Frame' to 'Unregistered_Frame' to avoid sending spaces in URLs
 #-----------------------------
 
 #--------
@@ -227,7 +230,7 @@ function feedShowSetupInfo( $frameid, $fid )
     feedMakeInfoPanel( $fid, $fn );
 
     $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
-    $iname = ($active ? $row['user_nickname'] : 'Unregistered Frame');
+    $iname = ($active ? $row['user_nickname'] : 'Unregistered_Frame');
     $rss .= feedRssChannelListItem( $iname, '', 'user', 'FrameAlbum user', '', 0,
              $url, $icon_url);
 
@@ -258,9 +261,9 @@ function feedGetUserList( $frameid, $fid)
         $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
                  $icon_url, '');
     } else {
-        $rss .= feedRssChannelHead('Unregistered Frame:'.$frameid, 5, 'User list for [' . $frameid . ']', FALSE);
+        $rss .= feedRssChannelHead('Unregistered_Frame:'.$frameid, 5, 'User list for [' . $frameid . ']', FALSE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg';
-        $rss .= feedRssChannelListItem( 'Unregistered Frame:'.$frameid, '', 'user', 'FrameAlbum user', '', 0,
+        $rss .= feedRssChannelListItem( 'Unregistered_Frame:'.$frameid, '', 'user', 'FrameAlbum user', '', 0,
              $GLOBALS['image_url_root'] . '/' . $frameid . '-info.jpg', $GLOBALS['image_url_root'] . '/unknown-user.png');
     }
 
@@ -473,7 +476,7 @@ function feedInactiveFrameFeed($fid, $frameid, $prodid, $akey)
 #    }
 
     $rss = feedRssHead();
-    $rss .= feedRssChannelHead('Unregistered Frame:' . $frameid, 10, 'Unregistered Frame:' . $frameid, FALSE);
+    $rss .= feedRssChannelHead('Unregistered_Frame:' . $frameid, 10, 'Unregistered_Frame:' . $frameid, FALSE);
 
 $rss .= '<item>
         <title>FrameAlbum Info</title>
