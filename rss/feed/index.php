@@ -16,6 +16,9 @@
 #
 # 2012-sep-22 - TimC
 #   - support showSetupInfo
+#
+# 2012-dec-28 - TimC
+#   - handleUser(): change user and pin exists check from isset() to array_key_exists().  This allows for blank, but present 'pin=' parms in URL
 #-------------------------------------------------
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
@@ -60,8 +63,12 @@ function handleUser( $parms )
 {
 #if ( !isset($parms['pin']) ) { echo "PIN is NOT SET"; }
 #echo "handleUser() user:[".$parms['user']."] pin:[".$parms['pin']."]\n";
+    $mrkr = 'Unregistered Frame:';
+    if( preg_match('/'.$mrkr.'/', $parms['user'] ) ) {
+        $parms['frameid']= str_replace( $mrkr, '', $parms['user'] );
+    }
 
-    if ( isset( $parms['user'] ) and isset( $parms['pin'] ) ) {
+    if ( array_key_exists( 'user', $parms ) and array_key_exists( 'pin', $parms ) ) {
         $parms['fid'] = frameFindUsernamePin( $parms['user'], $parms['pin'] );          # is it a specific frame?
         if( $parms['fid'] > 0 ) {
             list ($ret, $parms['frameid'], $akey) = frameCheckIn( $parms['fid'] );
