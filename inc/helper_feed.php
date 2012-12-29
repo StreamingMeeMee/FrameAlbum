@@ -473,7 +473,7 @@ function feedInactiveFrameFeed($fid, $frameid, $prodid, $akey)
 #    }
 
     $rss = feedRssHead();
-    $rss .= feedRssChannelHead('Unregistered Frame:' . $frameid, 10, 'Unregistered Frame:' . $frameid, FALSE);
+    $rss .= feedRssChannelHead('Unregistered Frame:' . $frameid, 10, 'Unregistered Frame:' . $frameid . ' fid:['.$fid.']', FALSE);
 
 $rss .= '<item>
         <title>FrameAlbum Info</title>
