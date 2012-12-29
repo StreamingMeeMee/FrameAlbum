@@ -62,7 +62,7 @@ function handleUser( $parms )
 #--------------------------
 {
 #if ( !isset($parms['pin']) ) { echo "PIN is NOT SET"; }
-echo "handleUser() user:[".$parms['user']."] pin:[".$parms['pin']."]\n";
+#echo "handleUser() user:[".$parms['user']."] pin:[".$parms['pin']."]\n";
     $mrkr = 'Unregistered Frame:';
     if( preg_match('/'.$mrkr.'/', $parms['user'] ) ) {
         $parms['frameid']= str_replace( $mrkr, '', $parms['user'] );
@@ -181,7 +181,6 @@ function handleFrame( $parms )
 
     dbStart();
 
-print_r($parms);
     if ( (isset($parms['fid'])) and ($parms['fid'] == 999999) ) { $parms['fid'] = 15; }                       # old demo feed frame id
 
     if( featureEnabled('enable_handle_route') and isset( $parms['route'] ) ) {
