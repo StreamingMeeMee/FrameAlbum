@@ -37,7 +37,8 @@
 #   - feedGetUserList(): Send 'Unregistered Frame' as 'frameuserinfo:username' for unregistered/inactive frames.
 #   - feedGetUserList(): Remove extraneous '/' in unregistered frame info panel URL
 #   - feedInactiveFrameFeed(): Use 'Unregistered Frame:' rather than 'inactive frame'
-#-----------------------------a
+#   - feedMakeInfoPanel(): Change 'have ceased operation' to 'has ceased operation'.
+#-----------------------------
 
 #--------
 function feedRssUserBody( $uid, $shuffle='N', $item_limit=999 )
@@ -427,7 +428,7 @@ function feedMakeInfoPanel( $fid, $fn )
     $fontName = 'Helvetica';
     $fontColor = '#efefef';
     $fontSize = 36;
-    $text = "FrameChannel have ceased operation.
+    $text = "FrameChannel has ceased operation.
 
 You can register for the new FrameAlbum
 service at www.framealbum.com.
