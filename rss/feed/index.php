@@ -181,7 +181,7 @@ function handleFrame( $parms )
 
     dbStart();
 
-#print_r($parms);
+print_r($parms);
     if ( (isset($parms['fid'])) and ($parms['fid'] == 999999) ) { $parms['fid'] = 15; }                       # old demo feed frame id
 
     if( featureEnabled('enable_handle_route') and isset( $parms['route'] ) ) {
