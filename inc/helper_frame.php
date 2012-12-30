@@ -491,6 +491,13 @@ function frameFindUsernamePin( $username, $pin )
         $frameid = prepDBVal( str_replace( $mrkr, '', $username ) );
 
         $sql = "SELECT idframes FROM frames WHERE frame_id='$frameid'";
+    } else if( preg_match( '/\:/', $username ) ) {           # username w/ PIN
+        list($username, $pin) = explode( ':', $username );
+
+        $username = prepDBVal( $username );
+        $pin = prepDBVal( $pin );
+
+        $sql = "SELECT idframes FROM frames AS f, users AS u WHERE u.username='$username' AND f.user_id=u.idusers AND feed_pin='$pin'";
     } else {                                    # 'real' username
         $username = prepDBVal( $username );
         $pin = prepDBVal( $pin );

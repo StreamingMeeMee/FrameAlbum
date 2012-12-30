@@ -70,10 +70,17 @@ function handleUser( $parms )
 
     if ( array_key_exists( 'user', $parms ) and array_key_exists( 'pin', $parms ) ) {
         $parms['fid'] = frameFindUsernamePin( $parms['user'], $parms['pin'] );          # is it a specific frame?
+#echo 'user:['.$parms['user'].'] pin:['.$parms['pin'].'] fid:['.$fid.']';
         if( $parms['fid'] > 0 ) {
             list ($ret, $parms['frameid'], $akey) = frameCheckIn( $parms['fid'] );
             if( isFrameActive( $parms['fid'] ) ) {
-                feedActiveFrameFeed( $parms['fid'] );
+                if( isset( $parms['channellist'] ) and $parms['channellist'] = 'true' ) {
+#echo 'sending channellist';
+                    $rss = feedChannelListFID( $parms['fid'] );
+                    feedSendRSS($rss);
+                } else {
+                    feedActiveFrameFeed( $parms['fid'] );
+                }
             } else {
                 feedInactiveFrameFeed($parms['fid'], $parms['frameid'], $parms['productid'], $akey);
             }
