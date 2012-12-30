@@ -1,4 +1,5 @@
 <?php
+include_once 'inc/config.php';
 
 #---------------------------
 function doGET($cd, $er, $er_rn, $er_desc)
@@ -53,7 +54,7 @@ function doPOST()
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>FrameAlbum (beta) - A FrameChannel service replacement</title>
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo $GLOBALS['static_url_root'].'/' ?>style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>

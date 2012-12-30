@@ -8,7 +8,7 @@ our %GLOBALS;
 # Set VERSION
 #------------------------------------------
 
-    $GLOBALS{'version'} = 'GIT - v2012-Jul-09';
+    $GLOBALS{'version'} = 'GIT - v2012-Dec-29';
 
 #------------------------------------------
 # Feature switches are first
@@ -58,10 +58,11 @@ our %GLOBALS;
 #--------------------------------------------
 # All paths should not include trailing '/'
 #--------------------------------------------
-    $GLOBALS{'image_path'} = '/opt/framealbum/html/image';
-    $GLOBALS{'image_url_root'} = 'http://YOUR_HOST_NAME/';
+    $GLOBALS{'image_path'} = '/path/to/your/image/storage';
+    $GLOBALS{'image_url_root'} = 'http://YOUR_HOST_NAME';
+    $GLOBALS{'static_url_root'} = 'http://YOUR_HOST_NAME';
 
-    $GLOBALS{'rss_path'} = '/opt/framealbum/rss';
+    $GLOBALS{'rss_path'} = '/path/to/your/rss/storage';
     $GLOBALS{'rss_url_root'} = 'http://YOUR_HOST_NAME';
     $GLOBALS{'rss_feed_url'} = 'http://YOUR_HOST_NAME/feed.php';
 
