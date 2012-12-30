@@ -258,7 +258,7 @@ function feedGetUserList( $frameid, $fid)
         $row = mysql_fetch_assoc( $res );
         $rss .= feedRssChannelHead($row['username'], 15, 'User list for [' . $frameid . ']', TRUE);
         $icon_url = $GLOBALS['image_url_root'] . '/frame_icon.jpg'; 
-        $rss .= feedRssChannelListItem($row['username'], '', 'user', '', '', $row['idusers'],
+        $rss .= feedRssChannelListItem($row['username'].':'.$row['feed_pin'], '', 'user', '', '', $row['idusers'],
                  $icon_url, '');
     } else {
         $rss .= feedRssChannelHead('Unregistered_Frame:'.$frameid, 5, 'User list for [' . $frameid . ']', FALSE);
