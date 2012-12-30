@@ -2,9 +2,8 @@
 include_once 'inc/dbconfig.php';
 include_once 'inc/config.php';
 include_once 'inc/helpers.php';
-include_once 'inc/frame_helpers.php';
-include_once 'inc/chan_helpers.php';
-require_once 'inc/frame_class.php';
+include_once 'inc/helper_user.php';
+require_once 'inc/user_class.php';
 
     if (session_id() == '') { session_start(); }
 
@@ -13,7 +12,7 @@ require_once 'inc/frame_class.php';
     $dbh = dbStart();
 
 #----------------------------
-function doGET($fid, $action, $cid)
+function doGET($u, $action, $admin)
 #----------------------------
 {
     $msg = '';
@@ -21,20 +20,9 @@ function doGET($fid, $action, $cid)
     $redir = '';
 
     if (($action == 'edit') or ($action == 'add') or ($action == 'delete') ) {
-        list ($msg, $html) = frameForm($fid, $action);
-    } elseif ($action == 'adch') {
-        list ($msg, $html) = frameAddChan($fid, $cid);
-        list ($m, $html, $r) = doGET($fid, '', '');             # redraw the page with the added channel
-    } elseif ($action == 'rmch') {
-        list ($msg, $html) = frameDelChan($fid, $cid);
-        list ($m, $html, $r) = doGET($fid, '', '');             # redraw the page with the channel removed
+        $html = $u->htmlform( $admin );
     } else {
-        list ($msg, $html) = frameInfoHTML($_SESSION['uid'], $fid, $action);
-        if ( $GLOBALS['enable_frame_samples'] ) {
-            list ($m, $h) = frameSample($fid);
-            $msg .= $m;
-            $html .= $h;
-        }
+        $html = $u->htmlinfo( $admin );
     }
 
     return array ($msg, $html, $redir);
@@ -74,28 +62,29 @@ function doPOST($id)
 # M A I N
 #---------------------------
     if (isset($_REQUEST['action'])) { $action=$_REQUEST['action']; } else { $action = ''; }
-    if (isset($_REQUEST['fid'])) { $fid=$_REQUEST['fid']; } else { $fid = 0; $action='add';}
-    if (isset($_REQUEST['cid'])) { $cid=$_REQUEST['cid']; } else { $cid = 0; }
+    $uid = $_SESSION['uid'];
 
-    $fr = new Frame( $dbh, $fid, $_SESSION['uid'] );
-
-    if( !$fr->isOwner( $_SESSION['uid'] ) ) {          # is the current user the owner?
-        $msg='You are not the owner of that frame.';
-        $body = '';
+    if ( userIsAdmin( $_SESSION['username'] ) ) {
+        if( isset( $_REQUEST['uid'] ) ) { $uid = $_REQUEST['uid']; }
+        $admin = TRUE;
     } else {
-        $errs = 0;
-        $body = '';
-        $redir = '';
+        $admin = FALSE;
+    }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            list ($msg, $body, $redir) = doPOST($fid);
-        } else {
-            list ($msg, $body, $redir) = doGET($fid, $action, $cid);
-        }
+    $u = new User( $dbh, $uid );
 
-        if ( strlen($redir) > 0 ) {
-            header('Location: ' . $redir);
-        }
+    $errs = 0;
+    $body = '';
+    $redir = '';
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        list ($msg, $body, $redir) = doPOST($u, $admin);
+    } else {
+        list ($msg, $body, $redir) = doGET( $u, $action, $admin );
+    }
+
+    if ( strlen($redir) > 0 ) {
+        header('Location: ' . $redir);
     }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -108,9 +97,20 @@ function doPOST($id)
     include_once 'js.inc';
     include_once 'validate.inc';
 ?>
+<script type="text/javascript">
+function setDelIcon()
+{
+    if (document.getElementById('del_frame').checked) {
+        document.getElementById('del_frame_msg').src='/images/knobs/Remove_Red.png';
+    } else {
+        document.getElementById('del_frame_msg').src='/images/blank.png';
+    }
+
+}
+</script>
 </head>
 
-<body onLoad="mpmetrics.track('UserDetail');">
+<body onLoad="mpmetrics.track('FrameDetail');">
 <?php
     include_once "topheader.inc";
     include_once "search_strip.inc";
@@ -121,7 +121,8 @@ function doPOST($id)
 ?>
 <!-- end of 'left' DIV -->
 
-  <div class="midarea">
+    <div class="midarea">
+    <div class="body_title">User Account Info</div>
 <?php
     if ( isset($body) ) { echo $body; }
 ?>

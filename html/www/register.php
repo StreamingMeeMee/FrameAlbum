@@ -168,7 +168,7 @@ function doPOST()
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>FrameAlbum (beta) - A FrameChannel service replacement</title>
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo $GLOBALS['static_url_root'].'/' ?>style.css" rel="stylesheet" type="text/css" />
 <?php
     include_once 'js.inc';
     include_once 'validate.inc';

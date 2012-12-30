@@ -1,4 +1,6 @@
 <?php
+include_once 'inc/config.php';
+
     if (session_id() == "") { session_start(); }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -6,7 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>FrameAlbum (beta) - A FrameChannel service replacement</title>
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo $GLOBALS['static_url_root'].'/' ?>style.css" rel="stylesheet" type="text/css" />
 <?php
     include_once 'js.inc';
 ?>
