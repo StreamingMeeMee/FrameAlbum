@@ -293,6 +293,7 @@ function feedChannelListFID( $fid )
     $res = mysql_query($sql)or die("channelList lookup failed.");
 
     $rss = feedRssHead();
+    $rss .= "<channel>\n";
 #    $rss .= feedRssChannelHead( userFindFID($fid).':'.$fr->feed_pin, 15, 'Channel list for ' . userFindFID($fid), TRUE );
 
     if ( mysql_num_rows($res) > 0 ) {
@@ -303,7 +304,7 @@ function feedChannelListFID( $fid )
         }
     }
 
-#    $rss .= feedRssChannelTail();
+    $rss .= feedRssChannelTail();
     $rss .= feedRssTail();
 
     return $rss;
