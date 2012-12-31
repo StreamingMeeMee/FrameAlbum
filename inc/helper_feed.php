@@ -274,7 +274,7 @@ function feedGetUserList( $frameid, $fid)
 }
 
 #-------------------------
-function feedChannelListFID($fid)
+function feedChannelListFID( $fid )
 #-------------------------
 {
     $rss = '';
@@ -286,7 +286,7 @@ function feedChannelListFID($fid)
     $res = mysql_query($sql)or die("channelList lookup failed.");
 
     $rss = feedRssHead();
-    $rss .= feedRssChannelHead('', 15, 'Channel list for ' . userFindFID($fid) . ' [FID:'. $fid . ']');
+    $rss .= feedRssChannelHead( userFindFID($fid), 15, 'Channel list for ' . userFindFID($fid) );
 
     if ( mysql_num_rows($res) > 0 ) {
         while( $row = mysql_fetch_assoc( $res ) ) {
