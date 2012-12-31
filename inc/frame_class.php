@@ -29,7 +29,7 @@ class Frame
 
     public $feed_ttl = 60;
 
-    private $feed_pin = 0;
+    public $feed_pin = 0;
 
     public $item_limit = 0;
 
