@@ -1,4 +1,7 @@
 <?php
+require_once 'dbconfig.php';
+require_once 'frame_class.php';
+
 #-----------------------------
 # 2011-nov-27 - TimC
 #   - fix the SQL in feedChannelsListFID() to not return ALL users channesl -- DOH!
@@ -280,13 +283,17 @@ function feedChannelListFID( $fid )
     $rss = '';
     $fid = prepDBVal($fid);
 
+    $dbh = dbStart();
+
+    $fr = new Frame( $dbh, $fid );
+
     $sql = "SELECT * FROM frames AS f, frame_channels AS fc, user_channels AS uc, channel_types AS ct
         WHERE f.idframes='$fid' AND fc.frame_id=f.idframes AND uc.iduserchannels=fc.user_channel_id
         AND ct.idchanneltypes=uc.channel_type_id";
     $res = mysql_query($sql)or die("channelList lookup failed.");
 
     $rss = feedRssHead();
-    $rss .= feedRssChannelHead( userFindFID($fid), 15, 'Channel list for ' . userFindFID($fid) );
+    $rss .= feedRssChannelHead( userFindFID($fid).':'.$fr->feed_pin, 15, 'Channel list for ' . userFindFID($fid), TRUE );
 
     if ( mysql_num_rows($res) > 0 ) {
         while( $row = mysql_fetch_assoc( $res ) ) {

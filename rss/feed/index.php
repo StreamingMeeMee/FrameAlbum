@@ -75,8 +75,7 @@ function handleUser( $parms )
             list ($ret, $parms['frameid'], $akey) = frameCheckIn( $parms['fid'] );
             if( isFrameActive( $parms['fid'] ) ) {
                 if( isset( $parms['channellist'] ) and $parms['channellist'] = 'true' ) {
-#echo 'sending channellist';
-                    $rss = feedChannelListFID( $parms['fid'] );
+                    $rss .= feedChannelListFID( $parms['fid'] );
                     feedSendRSS($rss);
                 } else {
                     feedActiveFrameFeed( $parms['fid'] );
