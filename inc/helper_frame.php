@@ -29,6 +29,9 @@
 #
 # 2012-dec-28 - TimC
 #   - change 'Unregistered Frame' to 'Unregistered_Frame' to avoid sending spaces in URLs
+#
+# 2016-may-30 - TimC
+#   - update frames.last_seen_tm on checkin
 #--------------------------------
 
 #----------------------------
@@ -418,9 +421,9 @@ function frameCheckInFrameID2($frameid, $prodid)
             $row = mysql_fetch_assoc( $result );
             $akey = $row['activation_key'];
             if ( $row['product_id'] != $idproduct ) {
-                $sql = "UPDATE frames SET product_id='$idproduct', last_seen = now() WHERE frame_id = '$frameid' LIMIT 1";
+                $sql = "UPDATE frames SET product_id='$idproduct', last_seen = now(),last_seen_tm=unix_timestamp() WHERE frame_id = '$frameid' LIMIT 1";
             } else {
-                $sql = "UPDATE frames SET last_seen = now() WHERE frame_id = '$frameid' LIMIT 1";
+                $sql = "UPDATE frames SET last_seen = now(),last_seen_tm=unix_timestamp() WHERE frame_id = '$frameid' LIMIT 1";
             }
             $result = mysql_query($sql);
             if (!$result) {

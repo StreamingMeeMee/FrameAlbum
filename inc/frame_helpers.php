@@ -359,7 +359,7 @@ function frameCheckIn($fid, $prodid)
         $fid = prepDBVal($fid);
         $prodid = prepDBVal($prodid);
 
-        $sql = "UPDATE frames SET product_id='$prodid', last_seen = now() WHERE frame_id = '$fid'";
+        $sql = "UPDATE frames SET product_id='$prodid', last_seen = now(), last_seen_tm=unix_timestamp() WHERE frame_id = '$fid'";
         $result = mysql_query($sql);
         if (!$result) {
             die("[$sql]: Invalid query: " . mysql_error());
