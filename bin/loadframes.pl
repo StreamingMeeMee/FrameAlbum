@@ -25,6 +25,12 @@
 # 2012-aug-2 - TimC
 #   - don't send stats to lefttronic if no key is set
 #   - remove some dead code
+#
+# 2013-sept-28 - TimC
+#   - increase $MAX_ITEMS to 400
+#
+# 2016-may-30 - TimC
+#   - don't load frames who are 'stale'
 #----------------------------------------
 use POSIX qw( strftime );
 use Data::Dumper;
@@ -74,7 +80,7 @@ if ($PROGRAMNAME) {
 #----------------------------------
 # G L O B A L S
 #----------------------------------
-my $MAX_ITEMS = 200;
+my $MAX_ITEMS = 400;
 
 our $dbh;
 my $sth_add_items;
@@ -212,6 +218,7 @@ my $sql = '';
 my $cnt = 0;
 my $st = time();
 my $et = 0;
+my $stale = 3600;                   # age (secs) of stale frames
 
     getopts('dDf:', \%opts);          # -d debug, -f # - build only frameID #
 
@@ -222,12 +229,16 @@ my $et = 0;
 
     dbStart();
 
+    $stale = getSysParm('STALE_FRAME_AGE', 3600);
+    SysMsg($MSG_DEBUG, 'STALE_FRAME_AGE:[' . $stale . ']');
+
     if ($fid > 0) {
 		$item_cnt = populateFrame($fid);
 		$cnt = 1;
     } else {
 		$sql = "SELECT f.idframes FROM frames AS f, users AS u
-            WHERE f.active='Y' AND  f.user_id=u.idusers AND u.active='Y'";
+            WHERE f.active='Y' AND  f.user_id=u.idusers AND u.active='Y'
+            AND ((unix_timestamp() - last_seen_tm) < ?)";
 
         $sth = $dbh->prepare( $sql );
         if (!defined $sth) {
@@ -235,7 +246,7 @@ my $et = 0;
             exit 1;
         }
 
-        $sth->execute()
+        $sth->execute( $stale )
             or SysMsg($MSG_CRIT, "Unable to execute reports SELECT statement: " . $dbh->errstr);
 
         while ( ($fid) = $sth->fetchrow_array() ) {

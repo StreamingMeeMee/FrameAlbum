@@ -41,6 +41,9 @@
 #   - if there is no descriptive text for an image include a <img> link to the image instead.
 #      Was sending just link to image
 #   - Belay that last bit -- always send an <img> link in description.
+#
+# 2016-may-30 - TimC
+#   - Build feeds for frames that have checked in within STALE_FRAME_AGE
 #-------------------------------------
 use DBI;
 
@@ -213,6 +216,7 @@ my $title = '';
             SysMsg($MSG_CRIT, 'Unable to execute frame_items (shuffle)(shuffle)  SELECT statement: ' . $dbh->errstr);
         $ref = $sth_items_shuffle->fetchrow_hashref()
     } else {
+        SysMsg($MSG_INFO, 'Building a feed for FID:['.$fid.']');
         $sth_items->execute($fid) or
             SysMsg($MSG_CRIT, 'Unable to execute frame_items SELECT statement: ' . $dbh->errstr);
         $ref = $sth_items->fetchrow_hashref()
@@ -324,6 +328,7 @@ my %opts;
 
 my $pidfile='';
 my $pid;
+my $stale = 3600;       # don't build for frames who are MIA
 
     getopts('dDf:', \%opts);          # -d debug, -f # - build only frameID #
 
@@ -347,23 +352,27 @@ my $pid;
 
     dbStart();
 
+    $stale = getSysParm('STALE_FRAME_AGE', 3600);
+    SysMsg($MSG_DEBUG, 'STALE_FRAME_AGE:[' . $stale . ']');
+
     unless ($fid > 0) {
         unless ($sth_frames) {
-            $sth_frames = $dbh->prepare("SELECT * FROM frames AS fr, users AS u WHERE fr.active='Y' AND u.idusers=fr.user_id AND u.active='Y'");
+            $sth_frames = $dbh->prepare("SELECT * FROM frames AS fr, users AS u WHERE fr.active='Y' AND u.idusers=fr.user_id AND u.active='Y'
+                                        AND ((unix_timestamp() - last_seen_tm) < ?)");
             if (!defined $sth_frames) {
                 SysMsg($MSG_CRIT, "Unable to prepare frames SELECT statement: " . $dbh->errstr);
                 exit 1;
             }
         }
 
-        $sth_frames->execute() or
+        $sth_frames->execute( $stale ) or
             SysMsg($MSG_CRIT, "Unable to execute frames SELECT statement: " . $dbh->errstr);
 
         while ( ($ref = $sth_frames->fetchrow_hashref()) ) {
 
             $t = '';
             $t = feedHead();
-            $t .= channelHead($$ref{'username'}, 30, $$ref{'idframes'});
+            $t .= channelHead($$ref{'user_nickname'}, 30, $$ref{'idframes'});
 
             unless ($$ref{'item_limit'}) { $$ref{'item_limit'} = 99999; }         # if no limit defined set it crazy high
             SysMsg($MSG_DEBUG, "item limit:[".$$ref{'item_limit'}.']');

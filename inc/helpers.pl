@@ -7,6 +7,9 @@ use Net::SMTP;
 #
 # 2012-aug-11 - TimC
 #   - Add featureEnabled() to check feature status.
+#
+# 2016-may-30 - TimC
+#   - code getSysParm() - was only a stub
 #--------------------------------------
 #==============================
 # G L O B A L S
@@ -14,6 +17,8 @@ use Net::SMTP;
 our %GLOBALS;
 
 our $DEBUG = 0;
+
+our $dbh;
 
 #--- SysMsg() Globals
 our @SAVEMSGS;           # Collect messages for OPS report
@@ -67,6 +72,8 @@ our $BCC_EMAIL_ADDR = $PROGRAMOWNER;
 
 our $EMAIL_CC = '';
 
+my $sth_sys_parm;           # getSysParm()
+
 #================================================
 sub featureEnabled( $ )
 #================================================
@@ -84,11 +91,42 @@ my $ret = 0;
 sub getSysParm($$$)
 #================================================
 {
-my $key = shift;
-my $scope = shift;
-my $default = shift;
+my $parm_name = $_[0];
+my $parm_default = $_[1];
+my $parm_scope = (defined $_[2]) ? $_[2] : 'global';
 
-    return $default;
+my $val = '';
+
+    SysMsg($MSG_DEBUG, 'getSysParm: parm:[' . $parm_name . ']  scope:[' . $parm_scope . ']  default:[' . $parm_default . ']');
+
+    unless ((@_ == 2) or (@_ == 3)) { return ''; }        # Bail if we didn't get the right parms
+
+    unless ($sth_sys_parm) {
+        $sth_sys_parm = $dbh->prepare("SELECT value FROM sys_parms WHERE sys_parms.key=? AND sys_parms.scope=?");
+        if (!defined $sth_sys_parm) {
+            SysMsg($MSG_CRIT, "Unable to prepare sys_parms SELECT statement: " . $dbh->errstr);
+            exit 1;
+        }
+    }
+
+    if ($parm_scope) {
+        $sth_sys_parm->execute($parm_name, $parm_scope) or
+            SysMsg($MSG_CRIT, "Unable to EXECUTE sys_parms SELECT: " .  $dbh->errstr);
+    }
+
+    if ($sth_sys_parm->rows == 0) {
+        $sth_sys_parm->execute($parm_name, 'global') or
+            SysMsg($MSG_CRIT, "Unable to EXECUTE sys_parms (global) SELECT: " .  $dbh->errstr);
+    }
+
+    if ($sth_sys_parm->rows == 0) {
+        $val = $parm_default;
+    } else {
+        ($val) = $sth_sys_parm->fetchrow_array;
+    }
+
+#       return ($val, $parm_scope);
+    return $val;
 }
 
 #================================================
@@ -253,10 +291,14 @@ my $msgtimestr = scalar(localtime($msgtime));
 
   $| = 1;     # Make sure to flush the buffer after each print
 
-  if (defined $SEVERITY{$sev} ) {
+  if( !defined $sev ) {
+    $sev = $MSG_WARN;
+  }
+
+  if( (defined $SEVERITY{$sev} ) ) {
     $msg =  "$msgtimestr:$PROGRAMNAME:$SEVERITY{$sev} $msg\n";
   } else {
-    $msg =  "$msgtimestr:$PROGRAMNAME:*Severity[$sev]* $msg\n";
+    $msg =  "$msgtimestr:$PROGRAMNAME:*Severity[" . ($sev ? $sev : 'n/a') . "]* $msg\n";
   }
   push @SAVEMSGS, $msg;             # Save for later OPS msg if necessary
 
